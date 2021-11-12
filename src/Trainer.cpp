@@ -141,6 +141,10 @@ void Trainer::Steel(Trainer &_trainer) {
     _trainer.open = false;
 }
 
+std::string Trainer::toString() {
+    return std::to_string(capacity);
+}
+
 
 
 ////TO DELETE:

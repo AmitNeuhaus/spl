@@ -20,3 +20,8 @@ WorkoutType Workout::getType() const {
     return type;
 }
 
+std::string Workout::toString() {
+    std::string ans = name+ ", " +std::to_string(type)+ ", "+ std::to_string(price);
+    return ans;
+}
+

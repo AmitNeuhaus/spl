@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <fstream>
 #include "Workout.h"
 #include "Trainer.h"
 #include "Action.h"
@@ -19,7 +22,7 @@ public:
     std::vector<Workout>& getWorkoutOptions();
 
 private:
-    bool open;
+    bool open{};
     std::vector<Trainer*> trainers;
     std::vector<Workout> workout_options;
     std::vector<BaseAction*> actionsLog;
