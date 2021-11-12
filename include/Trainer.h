@@ -6,10 +6,15 @@
 #include "Workout.h"
 
 typedef std::pair<int, Workout> OrderPair;
-
+//
 class Trainer{
 public:
     Trainer(int t_capacity);
+    Trainer(const Trainer& _trainer);
+    Trainer& operator=(Trainer& _trainer);
+    Trainer(Trainer&& _trainer);
+    Trainer& operator=(Trainer&& _trainer);
+    ~Trainer();
     int getCapacity() const;
     void addCustomer(Customer* customer);
     void removeCustomer(int id);
@@ -22,6 +27,9 @@ public:
     int getSalary();
     bool isOpen();
 private:
+    void Copy(const Trainer& _trainer);
+    void Clean();
+    void Steel(Trainer &_trainer);
     int capacity;
     bool open;
     std::vector<Customer*> customersList;
