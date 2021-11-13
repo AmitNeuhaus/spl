@@ -60,7 +60,6 @@ Studio::Studio(const std::string &configFilePath) {
                             counter++;
                         }
                         else{
-
                             price = std::stoi(substr);
                         }
 
