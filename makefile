@@ -1,8 +1,13 @@
 all: test
 
-test:bin/Trainer.o bin/Workout.o bin/Customer.o
-	g++ -o bin/test bin/Trainer.o bin/Workout.o bin/Customer.o
+test:bin/Trainer.o bin/Workout.o bin/Customer.o bin/Studio.o
+	g++ -o bin/test bin/Trainer.o bin/Workout.o bin/Customer.o bin/Studio.o
 	@echo "Ready"
+
+bin/Studio.o: src/Studio.o
+	@echo "compiling Studio"
+	g++ -g -Wall -Weffc++ -std=c++11 -c -Iinclude -o bin/Studio.o src/Studio.cpp
+
 
 bin/Trainer.o: src/Trainer.cpp
 	@echo "compiling Trainer"

@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <sstream>
+#include <iostream>
+#include <fstream>
 #include "Workout.h"
 #include "Trainer.h"
 #include "Action.h"
