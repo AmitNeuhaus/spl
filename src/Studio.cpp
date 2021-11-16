@@ -84,31 +84,36 @@ Studio::Studio(const std::string &configFilePath) {
 
 void Studio::start() {
         // TODO: parsing the first word in the command line  == action
-        std::cin << "Studio is now open!" << std::cout
+        std::cout << "Studio is now open!" << std::endl;
         bool studioIsOpen = true;
+        std::string action = "Hey";
         while (studioIsOpen) {
-            switch (action) {
-                case "open":
+                if (action == "open") {
                     // TODO: parse customers from command ,and trainer id
                     // create new customers instances list
-                    OpenTrainer *openTrainerInstance = new OpenTrainer(id, customerList);
-                    openTrainerInstance->act(this)
+                    int parsedId = 7;
+                    std::vector<Customer *> customersList = std::vector<Customer *>();
+                    OpenTrainer *openTrainerInstance = new OpenTrainer(parsedId, customersList);
+                    openTrainerInstance -> act(*this);
                     //TODO: think if need to check that act completed successfully.
                     delete openTrainerInstance;
-                case "order":
+                }
+                else if (action == "order" ) {
                     //parse Trainer ID
-                    Order *orderInstance = new Order(trainerId);
-                    orderInstance->act(this);
+                    int parsedId = 7;
+                    Order *orderInstance = new Order(parsedId);
+                    orderInstance->act(*this);
                     //TODO: think if need to check that act completed successfully.
                     delete orderInstance;
-                case "closeAll":
+                }
+                else if (action == "closeAll") {
                     studioIsOpen = false;
-
-                default:
-                    std::cin << "No action recognized" << std::cout
+                }
+                else {
+                }
             }
         }
-    }
+
 
 
 
@@ -131,22 +136,22 @@ std::vector<Workout> &Studio::getWorkoutOptions() {
 
 
 
-int main(int argc,char** argv){
-    std::string fileName;
-    std::cout<<"----enter file name----: "<<std::endl;
-    std::cin>>fileName;
-    Studio s(fileName);
-    std::cout<<"------number of trainers in studio-------"<<std::endl;
-    std::cout<<s.getNumOfTrainers()<<std::endl;
-    std::cout<<"------print all workouts in the studio-------"<<std::endl;
-    for (Workout i : s.getWorkoutOptions()) {
-        std::cout<<i.toString()<<std::endl;
-    }
-
-    std::cout<<"-----print trainers id and capacity"<<std::endl;
-    for(int i =0;i<s.getNumOfTrainers();i++){
-        std::cout << std::to_string(i) << ": " <<s.getTrainer(i)->toString() <<std::endl;
-    }
-
-}
+//int main(int argc,char** argv){
+//    std::string fileName;
+//    std::cout<<"----enter file name----: "<<std::endl;
+//    std::cin>>fileName;
+//    Studio s(fileName);
+//    std::cout<<"------number of trainers in studio-------"<<std::endl;
+//    std::cout<<s.getNumOfTrainers()<<std::endl;
+//    std::cout<<"------print all workouts in the studio-------"<<std::endl;
+//    for (Workout i : s.getWorkoutOptions()) {
+//        std::cout<<i.toString()<<std::endl;
+//    }
+//
+//    std::cout<<"-----print trainers id and capacity"<<std::endl;
+//    for(int i =0;i<s.getNumOfTrainers();i++){
+//        std::cout << std::to_string(i) << ": " <<s.getTrainer(i)->toString() <<std::endl;
+//    }
+//
+//}
 
