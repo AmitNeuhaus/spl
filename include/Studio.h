@@ -22,7 +22,7 @@ public:
     std::vector<Workout>& getWorkoutOptions();
 
 private:
-    bool open{};
+    bool open;
     std::vector<Trainer*> trainers;
     std::vector<Workout> workout_options;
     std::vector<BaseAction*> actionsLog;
