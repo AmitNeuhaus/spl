@@ -1,12 +1,13 @@
 #include "../include/Customer.h"
 
 #include <iostream>
+#include <utility>
 using namespace std;
 
 
 
 //Customer ---------------------------------
-Customer::Customer(std::string c_name, int c_id):name(c_name),id(c_id){};
+Customer::Customer(std::string c_name, int c_id):name(std::move(c_name)),id(c_id){};
 
 //order and toString are virtual therefore i don't need to implement them here
 std::string Customer::getName() const {
@@ -43,16 +44,17 @@ std::string SweatyCustomer::toString() const {
 
 
 
-
-int main(int argc, char** argv) {
-    SweatyCustomer amit = SweatyCustomer("amit", 4);
-    Workout running = Workout( 1, "running",  15, ANAEROBIC);
-
-    //this is a workouts pointer
-    std::vector<Workout> *workouts = new vector<Workout>{running};
-
-    //passing the workouts object itself, the function gets it by reference.
-    amit.order(*workouts);
-    return 3;
-}
+//
+//int main(int argc, char** argv) {
+//    SweatyCustomer amit = SweatyCustomer("amit", 4);
+//    Workout running = Workout( 1, "running",  15, ANAEROBIC);
+//
+//    //this is a workouts pointer
+//    std::vector<Workout> *workouts = new vector<Workout>{running};
+//
+//    //passing the workouts object itself, the function gets it by reference.
+//    amit.order(*workouts);
+////    delete(workouts);
+//    return 3;
+//}
 
