@@ -26,6 +26,7 @@ public:
     void closeTrainer();
     int getSalary();
     bool isOpen();
+    bool isFull();
     std::string toString();
 private:
     void Copy(const Trainer& _trainer);

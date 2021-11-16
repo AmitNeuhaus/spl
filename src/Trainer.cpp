@@ -115,6 +115,7 @@ Trainer& Trainer::operator=(Trainer &&_trainer) {
 void Trainer::Copy(const Trainer& _trainer){
     capacity = _trainer.getCapacity();
     open = _trainer.open;
+    //todo: fix copy for costumer list vector;
     customersList = _trainer.customersList;
     for (OrderPair i : orderList) {
         OrderPair newPair= i;
@@ -127,6 +128,7 @@ void Trainer::Clean(){
 
     capacity = -1;
     open = false;
+    //todo: delete each object in costumer list;
     customersList.clear();
     orderList.clear();
 
@@ -143,6 +145,10 @@ void Trainer::Steel(Trainer &_trainer) {
 
 std::string Trainer::toString() {
     return std::to_string(capacity);
+}
+
+bool Trainer::isFull() {
+    return capacity = customersList.size();
 }
 
 

@@ -35,7 +35,9 @@ Studio::Studio(const std::string &configFilePath) {
                 else{
                     std::string name;
                     WorkoutType type;
-                    int price;
+                    int priceat act completed successfully.
+                    delete openTrainerInstance;
+                case "order":;
                     int w_id = 0;
                     int counter=0;
                     while (s_line.good()){
@@ -84,7 +86,7 @@ Studio::Studio(const std::string &configFilePath) {
 
 void Studio::start() {
         // TODO: parsing the first word in the command line  == action
-        std::cin << "Studio is now open!" << std::cout
+        std::cout << "Studio is now open!" << std::endl
         bool studioIsOpen = true;
         while (studioIsOpen) {
             switch (action) {
@@ -117,6 +119,9 @@ int Studio::getNumOfTrainers() const {
 }
 
 Trainer *Studio::getTrainer(int tid) {
+    if (tid>trainers.size()-1){
+        return nullptr;
+    }
     Trainer* t = trainers[tid];
     return t;
 }
@@ -136,17 +141,17 @@ int main(int argc,char** argv){
     std::cout<<"----enter file name----: "<<std::endl;
     std::cin>>fileName;
     Studio s(fileName);
-    std::cout<<"------number of trainers in studio-------"<<std::endl;
-    std::cout<<s.getNumOfTrainers()<<std::endl;
-    std::cout<<"------print all workouts in the studio-------"<<std::endl;
-    for (Workout i : s.getWorkoutOptions()) {
-        std::cout<<i.toString()<<std::endl;
-    }
-
-    std::cout<<"-----print trainers id and capacity"<<std::endl;
-    for(int i =0;i<s.getNumOfTrainers();i++){
-        std::cout << std::to_string(i) << ": " <<s.getTrainer(i)->toString() <<std::endl;
-    }
+//    std::cout<<"------number of trainers in studio-------"<<std::endl;
+//    std::cout<<s.getNumOfTrainers()<<std::endl;
+//    std::cout<<"------print all workouts in the studio-------"<<std::endl;
+//    for (Workout i : s.getWorkoutOptions()) {
+//        std::cout<<i.toString()<<std::endl;
+//    }
+//
+//    std::cout<<"-----print trainers id and capacity"<<std::endl;
+//    for(int i =0;i<s.getNumOfTrainers();i++){
+//        std::cout << std::to_string(i) << ": " <<s.getTrainer(i)->toString() <<std::endl;
+//    }
 
 }
 
