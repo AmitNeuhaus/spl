@@ -117,3 +117,79 @@ std::string Close::toString() const {
     return actionString;
 }
 
+
+//Close All class:
+CloseAll::CloseAll() {}
+
+void CloseAll::act(Studio &studio) {
+    for(int i = 0 ; i<studio.getNumOfTrainers()-1;++i){
+        Close* closeTrainer= new Close(i);
+        closeTrainer->act(studio);
+        delete closeTrainer;
+    }
+}
+
+std::string CloseAll::toString() const {
+    std::string actionString = "CloseAll, "   + std::to_string(getStatus());
+    return actionString;
+}
+
+
+//Print Workout Options class:
+PrintWorkoutOptions::PrintWorkoutOptions() {}
+
+void PrintWorkoutOptions::act(Studio &studio) {
+    std::vector<Workout> workouts = studio.getWorkoutOptions();
+    for(Workout workout : workouts){
+        std::cout << workout.toString() << std::endl;
+    }
+}
+
+std::string PrintWorkoutOptions::toString() const {
+    std::string actionString = "PrintWorkoutOptions, "   + std::to_string(getStatus());
+    return actionString;
+}
+
+
+//Print Trainer Status class:
+PrintTrainerStatus::PrintTrainerStatus(int id):trainerId(id) {}
+
+void PrintTrainerStatus::act(Studio &studio) {
+    Trainer* trainer = studio.getTrainer(trainerId);
+    if (trainer->isOpen()){
+        std::cout << "Trainer " + std::to_string(trainerId) +"status: open" std::endl;
+        std::cout << "Customers:" << std::endl;
+        for(Customer* customer:trainer->getCustomers()){
+            std::cout << std::to_string(customer->getId()) << " " << std::to_string(customer->getName()) << std::endl;
+        }
+        std::cout << "Orders:" << std::endl;
+        for(OrderPair pair : trainer->getOrders()){
+            std::cout << pair.second.getName() << " "<<std::to_string(pair.second.getPrice())<<" "<< std::to_string(pair.first)<<std::endl;
+        }
+        std::cout << "Current Trainer's Salary: "<< std::to_string(trainer->getSalary())<<std::endl;
+
+
+    }else{
+        std::cout << "Trainer " + std::to_string(trainerId) +"status: close" std::endl;
+    }
+}
+
+std::string PrintTrainerStatus::toString() const {
+    std::string actionString = "PrintTrainerStatus, "   +std::to_string(trainerId)+", " std::to_string(getStatus());
+    return actionString;
+}
+
+//Print Actions Log class:
+PrintActionsLog::PrintActionsLog() {}
+
+void PrintActionsLog::act(Studio &studio) {
+    std::vector<BaseAction*> actionLog = studio.getActionsLog();
+    for(BaseAction* action : actionLog){
+        std::cout<< action->toString()<<std::endl;
+    }
+}
+
+std::string PrintActionsLog::toString() const {
+    std::string actionString = "PrintActionLog, "   + std::to_string(getStatus());
+    return actionString;
+}
