@@ -29,6 +29,7 @@ public:
     bool isFull();
     std::string toString();
 private:
+    Customer* createCustomer(Customer *customer);
     void Copy(const Trainer& _trainer);
     void Clean();
     void Steel(Trainer &_trainer);

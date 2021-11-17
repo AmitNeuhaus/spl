@@ -20,10 +20,12 @@ void Trainer::removeCustomer(int id){
     for (std::vector<Customer*>::iterator customer = customersList.begin();customer!=customersList.end();) {
         if ((*customer)->getId() == id){
             customersList.erase(customer);
+            delete *customer;
         }else{
             ++customer;
         }
     }
+
     std::vector<OrderPair> newOrderList;
     for (OrderPair pair: orderList) {
         OrderPair p = pair;
@@ -128,10 +130,10 @@ void Trainer::Copy(const Trainer& _trainer){
     salary = _trainer.salary;
     //todo: fix copy for costumer list vector;
     customersList = _trainer.customersList;
-//    for (Customer* customer : _trainer.customersList) {
-//        Customer* copyCustomer = new Customer(customer);
-//        customersList.push_back(copyCustomer);
-//    }
+    for (Customer* customer : _trainer.customersList) {
+        Customer* copyCustomer = createCustomer(customer);
+        customersList.push_back(copyCustomer);
+    }
     for (OrderPair i : orderList) {
         OrderPair newPair= i;
         orderList.push_back(newPair);
@@ -143,7 +145,9 @@ void Trainer::Clean(){
     salary = -1;
     capacity = -1;
     open = false;
-    //todo: delete each object in costumer list;
+    for(Customer* customer : customersList){
+        delete customer;
+    }
     customersList.clear();
     orderList.clear();
 
@@ -165,6 +169,24 @@ std::string Trainer::toString() {
 
 bool Trainer::isFull() {
     return capacity = customersList.size();
+}
+
+Customer *Trainer::createCustomer(Customer *customer) {
+    std::string customerType = customer->toString();
+    if (customerType.compare("SweatyCustomer")){
+        SweatyCustomer* newCustomer = new SweatyCustomer(customer->getName(),customer->getId());
+        return newCustomer;
+    }
+    else if (customerType.compare("CheapCustomer")){
+        CheapCustomer* newCustomer = new CheapCustomer(customer->getName(),customer->getId());
+        return newCustomer;
+    }else if (customerType.compare("HeavyMuscleCustomer")){
+        HeavyMuscleCustomer* newCustomer = new HeavyMuscleCustomer(customer->getName(),customer->getId());
+        return newCustomer;
+    }else{
+        FullBodyCustomer* newCustomer = new FullBodyCustomer(customer->getName(),customer->getId());
+        return newCustomer;
+    }
 }
 
 
