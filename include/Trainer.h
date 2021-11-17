@@ -34,8 +34,11 @@ private:
     void Steel(Trainer &_trainer);
     int capacity;
     bool open;
+    int salary;
     std::vector<Customer*> customersList;
     std::vector<OrderPair> orderList; //A list of pairs for each order for the trainer - (customer_id, Workout)
+
+
 };
 
 

@@ -75,12 +75,6 @@ void MoveCustomer::act(Studio &studio) {
         Customer* customer = srcTrainerRef->getCustomer(id);
         //remove customer from src trainer:
         srcTrainerRef->removeCustomer(id);
-        std::vector<OrderPair>* srcOrderList = &(srcTrainerRef->getOrders());
-        for (std::vector<std::pair<int,Workout>>::iterator it = srcOrderList->begin();it<srcOrderList->end();++it) {
-           if(it->first == id){
-                srcOrderList->erase(it);  //// this is the line that cause the ERROR, good luck she is a bitch
-           }
-        }
         //add customer to new trainer:
         dstTrainerRef->addCustomer(customer);
         dstTrainerRef->order(customer->getId(),customer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
