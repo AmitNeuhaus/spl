@@ -86,8 +86,11 @@ void Studio::start() {
         // TODO: parsing the first word in the command line  == action
         std::cout << "Studio is now open!" << std::endl;
         bool studioIsOpen = true;
-        std::string action = "Hey";
-        while (studioIsOpen) {
+
+
+    while (studioIsOpen) {
+        std::vector<std::string> command = getUserCommand();
+        std::string action = command[0];
                 if (action == "open") {
                     // TODO: parse customers from command ,and trainer id
                     // create new customers instances list
@@ -110,6 +113,7 @@ void Studio::start() {
                     studioIsOpen = false;
                 }
                 else {
+                    std::cout << action << std::endl;
                 }
             }
         }
@@ -135,6 +139,19 @@ std::vector<Workout> &Studio::getWorkoutOptions() {
 }
 
 
+//std::vector<std::string>& getUserCommand(){
+
+std::vector<std::string> Studio::getUserCommand(){
+    std::string command;
+    std::getline(std::cin, command);
+    std::stringstream commandStream(command);
+    std::vector<std::string> out;
+    std::string s;
+    while (std::getline(commandStream, s, ' ')) {
+        out.push_back(s);
+    }
+    return out;
+}
 
 //int main(int argc,char** argv){
 //    std::string fileName;
