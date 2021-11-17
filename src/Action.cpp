@@ -1,45 +1,45 @@
 
 #include "../include/Action.h"
 #include "../include/Trainer.h"
+#include "../include/Studio.h"
+#include <utility>
+
 
 //Base Action
 //TODO: check if needed to initial with those values
-BaseAction::BaseAction(){errorMessage(""),status(NULL)};
-ActionStatus BaseAction::getStatus() const {}
-std::string BaseAction::getErrorMsg() const {}(){return status;}
+BaseAction::BaseAction(){}
+
+ActionStatus BaseAction::getStatus() const {return status;}
+std::string BaseAction::getErrorMsg() const {return errorMsg;}
 void BaseAction::complete() {status=COMPLETED;}
-void BaseAction::error(std::string errorMsg) { status=ERROR; errorMsg=errorMsg;}
+void BaseAction::error(std::string errorMsg_in) { status=ERROR; errorMsg=errorMsg_in;}
 
 
 
 //OpenTrainer
 // receive customers created reference and attach them to the current trainer.
-OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList):BaseAction(){
-    trainerId = id;
-    customers = customersList;
-}
+OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList):BaseAction(), trainerId(id), customers(customersList){}
 
 void OpenTrainer::act(Studio &studio) {
-    Trainer* trainerRef = studio.getTrainer(trainerId);
-    //TODO: check if trainer isnt open &&  and capacity is suitable  && trainer exists
+    Trainer* trainerRef = studio.getTrainer(2);
+    //TODO: check if trainer isn't open &&  and capacity is suitable  && trainer exists
     // if not call error("Workout session does not exist or is already open")
 
     // open trainer (set trainer session status to open)
     trainerRef -> openTrainer();
     for (int i=0; i < customers.size(); i++){
-        trainerRef.addCustomer(customers[i]);
+        trainerRef -> addCustomer(customers[i]);
     }
     complete();
     //log action
 
 }
+std::string OpenTrainer::toString() const { return "dfsfs";}
 
 
 //Order class:
 
-Order::Order(int id) {}:BaseAction(){
-    trainerId = id;
-}
+Order::Order(int id):BaseAction(), trainerId(id){}
 
 void Order::act(Studio &studio) {
     Trainer* trainerRef = studio.getTrainer(trainerId);
@@ -48,19 +48,20 @@ void Order::act(Studio &studio) {
     // if not call error("Trainer does not exist or is not open")
 
     // open trainer (set trainer session status to open)
-    std::vector<Customer*>& customers = trainerRef -> getCustomers()
+    std::vector<Customer*>& customers = trainerRef -> getCustomers();
     for (int i=0;  i < customers.size(); i++){
         // todo: check how to store in var efficiently.
         std::vector<int> orderedWorkouts = customers[i] -> order(studio.getWorkoutOptions());
         trainerRef -> order(customers[i]-> getId(), orderedWorkouts, studio.getWorkoutOptions());
     }
-    std::vector<OrderPair> trainerSessionOrders = trainerRef -> orderList;
-    for (int i =0; i<trainerSessionOrders; ++i ){
+    std::vector<OrderPair> trainerSessionOrders = trainerRef -> getOrders();
+    for (int i =0; i<trainerSessionOrders.size(); ++i ){
         //cout the order pair
     }
     complete();
 
 }
+std::string Order::toString() const {return "sdsda";}
 
 
 
@@ -74,15 +75,15 @@ void MoveCustomer::act(Studio &studio) {
         Customer* customer = srcTrainerRef->getCustomer(id);
         //remove customer from src trainer:
         srcTrainerRef->removeCustomer(id);
-        std::vector<OrderPair>* srcOrderList = srcTrainerRef->getOrders();
-        for (std::vector<OrderPair>::iterator it = srcOrderList.begin(); it!=srcOrderList.end();++it) {
-            if (it->first == id){
-                srcOrderList->erase(it);
-            }
+        std::vector<OrderPair>* srcOrderList = &(srcTrainerRef->getOrders());
+        for (std::vector<std::pair<int,Workout>>::iterator it = srcOrderList->begin();it<srcOrderList->end();++it) {
+           if(it->first == id){
+                srcOrderList->erase(it);  //// this is the line that cause the ERROR, good luck she is a bitch
+           }
         }
         //add customer to new trainer:
         dstTrainerRef->addCustomer(customer);
-        dstTrainerRef->order(customer->getId(),customer->order(),studio.getWorkoutOptions());
+        dstTrainerRef->order(customer->getId(),customer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
         complete();
     }
     else{
@@ -92,13 +93,14 @@ void MoveCustomer::act(Studio &studio) {
 
 }
 
+
 std::string MoveCustomer::toString() const {
-    std::string actionString = "MoveCustomer" + std::to_string(srcTrainer) + ", " + std::to_string(dstTrainer) + ", " + std::to_string(id)+", " + status;
+    std::string actionString = "MoveCustomer" + std::to_string(srcTrainer) + ", " + std::to_string(dstTrainer) + ", " + std::to_string(id)+", " + std::to_string(getStatus());
     return actionString;
 }
 
-bool MoveCustomer::canMove(Trainer &t1, Trainer &t2, int cId) {
-    return (t1!= nullptr && t2!= nullptr && t1.isOpen() && t2.isOpen() && !t2.isFull() && t1.getCustomer(cId) != nullptr);
+bool MoveCustomer::canMove(Trainer* t1, Trainer* t2, int cId) {
+    return (t1!= nullptr  && t2!= nullptr && t1->isOpen() && t2->isOpen() && !t2->isFull() && t1->getCustomer(cId) != nullptr);
 }
 
 
@@ -109,7 +111,7 @@ void Close::act(Studio &studio) {
     Trainer* trainer = studio.getTrainer(trainerId);
     if (trainer!= nullptr && trainer->isOpen()){
         trainer->closeTrainer();
-        std::cout << "Trainer " + std::to_string(id) + "closed. Salary " + std::to_string(trainer->getSalary()) +"NIS"<<std::endl;
+        std::cout << "Trainer " + std::to_string(trainerId) + "closed. Salary " + std::to_string(trainer->getSalary()) +"NIS"<<std::endl;
     }else{
         error("Trainer does not exist or is not open");
     }
@@ -117,49 +119,7 @@ void Close::act(Studio &studio) {
 }
 
 std::string Close::toString() const {
-    std::string actionString = "Close" + ", " + std::to_string(trainerId) + ", " + status;
-    return actionString();
-}
-
-//CloseAll class:
-CloseAll::CloseAll() {}
-
-void CloseAll::act(Studio &studio) {
-    for (int i = 0; i < studio.getNumOfTrainers; ++i) {
-        Close* close = new Close(i);
-        close->act(studio);
-        delete(close);
-
-    }
-}
-
-std::string CloseAll::toString() const {
-    std::string actionString = "CloseAll" + ", " + std::to_string(status);
+    std::string actionString = "Close, "  + std::to_string(trainerId) + ", " + std::to_string(getStatus());
     return actionString;
 }
 
-
-//Print Workout Options class:
-PrintWorkoutOptions::PrintWorkoutOptions() {}
-
-void PrintWorkoutOptions::act(Studio &studio) {
-    for(Workout w : studio.getWorkoutOptions()){
-        std::cout << w.toString() << std::endl;
-    }
-}
-
-std::string PrintWorkoutOptions::toString() const {
-    std::string actionString = "PrintWorkoutOptions" + std::to_string(status);
-    return actionstring;
-}
-
-PrintTrainerStatus::PrintTrainerStatus(int id):trainerId(id) {}
-
-void PrintTrainerStatus::act(Studio &studio) {
-    Trainer* trainer = studio.getTrainer(trainerId);
-
-}
-
-std::string PrintTrainerStatus::toString() const {
-    return std::string();
-}
