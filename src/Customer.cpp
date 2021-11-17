@@ -35,6 +35,10 @@ std::string SweatyCustomer::toString() const {
     return "SweatyCustomer";
 }
 
+Customer* SweatyCustomer::clone() const{
+    return new SweatyCustomer(getName(),getId());
+}
+
 //CheapCustomer --------------------------
 //TODO: in the assignment it says this customer only orders once, maybe we should save a pointer/id of the cheapest workout elsewhere after calling.
 CheapCustomer::CheapCustomer(std::string name, int id):Customer(name,id){};
@@ -52,6 +56,10 @@ std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_option
 
 std::string CheapCustomer::toString() const {
     return "CheapCustomer";
+}
+
+Customer* CheapCustomer::clone() const{
+    return new CheapCustomer(getName(),getId());
 }
 
 //HeavyMuscleCustomer --------------------
@@ -82,6 +90,10 @@ std::string HeavyMuscleCustomer::toString() const {
     return "HeavyMuscleCustomer";
 }
 
+
+Customer* HeavyMuscleCustomer::clone() const{
+    return new HeavyMuscleCustomer(getName(),getId());
+}
 
 //FullBodyCustomer -----------------------
 FullBodyCustomer::FullBodyCustomer(std::string name, int id):Customer(name,id){};
@@ -126,6 +138,10 @@ std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_opt
 
 std::string FullBodyCustomer::toString() const {
     return "FullBodyCustomer";
+}
+
+Customer* FullBodyCustomer::clone() const{
+    return new FullBodyCustomer(getName(),getId());
 }
 //
 //int main(int argc, char** argv) {
