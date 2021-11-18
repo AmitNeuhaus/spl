@@ -24,13 +24,14 @@ void BaseAction::error(std::string errorMsg_in) {
 OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList):BaseAction(), trainerId(id), customers(customersList){}
 
 void OpenTrainer::act(Studio &studio) {
-    Trainer* trainerRef = studio.getTrainer(2);
+    Trainer* trainerRef = studio.getTrainer(trainerId);
     //TODO: check if trainer isn't open &&  and capacity is suitable  && trainer exists
     // if not call error("Workout session does not exist or is already open")
-
+    int trainerCapacity = trainerRef -> getCapacity();
     // open trainer (set trainer session status to open)
     trainerRef -> openTrainer();
-    for (int i=0; i < trainerRef->getCapacity(); i++){
+    int maxCustomers = trainerCapacity < customers.size()? trainerCapacity: customers.size();
+    for (int i=0; i < maxCustomers; i++){
         trainerRef -> addCustomer(customers[i]);
     }
     complete();

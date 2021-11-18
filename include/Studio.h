@@ -22,6 +22,8 @@ public:
     std::vector<Workout>& getWorkoutOptions();
     std::vector<std::string> getUserCommand();
     Customer* createCustomer(std::string name, std::string strategy, int id);
+    std::vector<std::string> splitNameAndStrategy(std::string nameAndStrategy);
+
 private:
     bool open;
     std::vector<Trainer*> trainers;
