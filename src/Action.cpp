@@ -4,6 +4,7 @@
 #include "../include/Studio.h"
 #include <utility>
 
+extern Studio* backup;
 
 //Base Action
 //TODO: check if needed to initial with those values
@@ -191,5 +192,30 @@ void PrintActionsLog::act(Studio &studio) {
 
 std::string PrintActionsLog::toString() const {
     std::string actionString = "PrintActionLog, "   + std::to_string(getStatus());
+    return actionString;
+}
+
+
+//BackUp Action class:
+BackupStudio::BackupStudio() {}
+
+void BackupStudio::act(Studio &studio) {
+    backup = new Studio(studio);
+}
+
+std::string BackupStudio::toString() const {
+    std::string actionString = "BackUp, "   + std::to_string(getStatus());
+    return actionString;
+}
+
+//Restore Studio Action class
+RestoreStudio::RestoreStudio() {}
+
+void RestoreStudio::act(Studio &studio) {
+    studio = *backup;
+}
+
+std::string RestoreStudio::toString() const {
+    std::string actionString = "RestoreStudio, "   + std::to_string(getStatus());
     return actionString;
 }
