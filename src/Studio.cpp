@@ -107,14 +107,14 @@ void Studio::start() {
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
                     //TODO: think if need to check that act completed successfully.
-                    delete openTrainerInstance;
+                    actionsLog.push_back(openTrainerInstance);
                 }
                 else if (action == "order" ) {
                     int trainerId = std::stoi( command[1] );
                     Order *orderInstance = new Order(trainerId);
                     orderInstance->act(*this);
                     //TODO: think if need to check that act completed successfully.
-                    delete orderInstance;
+                    actionsLog.push_back(orderInstance);
                 }
                 else if (action == "closeAll") {
                     studioIsOpen = false;

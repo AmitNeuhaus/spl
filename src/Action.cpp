@@ -35,8 +35,6 @@ void OpenTrainer::act(Studio &studio) {
         trainerRef -> addCustomer(customers[i]);
     }
     complete();
-    //log action
-
 }
 std::string OpenTrainer::toString() const { return "dfsfs";}
 
@@ -64,7 +62,6 @@ void Order::act(Studio &studio) {
         //cout the order pair
     }
     complete();
-    //log action
 }
 
 std::string Order::toString() const {return "sdsda";}
