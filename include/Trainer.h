@@ -14,7 +14,7 @@ public:
     Trainer& operator=(Trainer& _trainer);
     Trainer(Trainer&& _trainer);
     Trainer& operator=(Trainer&& _trainer);
-    ~Trainer();
+    virtual ~Trainer();
     int getCapacity() const;
     void addCustomer(Customer* customer);
     void removeCustomer(int id);

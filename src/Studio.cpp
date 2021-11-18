@@ -137,6 +137,77 @@ std::vector<Workout> &Studio::getWorkoutOptions() {
     return workout_options;
 }
 
+//Rule of 5:
+
+//copy c-tor:
+Studio::Studio(const Studio &studio) {
+    Copy(studio);
+}
+
+Studio &Studio::operator=(Studio &studio) {
+    if (this!=&studio){
+        Clean();
+        Copy(studio);
+    }
+    return (*this);
+}
+
+Studio::Studio(Studio &&studio) {
+    Steel(studio);
+}
+
+Studio &Studio::operator=(Studio &&studio) {
+    if (this!=&studio){
+        Clean();
+        Steel(studio);
+    }
+    return (*this);
+}
+
+Studio::~Studio() {
+    Clean();
+}
+
+void Studio::Clean() {
+    for(Trainer* trainer : trainers){
+        delete trainer;
+    }
+    for(Workout workout : workout_options){
+        delete &workout;
+    }
+    for(BaseAction* action : actionsLog){
+        delete action;
+    }
+    trainers.clear();
+    workout_options.clear();
+    actionsLog.clear();
+}
+
+void Studio::Copy(const Studio& studio) {
+    for(Trainer* trainer : studio.trainers){
+        Trainer* copyTrainer = trainer;
+        trainers.push_back(copyTrainer);
+    }
+    for(Workout workout : studio.workout_options){
+        Workout* copyWorkout  = new Workout(workout.getId(),workout.getName(),workout.getPrice(),workout.getType());
+        workout_options.push_back(*copyWorkout);
+    }
+//    for(BaseAction* action : studio.actionsLog){
+//        BaseAction* copyAction = action.copyAction(action);
+//        actionsLog.push_back(copyAction);
+//    }
+}
+
+void Studio::Steel(Studio &studio) {
+    trainers=std::move(studio.trainers);
+    studio.trainers.clear();
+    workout_options = std::move(studio.workout_options);
+    studio.workout_options.clear();
+    actionsLog = std::move(studio.actionsLog);
+    studio.actionsLog.clear();
+
+}
+
 
 
 //int main(int argc,char** argv){

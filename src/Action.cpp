@@ -157,10 +157,10 @@ PrintTrainerStatus::PrintTrainerStatus(int id):trainerId(id) {}
 void PrintTrainerStatus::act(Studio &studio) {
     Trainer* trainer = studio.getTrainer(trainerId);
     if (trainer->isOpen()){
-        std::cout << "Trainer " + std::to_string(trainerId) +"status: open" std::endl;
+        std::cout << "Trainer " + std::to_string(trainerId) +"status: open"<< std::endl;
         std::cout << "Customers:" << std::endl;
         for(Customer* customer:trainer->getCustomers()){
-            std::cout << std::to_string(customer->getId()) << " " << std::to_string(customer->getName()) << std::endl;
+            std::cout << std::to_string(customer->getId()) << " " << customer->getName() << std::endl;
         }
         std::cout << "Orders:" << std::endl;
         for(OrderPair pair : trainer->getOrders()){
@@ -170,12 +170,12 @@ void PrintTrainerStatus::act(Studio &studio) {
 
 
     }else{
-        std::cout << "Trainer " + std::to_string(trainerId) +"status: close" std::endl;
+        std::cout << "Trainer " + std::to_string(trainerId) +"status: close"<< std::endl;
     }
 }
 
 std::string PrintTrainerStatus::toString() const {
-    std::string actionString = "PrintTrainerStatus, "   +std::to_string(trainerId)+", " std::to_string(getStatus());
+    std::string actionString = "PrintTrainerStatus, "   +std::to_string(trainerId)+", " +std::to_string(getStatus());
     return actionString;
 }
 
