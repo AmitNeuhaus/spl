@@ -99,10 +99,9 @@ void PrintActionsLog::act(Studio &studio) {
 }
 
 std::string PrintActionsLog::toString() const {
-    return std::string("log");
+    return std::string("log Completed");
 }
 
-}
 
 //Move Customer class:
 MoveCustomer::MoveCustomer(int src, int dst, int customerId):srcTrainer(src),dstTrainer(dst),id(customerId) {}
@@ -215,21 +214,6 @@ void PrintTrainerStatus::act(Studio &studio) {
 
 std::string PrintTrainerStatus::toString() const {
     std::string actionString = "PrintTrainerStatus, "   +std::to_string(trainerId)+", " +std::to_string(getStatus());
-    return actionString;
-}
-
-//Print Actions Log class:
-PrintActionsLog::PrintActionsLog() {}
-
-void PrintActionsLog::act(Studio &studio) {
-    std::vector<BaseAction*> actionLog = studio.getActionsLog();
-    for(BaseAction* action : actionLog){
-        std::cout<< action->toString()<<std::endl;
-    }
-}
-
-std::string PrintActionsLog::toString() const {
-    std::string actionString = "PrintActionLog, "   + std::to_string(getStatus());
     return actionString;
 }
 

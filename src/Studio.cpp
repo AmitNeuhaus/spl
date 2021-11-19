@@ -116,8 +116,31 @@ void Studio::start() {
                     //TODO: think if need to check that act completed successfully.
                     actionsLog.push_back(orderInstance);
                 }
-                else if (action == "closeAll") {
+                else if (action == "move") {
+                    int originTrainerId = std::stoi( command[1] );
+                    int destinationTrainerId = std::stoi( command[2] );
+                    int customerId = std::stoi( command[3] );
+                    MoveCustomer *moveCustomerInstance = new MoveCustomer(originTrainerId,destinationTrainerId,customerId);
+                    moveCustomerInstance->act(*this);
+                    actionsLog.push_back(moveCustomerInstance);
+                }
+                else if (action == "close") {
+                    int trainerId = std::stoi( command[1] );
+                    Close *closeInstance = new Close(trainerId);
+                    closeInstance->act(*this);
+                    actionsLog.push_back(closeInstance);
+                }
+                else if (action == "closeall") {
+                    CloseAll *closeAllInstance = new CloseAll();
+                    closeAllInstance->act(*this);
+                    actionsLog.push_back(closeAllInstance);
                     studioIsOpen = false;
+                }
+                else if (action == "status") {
+                    int trainerId = std::stoi( command[1] );
+                    PrintTrainerStatus *printTrainerStatusInstance = new PrintTrainerStatus(trainerId);
+                    printTrainerStatusInstance->act(*this);
+                    actionsLog.push_back(printTrainerStatusInstance);
                 }
                 else if (action == "log") {
                     PrintActionsLog *printActionsLogInstance = new PrintActionsLog();
