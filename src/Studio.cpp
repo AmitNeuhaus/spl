@@ -12,6 +12,7 @@ Studio::Studio(const std::string &configFilePath) {
     std::string line;
     std::string substr;
     int lineCounter = 0;
+    int w_id = 0;
     if (file.is_open()){
         while(getline(file,line)){
             if (line[0] != '#'){
@@ -36,7 +37,6 @@ Studio::Studio(const std::string &configFilePath) {
                     std::string name;
                     WorkoutType type;
                     int price;
-                    int w_id = 0;
                     int counter=0;
                     while (s_line.good()){
                         std::getline(s_line,substr,',');
@@ -107,17 +107,22 @@ void Studio::start() {
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
                     //TODO: think if need to check that act completed successfully.
-                    delete openTrainerInstance;
+                    actionsLog.push_back(openTrainerInstance);
                 }
                 else if (action == "order" ) {
                     int trainerId = std::stoi( command[1] );
                     Order *orderInstance = new Order(trainerId);
                     orderInstance->act(*this);
                     //TODO: think if need to check that act completed successfully.
-                    delete orderInstance;
+                    actionsLog.push_back(orderInstance);
                 }
                 else if (action == "closeAll") {
                     studioIsOpen = false;
+                }
+                else if (action == "log") {
+                    PrintActionsLog *printActionsLogInstance = new PrintActionsLog();
+                    printActionsLogInstance->act(*this);
+                    actionsLog.push_back(printActionsLogInstance);
                 }
                 else {
                     std::cout << action << std::endl;

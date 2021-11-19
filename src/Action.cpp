@@ -35,12 +35,21 @@ void OpenTrainer::act(Studio &studio) {
         trainerRef -> addCustomer(customers[i]);
     }
     complete();
-    //log action
-
 }
-std::string OpenTrainer::toString() const { return "dfsfs";}
 
-
+std::string OpenTrainer::toString() const {
+    std::string output= "open " + std::to_string(trainerId);
+    for (int i=0; i<customers.size(); i++){
+        output = output + std::string(" ") + customers[i] -> toString() + std::string(" ");
+    }
+    if (getStatus() == COMPLETED) {
+        output = output + std::string("Completed");
+    }
+    else if(getStatus() == ERROR){
+        output = output + getErrorMsg();
+    }
+    return output;
+}
 
 //Order
 
@@ -64,7 +73,30 @@ void Order::act(Studio &studio) {
         //cout the order pair
     }
     complete();
-    //log action
 }
 
-std::string Order::toString() const {return "sdsda";}
+std::string Order::toString() const {
+    std::string output= "order " + std::to_string(trainerId) +std::string(" ");
+    if (getStatus() == COMPLETED) {
+        output = output + std::string("Completed");
+    }
+    else if (getStatus() == ERROR){
+        output = output + getErrorMsg();
+    }
+    return output;
+}
+
+
+//PrintActionsLog
+
+PrintActionsLog::PrintActionsLog() {}
+
+void PrintActionsLog::act(Studio &studio) {
+    for (int i = 0; i < studio.getActionsLog().size(); i++) {
+        std::cout << studio.getActionsLog()[i]->toString() << std::endl;
+    }
+}
+
+std::string PrintActionsLog::toString() const {
+    return std::string("log");
+}
