@@ -92,19 +92,26 @@ void Studio::start() {
         std::vector<std::string> command = getUserCommand();
         std::string action = command[0];
                 if (action == "open") {
-                    // TODO: parse customers from command ,and trainer id
-                    // create new customers instances list
-                    int parsedId = 7;
+                    int trainerId = std::stoi( command[1] );
+                    // open a customer list on stack
                     std::vector<Customer *> customersList = std::vector<Customer *>();
-                    OpenTrainer *openTrainerInstance = new OpenTrainer(parsedId, customersList);
+                    int amountOfCustomers = command.size() - 2 ;// number of parameters excluding action and trainer Id (divide 2 because of workout types)
+                    int customerId = 0;
+                    for (int i=0; i < amountOfCustomers; i++){
+                        std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
+                        std::string name = nameAndStrategy[0];
+                        std::string strategy = nameAndStrategy[1];
+                        customersList.push_back(createCustomer(name, strategy, customerId));
+                        customerId++;
+                    }
+                    OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
                     //TODO: think if need to check that act completed successfully.
                     delete openTrainerInstance;
                 }
                 else if (action == "order" ) {
-                    //parse Trainer ID
-                    int parsedId = 7;
-                    Order *orderInstance = new Order(parsedId);
+                    int trainerId = std::stoi( command[1] );
+                    Order *orderInstance = new Order(trainerId);
                     orderInstance->act(*this);
                     //TODO: think if need to check that act completed successfully.
                     delete orderInstance;
@@ -141,6 +148,21 @@ std::vector<Workout> &Studio::getWorkoutOptions() {
 
 //std::vector<std::string>& getUserCommand(){
 
+// helpers --------------------------------------
+
+Customer* Studio::createCustomer(std::string name, std::string strategy, int id){
+    if(strategy == "swt"){
+        return new SweatyCustomer(name, id);
+    }else if (strategy =="chp"){
+        return new CheapCustomer(name, id);
+    }else if (strategy =="mcl"){
+        return new HeavyMuscleCustomer(name, id);
+    } else {
+        return  new FullBodyCustomer(name, id);
+    }
+}
+
+
 std::vector<std::string> Studio::getUserCommand(){
     std::string command;
     std::getline(std::cin, command);
@@ -153,6 +175,15 @@ std::vector<std::string> Studio::getUserCommand(){
     return out;
 }
 
+std::vector<std::string> Studio::splitNameAndStrategy(std::string nameAndStrategy){
+    std::stringstream commandStream(nameAndStrategy);
+    std::vector<std::string> out;
+    std::string s;
+    while (std::getline(commandStream, s, ',')) {
+        out.push_back(s);
+    }
+    return out;
+}
 //int main(int argc,char** argv){
 //    std::string fileName;
 //    std::cout<<"----enter file name----: "<<std::endl;
