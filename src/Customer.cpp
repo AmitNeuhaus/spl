@@ -32,7 +32,7 @@ std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_optio
 };
 
 std::string SweatyCustomer::toString() const {
-    return "SweatyCustomer";
+    return getName() + ",swt";
 }
 
 Customer* SweatyCustomer::clone() const{
@@ -55,7 +55,7 @@ std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_option
 };
 
 std::string CheapCustomer::toString() const {
-    return "CheapCustomer";
+    return getName() + ",chp";
 }
 
 Customer* CheapCustomer::clone() const{
@@ -87,7 +87,7 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
 };
 
 std::string HeavyMuscleCustomer::toString() const {
-    return "HeavyMuscleCustomer";
+    return getName() + ",mcl";
 }
 
 
@@ -137,7 +137,7 @@ std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_opt
 };
 
 std::string FullBodyCustomer::toString() const {
-    return "FullBodyCustomer";
+    return getName() + ",fbd";
 }
 
 Customer* FullBodyCustomer::clone() const{
