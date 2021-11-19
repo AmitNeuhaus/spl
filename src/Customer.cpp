@@ -1,6 +1,8 @@
 #include "../include/Customer.h"
 
 #include <iostream>
+#include <algorithm>
+
 using namespace std;
 
 
@@ -74,7 +76,7 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
         }
     }
     //sorting references by price (desc)
-    sort( filteredWorkouts.begin( ), filteredWorkouts.end( ), [ ]( const Workout* lhs, const Workout* rhs )
+    std::sort( filteredWorkouts.begin( ), filteredWorkouts.end( ), [ ]( const Workout* lhs, const Workout* rhs )
     {
         return lhs -> getPrice() > rhs -> getPrice();
     });

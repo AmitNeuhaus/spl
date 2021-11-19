@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include "Customer.h"
+#include "Trainer.h"
 
 enum ActionStatus{
     COMPLETED, ERROR
@@ -55,6 +56,7 @@ public:
     void act(Studio &studio);
     std::string toString() const;
 private:
+    bool canMove(Trainer* t1, Trainer* t2,int cId);
     const int srcTrainer;
     const int dstTrainer;
     const int id;
