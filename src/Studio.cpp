@@ -85,7 +85,6 @@ void Studio::start() {
         std::cout << "Studio is now open!" << std::endl;
         bool studioIsOpen = true;
 
-
     while (studioIsOpen) {
         std::vector<std::string> command = getUserCommand();
         std::string action = command[0];
@@ -98,7 +97,8 @@ void Studio::start() {
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
-                        customersList.push_back(createCustomer(name, strategy, i));
+                        customersList.push_back(createCustomer(name, strategy, customersIdCounter));
+                        customersIdCounter++;
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
