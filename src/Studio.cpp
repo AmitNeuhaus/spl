@@ -94,13 +94,11 @@ void Studio::start() {
                     // open a customer list on stack
                     std::vector<Customer *> customersList = std::vector<Customer *>();
                     int amountOfCustomers = command.size() - 2 ;// number of parameters excluding action and trainer Id (divide 2 because of workout types)
-                    int customerId = 0;
                     for (int i=0; i < amountOfCustomers; i++){
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
-                        customersList.push_back(createCustomer(name, strategy, customerId));
-                        customerId++;
+                        customersList.push_back(createCustomer(name, strategy, i));
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
@@ -168,10 +166,10 @@ void Studio::start() {
 
 
 
-
 int Studio::getNumOfTrainers() const {
     return trainers.size();
 }
+
 
 Trainer *Studio::getTrainer(int tid) {
     if (tid>trainers.size()-1){

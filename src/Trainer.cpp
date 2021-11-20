@@ -1,7 +1,5 @@
-//
-// Created by tomcooll on 08/11/2021.
-//
-#include "Trainer.h"
+////
+#include "../include/Trainer.h"
 #include <iostream>
 
 //Constructor
