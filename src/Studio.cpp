@@ -77,9 +77,7 @@ Studio::Studio(const std::string &configFilePath) {
         std::cout<< "ERROR: file did not open"<<std::endl;
     }
 
-
     file.close();
-
 }
 
 void Studio::start() {
@@ -136,6 +134,11 @@ void Studio::start() {
                     actionsLog.push_back(closeAllInstance);
                     studioIsOpen = false;
                 }
+                else if( action == "workout_options"){
+                    PrintWorkoutOptions *printWorkoutOptionsInstance = new PrintWorkoutOptions();
+                    printWorkoutOptionsInstance->act(*this);
+                    actionsLog.push_back(printWorkoutOptionsInstance);
+                }
                 else if (action == "status") {
                     int trainerId = std::stoi( command[1] );
                     PrintTrainerStatus *printTrainerStatusInstance = new PrintTrainerStatus(trainerId);
@@ -147,8 +150,18 @@ void Studio::start() {
                     printActionsLogInstance->act(*this);
                     actionsLog.push_back(printActionsLogInstance);
                 }
+                else if (action == "backup") {
+                    BackupStudio *backupStudioInstance = new BackupStudio();
+                    backupStudioInstance->act(*this);
+                    actionsLog.push_back(backupStudioInstance);
+                }
+                else if (action == "restore") {
+                    RestoreStudio *restoreStudioInstance = new RestoreStudio();
+                    restoreStudioInstance->act(*this);
+                    actionsLog.push_back(restoreStudioInstance);
+                }
                 else {
-                    std::cout << action << std::endl;
+                    std::cout << "unknown action" + action << std::endl;
                 }
             }
         }
