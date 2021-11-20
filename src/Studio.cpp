@@ -81,13 +81,40 @@ Studio::Studio(const std::string &configFilePath) {
 }
 
 void Studio::start() {
-        // TODO: parsing the first word in the command line  == action
-        std::cout << "Studio is now open!" << std::endl;
-        bool studioIsOpen = true;
+    // TODO: parsing the first word in the command line  == action
+    std::cout << "Studio is now open!" << std::endl;
+    bool studioIsOpen = true;
 
+
+
+    std::ifstream file("./textinput.txt");
+    bool fileinput;
     while (studioIsOpen) {
-        std::vector<std::string> command = getUserCommand();
+        std::vector<std::string> command;
+        // commands from file---------------------
+        if(fileinput){
+            std::string line;
+            std::getline(file, line);
+            std::stringstream commandStream(line);
+            std::vector<std::string> out;
+            std::string s;
+            while (std::getline(commandStream, s, ' ')) {
+                out.push_back(s);
+            }
+            command = out;
+        }else {
+            command = getUserCommand();
+        }
         std::string action = command[0];
+
+        if(action=="file"){
+            fileinput = true;
+        }
+
+        // commands from file---------------------
+
+//        std::vector<std::string> command = getUserCommand();
+//        std::string action = command[0];
                 if (action == "open") {
                     int trainerId = std::stoi( command[1] );
                     // open a customer list on stack
