@@ -21,7 +21,7 @@ bin/Action.o: include/Action.h src/Action.cpp
 bin/Studio.o: include/Studio.h src/Studio.cpp
 	g++ -g -Wall -Weffc++ -std=c++11 -c -Iinclude -o bin/Studio.o src/Studio.cpp
 
-bin/Trainer.o: src/Trainer.cpp
+bin/Trainer.o: include/Trainer.h src/Trainer.cpp
 	@echo "compiling Trainer"
 	g++ -g -Wall -Weffc++ -std=c++11 -c -Iinclude -o bin/Trainer.o src/Trainer.cpp
 

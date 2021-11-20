@@ -28,6 +28,7 @@ std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_optio
     for(int i = 0; i < workout_options.size(); ++i){
         if(workout_options[i].getType() == CARDIO){
             filteredWorkouts.push_back(workout_options[i].getId());
+            std::cout << getName() + " Is Doing " + workout_options[i].getName() << std::endl;
         }
     }
     return filteredWorkouts;
@@ -47,13 +48,16 @@ CheapCustomer::CheapCustomer(std::string name, int id):Customer(name,id){};
 std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_options){
     // we dereference cheapest to hold an alias to the first workout element in the list.
     const Workout *cheapest = &(workout_options[0]);
+    std::vector<int> filteredWorkouts;
     for(int i = 1; i < workout_options.size(); ++i){
         if(workout_options[i].getPrice() < cheapest -> getPrice()){
             //changing the cheapest alias to another object.
             cheapest = &(workout_options[i]);
         }
     }
-    return std::vector<int>{cheapest -> getId()};
+    filteredWorkouts.push_back(cheapest -> getId());
+    std::cout << getName() + " Is Doing " + cheapest -> getName() << std::endl;
+    return filteredWorkouts ;
 };
 
 std::string CheapCustomer::toString() const {
@@ -84,6 +88,7 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
 //    replace references with workout ids
     for(int i = 0; i <filteredWorkouts.size(); i++){
         sortedWorkouts.push_back(filteredWorkouts[i]->getId());
+        std::cout << getName() + " Is Doing " + filteredWorkouts[i] -> getName() << std::endl;
     }
     return sortedWorkouts;
 };
@@ -134,7 +139,10 @@ std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_opt
             filteredWorkouts.push_back(expensiveMixed->getId());
         if(cheapestAnaerobic != nullptr)
             filteredWorkouts.push_back(cheapestAnaerobic->getId());
-//
+
+        for (int i=0; i<filteredWorkouts.size(); i++){
+            std::cout << getName() + " Is Doing " + workout_options[filteredWorkouts[i]].getName() << std::endl;
+        }
         return filteredWorkouts;
 };
 

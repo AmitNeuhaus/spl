@@ -1,7 +1,5 @@
-//
-// Created by tomcooll on 08/11/2021.
-//
-#include "Trainer.h"
+////
+#include "../include/Trainer.h"
 #include <iostream>
 
 //Constructor
@@ -168,7 +166,7 @@ std::string Trainer::toString() {
 }
 
 bool Trainer::isFull() {
-    return capacity = customersList.size();
+    return capacity == customersList.size();
 }
 
 Customer *Trainer::createCustomer(Customer *customer) {

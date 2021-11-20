@@ -34,6 +34,7 @@ private:
     std::vector<Trainer*> trainers;
     std::vector<Workout> workout_options;
     std::vector<BaseAction*> actionsLog;
+    int customersIdCounter = 0;
     void Clean();
     void Copy(const Studio& studio);
     void Steel(Studio& studio);

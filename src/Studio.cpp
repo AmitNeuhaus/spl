@@ -77,16 +77,13 @@ Studio::Studio(const std::string &configFilePath) {
         std::cout<< "ERROR: file did not open"<<std::endl;
     }
 
-
     file.close();
-
 }
 
 void Studio::start() {
         // TODO: parsing the first word in the command line  == action
         std::cout << "Studio is now open!" << std::endl;
         bool studioIsOpen = true;
-
 
     while (studioIsOpen) {
         std::vector<std::string> command = getUserCommand();
@@ -96,13 +93,12 @@ void Studio::start() {
                     // open a customer list on stack
                     std::vector<Customer *> customersList = std::vector<Customer *>();
                     int amountOfCustomers = command.size() - 2 ;// number of parameters excluding action and trainer Id (divide 2 because of workout types)
-                    int customerId = 0;
                     for (int i=0; i < amountOfCustomers; i++){
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
-                        customersList.push_back(createCustomer(name, strategy, customerId));
-                        customerId++;
+                        customersList.push_back(createCustomer(name, strategy, customersIdCounter));
+                        customersIdCounter++;
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
@@ -116,26 +112,64 @@ void Studio::start() {
                     //TODO: think if need to check that act completed successfully.
                     actionsLog.push_back(orderInstance);
                 }
-                else if (action == "closeAll") {
+                else if (action == "move") {
+                    int originTrainerId = std::stoi( command[1] );
+                    int destinationTrainerId = std::stoi( command[2] );
+                    int customerId = std::stoi( command[3] );
+                    MoveCustomer *moveCustomerInstance = new MoveCustomer(originTrainerId,destinationTrainerId,customerId);
+                    moveCustomerInstance->act(*this);
+                    actionsLog.push_back(moveCustomerInstance);
+                }
+                else if (action == "close") {
+                    int trainerId = std::stoi( command[1] );
+                    Close *closeInstance = new Close(trainerId);
+                    closeInstance->act(*this);
+                    actionsLog.push_back(closeInstance);
+                }
+                else if (action == "closeall") {
+                    CloseAll *closeAllInstance = new CloseAll();
+                    closeAllInstance->act(*this);
+                    actionsLog.push_back(closeAllInstance);
                     studioIsOpen = false;
+                }
+                else if( action == "workout_options"){
+                    PrintWorkoutOptions *printWorkoutOptionsInstance = new PrintWorkoutOptions();
+                    printWorkoutOptionsInstance->act(*this);
+                    actionsLog.push_back(printWorkoutOptionsInstance);
+                }
+                else if (action == "status") {
+                    int trainerId = std::stoi( command[1] );
+                    PrintTrainerStatus *printTrainerStatusInstance = new PrintTrainerStatus(trainerId);
+                    printTrainerStatusInstance->act(*this);
+                    actionsLog.push_back(printTrainerStatusInstance);
                 }
                 else if (action == "log") {
                     PrintActionsLog *printActionsLogInstance = new PrintActionsLog();
                     printActionsLogInstance->act(*this);
                     actionsLog.push_back(printActionsLogInstance);
                 }
+                else if (action == "backup") {
+                    BackupStudio *backupStudioInstance = new BackupStudio();
+                    backupStudioInstance->act(*this);
+                    actionsLog.push_back(backupStudioInstance);
+                }
+                else if (action == "restore") {
+                    RestoreStudio *restoreStudioInstance = new RestoreStudio();
+                    restoreStudioInstance->act(*this);
+                    actionsLog.push_back(restoreStudioInstance);
+                }
                 else {
-                    std::cout << action << std::endl;
+                    std::cout << "unknown action" + action << std::endl;
                 }
             }
         }
 
 
 
-
 int Studio::getNumOfTrainers() const {
     return trainers.size();
 }
+
 
 Trainer *Studio::getTrainer(int tid) {
     if (tid>trainers.size()-1){
