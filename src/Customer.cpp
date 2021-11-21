@@ -9,7 +9,7 @@ using namespace std;
 
 //Customer ---------------------------------
 Customer::Customer(std::string c_name, int c_id):name(c_name),id(c_id){};
-
+Customer::~Customer(){}
 //order and toString are virtual therefore i don't need to implement them here
 std::string Customer::getName() const {
     return name;
@@ -21,6 +21,7 @@ int Customer::getId() const {
 
 // SweatyCustomer ------------------------
 SweatyCustomer::SweatyCustomer(std::string name, int id):Customer(name,id){};
+SweatyCustomer::~SweatyCustomer(){};
 std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_options){
     // filteredWorkouts only lives in this scope - therefore on stack;
     // option 2 initial in heap and delete before function close.
@@ -45,6 +46,8 @@ Customer* SweatyCustomer::clone() const{
 //CheapCustomer --------------------------
 //TODO: in the assignment it says this customer only orders once, maybe we should save a pointer/id of the cheapest workout elsewhere after calling.
 CheapCustomer::CheapCustomer(std::string name, int id):Customer(name,id){};
+CheapCustomer::~CheapCustomer(){};
+
 std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_options){
     // we dereference cheapest to hold an alias to the first workout element in the list.
     const Workout *cheapest = &(workout_options[0]);
@@ -70,6 +73,7 @@ Customer* CheapCustomer::clone() const{
 
 //HeavyMuscleCustomer --------------------
 HeavyMuscleCustomer::HeavyMuscleCustomer(std::string name, int id):Customer(name,id){};
+HeavyMuscleCustomer::~HeavyMuscleCustomer(){};
 std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_options){
     std::vector<int> sortedWorkouts;
     //array of pointers to the filtered workouts.
@@ -104,6 +108,7 @@ Customer* HeavyMuscleCustomer::clone() const{
 
 //FullBodyCustomer -----------------------
 FullBodyCustomer::FullBodyCustomer(std::string name, int id):Customer(name,id){};
+FullBodyCustomer::~FullBodyCustomer(){};
 std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_options){
     // we dereference cheapest to hold an alias to the first workout element in the list.
     const Workout *cheapestCardio = nullptr;

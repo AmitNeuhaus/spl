@@ -114,10 +114,11 @@ void MoveCustomer::act(Studio &studio) {
     if (canMove(srcTrainerRef,dstTrainerRef,id)){
         Customer* customer = srcTrainerRef->getCustomer(id);
         //remove customer from src trainer:
+        Customer* newCustomer = customer -> clone();
+        dstTrainerRef->addCustomer(newCustomer);
+        dstTrainerRef->order(newCustomer->getId(),newCustomer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
         srcTrainerRef->removeCustomer(id);
         //add customer to new trainer:
-        dstTrainerRef->addCustomer(customer);
-        dstTrainerRef->order(customer->getId(),customer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
         complete();
     }
     else{
@@ -154,7 +155,7 @@ void Close::act(Studio &studio) {
 }
 
 std::string Close::toString() const {
-    std::string actionString = "Close, "  + std::to_string(trainerId) + ", " + std::to_string(getStatus());
+    std::string actionString = "Close, "  + std::to_string(trainerId) + ", " + std::to_string(getStatus()) ;
     return actionString;
 }
 
