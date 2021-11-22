@@ -18,7 +18,7 @@ void Trainer::removeCustomer(int id){
     for (std::vector<Customer*>::iterator customer = customersList.begin();customer!=customersList.end();) {
         if ((*customer)->getId() == id){
             customersList.erase(customer);
-            delete *customer;
+//            delete *customer;
         }else{
             ++customer;
         }
@@ -72,6 +72,8 @@ void Trainer::openTrainer(){
 
 void Trainer::closeTrainer(){
     open = false;
+    customersList.clear();
+    orderList.clear();
 }
 
 int Trainer::getSalary(){
@@ -143,9 +145,9 @@ void Trainer::Clean(){
     salary = -1;
     capacity = -1;
     open = false;
-    for(Customer* customer : customersList){
-        delete customer;
-    }
+//    for(Customer* customer : customersList){
+//        delete customer;
+//    }
     customersList.clear();
     orderList.clear();
 

@@ -12,7 +12,7 @@ int main(int argc, char** argv){
         return 0;
     }
 
-    string configurationFile = argv[1];
+    const string configurationFile = argv[1];
     Studio studio(configurationFile);
     studio.start();
     if(backup!=nullptr){
