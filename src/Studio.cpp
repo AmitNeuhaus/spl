@@ -124,7 +124,9 @@ void Studio::start() {
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
-                        customersList.push_back(createCustomer(name, strategy, customersIdCounter));
+                        Customer* newCustomer = createCustomer(name, strategy, customersIdCounter);
+                        customersList.push_back(newCustomer);
+                        customersStudio.push_back(newCustomer);
                         customersIdCounter++;
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);

@@ -114,9 +114,8 @@ void MoveCustomer::act(Studio &studio) {
     if (canMove(srcTrainerRef,dstTrainerRef,id)){
         Customer* customer = srcTrainerRef->getCustomer(id);
         //remove customer from src trainer:
-        Customer* newCustomer = customer -> clone();
-        dstTrainerRef->addCustomer(newCustomer);
-        dstTrainerRef->order(newCustomer->getId(),newCustomer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
+        dstTrainerRef->addCustomer(customer);
+        dstTrainerRef->order(customer->getId(),customer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
         srcTrainerRef->removeCustomer(id);
         //add customer to new trainer:
         complete();
