@@ -72,6 +72,9 @@ void Trainer::openTrainer(){
 
 void Trainer::closeTrainer(){
     open = false;
+    for (Customer* customer: customersList) {
+        delete customer;
+    }
     customersList.clear();
     orderList.clear();
 }
@@ -131,7 +134,8 @@ void Trainer::Copy(const Trainer& _trainer){
     //todo: fix copy for costumer list vector;
     customersList = _trainer.customersList;
     for (Customer* customer : _trainer.customersList) {
-        customersList.push_back(customer);
+        Customer* newCustomer = customer->clone();
+        customersList.push_back(newCustomer);
     }
     for (OrderPair i : orderList) {
         OrderPair newPair= i;
@@ -144,6 +148,9 @@ void Trainer::Clean(){
     salary = -1;
     capacity = -1;
     open = false;
+    for (Customer* customer: customersList) {
+        delete customer;
+    }
     customersList.clear();
     orderList.clear();
 

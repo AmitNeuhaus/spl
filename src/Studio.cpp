@@ -126,7 +126,6 @@ void Studio::start() {
                         std::string strategy = nameAndStrategy[1];
                         Customer* newCustomer = createCustomer(name, strategy, customersIdCounter);
                         customersList.push_back(newCustomer);
-                        customersStudio.push_back(newCustomer);
                         customersIdCounter++;
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
@@ -251,9 +250,6 @@ void Studio::Clean() {
     for(Trainer* trainer : trainers){
         delete trainer;
     }
-    for(Customer* customer: customersStudio){
-        delete customer;
-    }
     for(BaseAction* action : actionsLog){
         delete action;
     }
@@ -263,13 +259,14 @@ void Studio::Clean() {
 }
 
 void Studio::Copy(const Studio& studio) {
+    customersIdCounter = studio.customersIdCounter;
     for(Trainer* trainer : studio.trainers){
-        Trainer* copyTrainer = trainer;
+        Trainer* copyTrainer = new Trainer(*trainer);
         trainers.push_back(copyTrainer);
     }
     for(Workout workout : studio.workout_options){
-        Workout* copyWorkout  = new Workout(workout.getId(),workout.getName(),workout.getPrice(),workout.getType());
-        workout_options.push_back(*copyWorkout);
+        Workout copyWorkout  =  Workout(workout.getId(),workout.getName(),workout.getPrice(),workout.getType());
+        workout_options.push_back(copyWorkout);
     }
 //    for(BaseAction* action : studio.actionsLog){
 //        BaseAction* copyAction = action.copyAction(action);
@@ -284,7 +281,6 @@ void Studio::Steel(Studio &studio) {
     studio.workout_options.clear();
     actionsLog = std::move(studio.actionsLog);
     studio.actionsLog.clear();
-
 }
 
 

@@ -24,13 +24,16 @@ void BaseAction::error(std::string errorMsg_in) {
 
 //OpenTrainer
 // receive customers created reference and attach them to the current trainer.
-OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList):BaseAction(), trainerId(id), customers(customersList){}
+OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList):BaseAction(), trainerId(id), customers(customersList),rep(""){}
 
 OpenTrainer::~OpenTrainer(){
     customers.clear();
 }
 
 void OpenTrainer::act(Studio &studio) {
+    for(Customer* customer: customersList){
+        rep+= customer->toString()+" ";
+    }
     Trainer* trainerRef = studio.getTrainer(trainerId);
     if (trainerRef != nullptr && !(trainerRef -> isOpen())){
     int trainerCapacity = trainerRef -> getCapacity();
@@ -47,10 +50,7 @@ void OpenTrainer::act(Studio &studio) {
 }
 
 std::string OpenTrainer::toString() const {
-    std::string output= "open " + std::to_string(trainerId);
-    for (int i=0; i<customers.size(); i++){
-        output = output + std::string(" ") + customers[i] -> toString() + std::string(" ");
-    }
+    std::string output= "open " + std::to_string(trainerId) +" "+ rep;
     if (getStatus() == COMPLETED) {
         output = output + std::string("Completed");
     }
