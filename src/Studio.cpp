@@ -268,10 +268,10 @@ void Studio::Copy(const Studio& studio) {
         Workout copyWorkout  =  Workout(workout.getId(),workout.getName(),workout.getPrice(),workout.getType());
         workout_options.push_back(copyWorkout);
     }
-//    for(BaseAction* action : studio.actionsLog){
-//        BaseAction* copyAction = action.copyAction(action);
-//        actionsLog.push_back(copyAction);
-//    }
+    for(BaseAction* action : studio.actionsLog){
+        BaseAction* copyAction = action->clone();
+        actionsLog.push_back(copyAction);
+    }
 }
 
 void Studio::Steel(Studio &studio) {

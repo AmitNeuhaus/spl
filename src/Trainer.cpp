@@ -132,9 +132,7 @@ void Trainer::Copy(const Trainer& _trainer){
     open = _trainer.open;
     salary = _trainer.salary;
     //todo: fix copy for costumer list vector;
-    customersList = _trainer.customersList;
-    for (Customer* customer : _trainer.customersList) {
-        Customer* newCustomer = customer->clone();
+    for (Customer* customer : _trainer.customersList) {Customer* newCustomer = customer->clone();
         customersList.push_back(newCustomer);
     }
     for (OrderPair i : orderList) {

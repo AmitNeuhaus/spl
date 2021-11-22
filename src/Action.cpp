@@ -31,7 +31,7 @@ OpenTrainer::~OpenTrainer(){
 }
 
 void OpenTrainer::act(Studio &studio) {
-    for(Customer* customer: customersList){
+    for(Customer* customer: customers){
         rep+= customer->toString()+" ";
     }
     Trainer* trainerRef = studio.getTrainer(trainerId);
@@ -60,6 +60,9 @@ std::string OpenTrainer::toString() const {
     return output;
 }
 
+OpenTrainer* OpenTrainer::clone(){
+    return new OpenTrainer(trainerId,customers);
+}
 //Order
 
 Order::Order(int id):BaseAction(), trainerId(id){}
@@ -97,7 +100,9 @@ std::string Order::toString() const {
     return output;
 }
 
-
+Order* Order::clone(){
+    return new Order(trainerId);
+}
 //PrintActionsLog
 
 PrintActionsLog::PrintActionsLog() {}
@@ -112,6 +117,10 @@ void PrintActionsLog::act(Studio &studio) {
 
 std::string PrintActionsLog::toString() const {
     return std::string("log Completed");
+}
+
+PrintActionsLog* PrintActionsLog::clone() {
+    return new PrintActionsLog();
 }
 
 
@@ -135,14 +144,16 @@ void MoveCustomer::act(Studio &studio) {
     else{
         error( "Cannot move customer");
     }
-
-
 }
 
 
 std::string MoveCustomer::toString() const {
     std::string actionString = "MoveCustomer " + std::to_string(srcTrainer) + ", " + std::to_string(dstTrainer) + ", " + std::to_string(id)+", " + std::to_string(getStatus());
     return actionString;
+}
+
+MoveCustomer* MoveCustomer::clone() {
+    return new MoveCustomer(srcTrainer,dstTrainer,id);
 }
 
 bool MoveCustomer::canMove(Trainer* t1, Trainer* t2, int cId) {
@@ -172,6 +183,10 @@ std::string Close::toString() const {
     return actionString;
 }
 
+Close* Close::clone(){
+    return new Close(trainerId);
+}
+
 
 //Close All class:
 CloseAll::CloseAll() {}
@@ -193,6 +208,9 @@ std::string CloseAll::toString() const {
     std::string actionString = "CloseAll, "   + std::to_string(getStatus());
     return actionString;
 }
+CloseAll* CloseAll::clone(){
+    return new CloseAll();
+}
 
 
 //Print Workout Options class:
@@ -213,6 +231,9 @@ std::string PrintWorkoutOptions::toString() const {
     return actionString;
 }
 
+PrintWorkoutOptions* PrintWorkoutOptions::clone(){
+    return new PrintWorkoutOptions();
+}
 
 //Print Trainer Status class:
 PrintTrainerStatus::PrintTrainerStatus(int id):trainerId(id) {}
@@ -243,6 +264,9 @@ std::string PrintTrainerStatus::toString() const {
     return actionString;
 }
 
+PrintTrainerStatus* PrintTrainerStatus::clone(){
+    return new PrintTrainerStatus(trainerId);
+}
 
 //BackUp Action class:
 BackupStudio::BackupStudio() {}
@@ -259,6 +283,10 @@ std::string BackupStudio::toString() const {
     return actionString;
 }
 
+BackupStudio* BackupStudio::clone(){
+    return new BackupStudio();
+}
+
 
 //Restore Studio Action class
 RestoreStudio::RestoreStudio() {}
@@ -266,13 +294,20 @@ RestoreStudio::RestoreStudio() {}
 RestoreStudio::~RestoreStudio() {}
 
 void RestoreStudio::act(Studio &studio) {
-    studio = *backup;
-    complete();
+    if (backup  != nullptr){
+        studio = *backup;
+        complete();
+    }
+
 }
 
 std::string RestoreStudio::toString() const {
     std::string actionString = "RestoreStudio, "   + std::to_string(getStatus());
     return actionString;
+}
+
+RestoreStudio* RestoreStudio::clone(){
+    return new RestoreStudio();
 }
 
 
