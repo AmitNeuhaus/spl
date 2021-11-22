@@ -6,7 +6,6 @@ order 3
 status 2
 open 0 Shuli,chp
 order 0
-order 0
 move 3 0 5
 finished
 log

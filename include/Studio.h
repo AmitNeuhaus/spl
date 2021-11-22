@@ -28,7 +28,7 @@ public:
     std::vector<std::string> getUserCommand();
     Customer* createCustomer(std::string name, std::string strategy, int id);
     std::vector<std::string> splitNameAndStrategy(std::string nameAndStrategy);
-
+    std::vector<Customer *> customersStudio;
 private:
     bool open;
     std::vector<Trainer*> trainers;
