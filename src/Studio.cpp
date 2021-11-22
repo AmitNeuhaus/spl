@@ -88,7 +88,7 @@ void Studio::start() {
 
 
     std::ifstream file("./textinput.txt");
-    bool fileinput;
+    bool fileinput=false;
     while (studioIsOpen) {
         std::vector<std::string> command;
         // commands from file---------------------
@@ -250,7 +250,7 @@ void Studio::Clean() {
         delete trainer;
     }
     for(Workout workout : workout_options){
-        delete &workout;
+        //need to delete all workouts instances.
     }
     for(BaseAction* action : actionsLog){
         delete action;

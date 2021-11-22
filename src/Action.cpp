@@ -165,9 +165,11 @@ CloseAll::CloseAll() {}
 
 void CloseAll::act(Studio &studio) {
     for(int i = 0 ; i<studio.getNumOfTrainers()-1;++i){
-        Close* closeTrainer= new Close(i);
-        closeTrainer->act(studio);
-        delete closeTrainer;
+        if (studio.getTrainer(i)->isOpen()){
+            Close* closeTrainer= new Close(i);
+            closeTrainer->act(studio);
+            delete closeTrainer;
+        }
     }
     complete();
 }
