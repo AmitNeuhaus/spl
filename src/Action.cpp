@@ -9,6 +9,8 @@ extern Studio* backup;
 //TODO: check if needed to initial with those values
 BaseAction::BaseAction(){}
 
+BaseAction::~BaseAction() {}
+
 ActionStatus BaseAction::getStatus() const {return status;}
 std::string BaseAction::getErrorMsg() const {return errorMsg;}
 void BaseAction::complete() {status=COMPLETED;}
@@ -23,6 +25,10 @@ void BaseAction::error(std::string errorMsg_in) {
 //OpenTrainer
 // receive customers created reference and attach them to the current trainer.
 OpenTrainer::OpenTrainer(int id, std::vector<Customer *> &customersList):BaseAction(), trainerId(id), customers(customersList){}
+
+OpenTrainer::~OpenTrainer(){
+    customers.clear();
+}
 
 void OpenTrainer::act(Studio &studio) {
     Trainer* trainerRef = studio.getTrainer(trainerId);
@@ -57,6 +63,8 @@ std::string OpenTrainer::toString() const {
 //Order
 
 Order::Order(int id):BaseAction(), trainerId(id){}
+
+Order::~Order(){}
 
 void Order::act(Studio &studio) {
     Trainer* trainerRef = studio.getTrainer(trainerId);
@@ -94,6 +102,8 @@ std::string Order::toString() const {
 
 PrintActionsLog::PrintActionsLog() {}
 
+PrintActionsLog::~PrintActionsLog() {}
+
 void PrintActionsLog::act(Studio &studio) {
     for (int i = 0; i < studio.getActionsLog().size(); i++) {
         std::cout << studio.getActionsLog()[i]->toString() << std::endl;
@@ -107,6 +117,8 @@ std::string PrintActionsLog::toString() const {
 
 //Move Customer class:
 MoveCustomer::MoveCustomer(int src, int dst, int customerId):srcTrainer(src),dstTrainer(dst),id(customerId) {}
+
+MoveCustomer::~MoveCustomer() {}
 
 void MoveCustomer::act(Studio &studio) {
     Trainer* srcTrainerRef = studio.getTrainer(srcTrainer);
@@ -129,7 +141,7 @@ void MoveCustomer::act(Studio &studio) {
 
 
 std::string MoveCustomer::toString() const {
-    std::string actionString = "MoveCustomer" + std::to_string(srcTrainer) + ", " + std::to_string(dstTrainer) + ", " + std::to_string(id)+", " + std::to_string(getStatus());
+    std::string actionString = "MoveCustomer " + std::to_string(srcTrainer) + ", " + std::to_string(dstTrainer) + ", " + std::to_string(id)+", " + std::to_string(getStatus());
     return actionString;
 }
 
@@ -141,11 +153,13 @@ bool MoveCustomer::canMove(Trainer* t1, Trainer* t2, int cId) {
 //Close Class:
 Close::Close(int id):trainerId(id) {}
 
+Close::~Close(){}
+
 void Close::act(Studio &studio) {
     Trainer* trainer = studio.getTrainer(trainerId);
     if (trainer!= nullptr && trainer->isOpen()){
         trainer->closeTrainer();
-        std::cout << "Trainer " + std::to_string(trainerId) + "closed. Salary " + std::to_string(trainer->getSalary()) +"NIS"<<std::endl;
+        std::cout << "Trainer " + std::to_string(trainerId) + " closed. Salary " + std::to_string(trainer->getSalary()) +"NIS"<<std::endl;
         complete();
     }else{
         error("Trainer does not exist or is not open");
@@ -161,6 +175,8 @@ std::string Close::toString() const {
 
 //Close All class:
 CloseAll::CloseAll() {}
+
+CloseAll::~CloseAll(){}
 
 void CloseAll::act(Studio &studio) {
     for(int i = 0 ; i<studio.getNumOfTrainers()-1;++i){
@@ -182,6 +198,8 @@ std::string CloseAll::toString() const {
 //Print Workout Options class:
 PrintWorkoutOptions::PrintWorkoutOptions() {}
 
+PrintWorkoutOptions::~PrintWorkoutOptions() {}
+
 void PrintWorkoutOptions::act(Studio &studio) {
     std::vector<Workout> workouts = studio.getWorkoutOptions();
     for(Workout workout : workouts){
@@ -198,6 +216,8 @@ std::string PrintWorkoutOptions::toString() const {
 
 //Print Trainer Status class:
 PrintTrainerStatus::PrintTrainerStatus(int id):trainerId(id) {}
+
+PrintTrainerStatus::~PrintTrainerStatus(){}
 
 void PrintTrainerStatus::act(Studio &studio) {
     Trainer* trainer = studio.getTrainer(trainerId);
@@ -232,13 +252,18 @@ void BackupStudio::act(Studio &studio) {
     complete();
 }
 
+BackupStudio::~BackupStudio() {}
+
 std::string BackupStudio::toString() const {
     std::string actionString = "BackUp, "   + std::to_string(getStatus());
     return actionString;
 }
 
+
 //Restore Studio Action class
 RestoreStudio::RestoreStudio() {}
+
+RestoreStudio::~RestoreStudio() {}
 
 void RestoreStudio::act(Studio &studio) {
     studio = *backup;
@@ -249,3 +274,5 @@ std::string RestoreStudio::toString() const {
     std::string actionString = "RestoreStudio, "   + std::to_string(getStatus());
     return actionString;
 }
+
+

@@ -131,8 +131,7 @@ void Trainer::Copy(const Trainer& _trainer){
     //todo: fix copy for costumer list vector;
     customersList = _trainer.customersList;
     for (Customer* customer : _trainer.customersList) {
-        Customer* copyCustomer = createCustomer(customer);
-        customersList.push_back(copyCustomer);
+        customersList.push_back(customer);
     }
     for (OrderPair i : orderList) {
         OrderPair newPair= i;
@@ -145,9 +144,6 @@ void Trainer::Clean(){
     salary = -1;
     capacity = -1;
     open = false;
-//    for(Customer* customer : customersList){
-//        delete customer;
-//    }
     customersList.clear();
     orderList.clear();
 
@@ -189,30 +185,6 @@ Customer *Trainer::createCustomer(Customer *customer) {
     }
 }
 
-
-
-////TO DELETE:
-//int main(int argc,char** argv){
-//    Trainer* T1 = new Trainer(7);
-//    Customer* c1 = new SweatyCustomer("amit", 4);
-//    std::cout << "print capacity of trainer should be 7"<<std::endl;
-//    std::cout << T1->getCapacity()<<std::endl;
-//    T1->addCustomer(c1);
-//    std::cout << "print customer name should be amit"<<std::endl;
-//    std::cout <<"Customer name is: "<< T1->getCustomer(4)->getName()<<std::endl;
-//    T1->removeCustomer(4);
-//    std::cout << "removed customer and for vector.empty should be true"<<std::endl;
-//    if(T1->getCustomers().empty()){
-//        std::cout << "true"<<std::endl;
-//
-//    }else{
-//        std::cout <<"false" <<std::endl;
-//
-//    }
-//
-//    delete(T1);
-//    delete(c1);
-//}
 
 
 

@@ -64,8 +64,8 @@ Studio::Studio(const std::string &configFilePath) {
                         }
 
                     }
-                    Workout* newWorkout = new Workout(w_id,name,price,type);
-                    workout_options.push_back(*newWorkout);
+                    Workout newWorkout = Workout(w_id,name,price,type);
+                    workout_options.push_back(newWorkout);
                     counter = 0;
                     w_id++;
                 }
@@ -251,8 +251,8 @@ void Studio::Clean() {
     for(Trainer* trainer : trainers){
         delete trainer;
     }
-    for(Workout workout : workout_options){
-        //need to delete all workouts instances.
+    for(Customer* customer: customersStudio){
+        delete customer;
     }
     for(BaseAction* action : actionsLog){
         delete action;
