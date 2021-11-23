@@ -16,10 +16,13 @@ std::string BaseAction::getErrorMsg() const {return errorMsg;}
 void BaseAction::complete() {status=COMPLETED;}
 void BaseAction::error(std::string errorMsg_in) {
     status=ERROR;
-    errorMsg=errorMsg_in;
-    std::cout << "Error: " + errorMsg_in << std::endl;
+    errorMsg="Error: " + errorMsg_in;
+    std::cout <<  errorMsg_in << std::endl;
 }
 
+void BaseAction::setStatus(ActionStatus newStatus) {
+    status = newStatus;
+}
 
 
 //OpenTrainer
@@ -55,13 +58,15 @@ std::string OpenTrainer::toString() const {
         output = output + std::string("Completed");
     }
     else if(getStatus() == ERROR){
-        output = output + "Error: " + getErrorMsg();
+        output = output + getErrorMsg();
     }
     return output;
 }
 
 OpenTrainer* OpenTrainer::clone(){
-    return new OpenTrainer(trainerId,customers);
+    OpenTrainer* newOpenTrainer = new OpenTrainer(trainerId,customers);
+    newOpenTrainer->setStatus(getStatus());
+    return newOpenTrainer;
 }
 //Order
 
@@ -100,7 +105,9 @@ std::string Order::toString() const {
 }
 
 Order* Order::clone(){
-    return new Order(trainerId);
+    Order* newOrder = new Order(trainerId);
+    newOrder->setStatus(getStatus());
+    return newOrder;
 }
 //PrintActionsLog
 
@@ -119,7 +126,9 @@ std::string PrintActionsLog::toString() const {
 }
 
 PrintActionsLog* PrintActionsLog::clone() {
-    return new PrintActionsLog();
+    PrintActionsLog* newPrintActionsLog = new PrintActionsLog();
+    newPrintActionsLog->setStatus(getStatus());
+    return newPrintActionsLog;
 }
 
 
@@ -150,10 +159,13 @@ void MoveCustomer::act(Studio &studio) {
 std::string MoveCustomer::toString() const {
     std::string actionString = "MoveCustomer " + std::to_string(srcTrainer) + ", " + std::to_string(dstTrainer) + ", " + std::to_string(id)+", " + std::to_string(getStatus());
     return actionString;
+
 }
 
 MoveCustomer* MoveCustomer::clone() {
-    return new MoveCustomer(srcTrainer,dstTrainer,id);
+    MoveCustomer* newMoveCustomer =  new MoveCustomer(srcTrainer,dstTrainer,id);
+    newMoveCustomer->setStatus(getStatus());
+    return newMoveCustomer;
 }
 
 bool MoveCustomer::canMove(Trainer* t1, Trainer* t2, int cId) {
@@ -184,7 +196,9 @@ std::string Close::toString() const {
 }
 
 Close* Close::clone(){
-    return new Close(trainerId);
+    Close* newClose =  new Close(trainerId);
+    newClose->setStatus(getStatus());
+    return newClose;
 }
 
 
@@ -194,7 +208,7 @@ CloseAll::CloseAll() {}
 CloseAll::~CloseAll(){}
 
 void CloseAll::act(Studio &studio) {
-    for(int i = 0 ; i<studio.getNumOfTrainers()-1;++i){
+    for(int i = 0 ; i<studio.getNumOfTrainers();++i){
         if (studio.getTrainer(i)->isOpen()){
             Close* closeTrainer= new Close(i);
             closeTrainer->act(studio);
@@ -209,7 +223,9 @@ std::string CloseAll::toString() const {
     return actionString;
 }
 CloseAll* CloseAll::clone(){
-    return new CloseAll();
+    CloseAll* newCloseAll = new CloseAll();
+    newCloseAll->setStatus(getStatus());
+    return newCloseAll;
 }
 
 
@@ -232,7 +248,9 @@ std::string PrintWorkoutOptions::toString() const {
 }
 
 PrintWorkoutOptions* PrintWorkoutOptions::clone(){
-    return new PrintWorkoutOptions();
+    PrintWorkoutOptions* newPrintWorkoutOptions = new PrintWorkoutOptions();
+    newPrintWorkoutOptions->setStatus(getStatus());
+    return newPrintWorkoutOptions;
 }
 
 //Print Trainer Status class:
@@ -265,7 +283,9 @@ std::string PrintTrainerStatus::toString() const {
 }
 
 PrintTrainerStatus* PrintTrainerStatus::clone(){
-    return new PrintTrainerStatus(trainerId);
+    PrintTrainerStatus* newPrintTrainerStatus=  new PrintTrainerStatus(trainerId);
+    newPrintTrainerStatus->setStatus(getStatus());
+    return newPrintTrainerStatus;
 }
 
 //BackUp Action class:
@@ -284,7 +304,9 @@ std::string BackupStudio::toString() const {
 }
 
 BackupStudio* BackupStudio::clone(){
-    return new BackupStudio();
+    BackupStudio* newBackupStudio = new BackupStudio();
+    newBackupStudio->setStatus(getStatus());
+    return newBackupStudio;
 }
 
 
@@ -307,7 +329,9 @@ std::string RestoreStudio::toString() const {
 }
 
 RestoreStudio* RestoreStudio::clone(){
-    return new RestoreStudio();
+    RestoreStudio* newRestoreStudio = new RestoreStudio();
+    newRestoreStudio ->setStatus(getStatus());
+    return newRestoreStudio;
 }
 
 
