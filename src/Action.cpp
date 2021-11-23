@@ -6,7 +6,6 @@
 extern Studio* backup;
 
 //Base Action
-//TODO: check if needed to initial with those values
 BaseAction::BaseAction():errorMsg(""),status(ERROR){}
 
 BaseAction::~BaseAction() {}
@@ -147,6 +146,9 @@ void MoveCustomer::act(Studio &studio) {
         dstTrainerRef->order(customer->getId(),customer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
         //remove customer from src trainer:
         srcTrainerRef->removeCustomer(id);
+        if (srcTrainerRef->getCustomers().empty()){
+            srcTrainerRef->closeTrainer();
+        }
 
         complete();
     }

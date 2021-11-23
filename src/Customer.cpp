@@ -88,6 +88,11 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
     });
 
 //    replace references with workout ids
+    sortedWorkouts.reserve(filteredWorkouts.size());
+for (const Workout* workout: filteredWorkouts) {
+        sortedWorkouts.push_back(workout->getId());
+
+    }
     return sortedWorkouts;
 };
 
