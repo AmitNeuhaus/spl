@@ -5,9 +5,9 @@
 #include "../include/Studio.h"
 
 
-Studio::Studio() = default ;
+Studio::Studio():open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>()) {}
 
-Studio::Studio(const std::string &configFilePath) {
+Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     std::ifstream file(configFilePath);
     std::string line;
     std::string substr;
@@ -83,13 +83,13 @@ Studio::Studio(const std::string &configFilePath) {
 void Studio::start() {
     // TODO: parsing the first word in the command line  == action
     std::cout << "Studio is now open!" << std::endl;
-    bool studioIsOpen = true;
+    open = true;
 
 
 
     std::ifstream file("./textinput.txt");
     bool fileinput=false;
-    while (studioIsOpen) {
+    while (open) {
         std::vector<std::string> command;
         // commands from file---------------------
         if(fileinput){
@@ -158,7 +158,7 @@ void Studio::start() {
                     CloseAll *closeAllInstance = new CloseAll();
                     closeAllInstance->act(*this);
                     actionsLog.push_back(closeAllInstance);
-                    studioIsOpen = false;
+                    open = false;
                 }
                 else if( action == "workout_options"){
                     PrintWorkoutOptions *printWorkoutOptionsInstance = new PrintWorkoutOptions();
@@ -200,7 +200,7 @@ int Studio::getNumOfTrainers() const {
 
 
 Trainer *Studio::getTrainer(int tid) {
-    if (tid>trainers.size()-1){
+    if (tid>int(trainers.size()-1)){
         return nullptr;
     }
     Trainer* t = trainers[tid];
@@ -218,7 +218,7 @@ std::vector<Workout> &Studio::getWorkoutOptions() {
 //Rule of 5:
 
 //copy c-tor:
-Studio::Studio(const Studio &studio) {
+Studio::Studio(const Studio &studio):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     Copy(studio);
 }
 
@@ -230,7 +230,7 @@ Studio &Studio::operator=(Studio &studio) {
     return (*this);
 }
 
-Studio::Studio(Studio &&studio) {
+Studio::Studio(Studio &&studio):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     Steel(studio);
 }
 

@@ -96,7 +96,7 @@ Trainer::~Trainer(){
 
 
 //copy c-tor
-Trainer::Trainer(const Trainer& _trainer){
+Trainer::Trainer(const Trainer& _trainer):capacity(0),open(false),salary(0),customersList(std::vector<Customer*>()),orderList(std::vector<OrderPair>()){
     Copy(_trainer);
 }
 
@@ -110,7 +110,7 @@ Trainer& Trainer::operator=(Trainer& _trainer){
     return (*this);
 }
 //move c-tor
-Trainer::Trainer(Trainer &&_trainer) {
+Trainer::Trainer(Trainer &&_trainer):capacity(0),open(false),salary(0),customersList(std::vector<Customer*>()),orderList(std::vector<OrderPair>()) {
     Steel(_trainer);
 
 }
@@ -166,7 +166,7 @@ std::string Trainer::toString() {
 }
 
 bool Trainer::isFull() {
-    return capacity == customersList.size();
+    return capacity == int(customersList.size());
 }
 
 Customer *Trainer::createCustomer(Customer *customer) {
