@@ -5,9 +5,9 @@
 #include "../include/Studio.h"
 
 
-Studio::Studio() = default ;
+Studio::Studio():open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>()) {}
 
-Studio::Studio(const std::string &configFilePath) {
+Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     std::ifstream file(configFilePath);
     std::string line;
     std::string substr;
@@ -64,8 +64,8 @@ Studio::Studio(const std::string &configFilePath) {
                         }
 
                     }
-                    Workout* newWorkout = new Workout(w_id,name,price,type);
-                    workout_options.push_back(*newWorkout);
+                    Workout newWorkout = Workout(w_id,name,price,type);
+                    workout_options.push_back(newWorkout);
                     counter = 0;
                     w_id++;
                 }
@@ -81,13 +81,40 @@ Studio::Studio(const std::string &configFilePath) {
 }
 
 void Studio::start() {
-        // TODO: parsing the first word in the command line  == action
-        std::cout << "Studio is now open!" << std::endl;
-        bool studioIsOpen = true;
+    // TODO: parsing the first word in the command line  == action
+    std::cout << "Studio is now open!" << std::endl;
+    open = true;
 
-    while (studioIsOpen) {
-        std::vector<std::string> command = getUserCommand();
+
+
+    std::ifstream file("./textinput.txt");
+    bool fileinput=false;
+    while (open) {
+        std::vector<std::string> command;
+        // commands from file---------------------
+        if(fileinput){
+            std::string line;
+            std::getline(file, line);
+            std::stringstream commandStream(line);
+            std::vector<std::string> out;
+            std::string s;
+            while (std::getline(commandStream, s, ' ')) {
+                out.push_back(s);
+            }
+            command = out;
+        }else {
+            command = getUserCommand();
+        }
         std::string action = command[0];
+
+        if(action=="file"){
+            fileinput = true;
+        }
+
+        // commands from file---------------------
+
+//        std::vector<std::string> command = getUserCommand();
+//        std::string action = command[0];
                 if (action == "open") {
                     int trainerId = std::stoi( command[1] );
                     // open a customer list on stack
@@ -97,7 +124,8 @@ void Studio::start() {
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
-                        customersList.push_back(createCustomer(name, strategy, customersIdCounter));
+                        Customer* newCustomer = createCustomer(name, strategy, customersIdCounter);
+                        customersList.push_back(newCustomer);
                         customersIdCounter++;
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
@@ -130,7 +158,7 @@ void Studio::start() {
                     CloseAll *closeAllInstance = new CloseAll();
                     closeAllInstance->act(*this);
                     actionsLog.push_back(closeAllInstance);
-                    studioIsOpen = false;
+                    open = false;
                 }
                 else if( action == "workout_options"){
                     PrintWorkoutOptions *printWorkoutOptionsInstance = new PrintWorkoutOptions();
@@ -172,7 +200,7 @@ int Studio::getNumOfTrainers() const {
 
 
 Trainer *Studio::getTrainer(int tid) {
-    if (tid>trainers.size()-1){
+    if (tid>int(trainers.size()-1)){
         return nullptr;
     }
     Trainer* t = trainers[tid];
@@ -190,7 +218,7 @@ std::vector<Workout> &Studio::getWorkoutOptions() {
 //Rule of 5:
 
 //copy c-tor:
-Studio::Studio(const Studio &studio) {
+Studio::Studio(const Studio &studio):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     Copy(studio);
 }
 
@@ -202,7 +230,7 @@ Studio &Studio::operator=(Studio &studio) {
     return (*this);
 }
 
-Studio::Studio(Studio &&studio) {
+Studio::Studio(Studio &&studio):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     Steel(studio);
 }
 
@@ -222,9 +250,6 @@ void Studio::Clean() {
     for(Trainer* trainer : trainers){
         delete trainer;
     }
-    for(Workout workout : workout_options){
-        delete &workout;
-    }
     for(BaseAction* action : actionsLog){
         delete action;
     }
@@ -234,18 +259,19 @@ void Studio::Clean() {
 }
 
 void Studio::Copy(const Studio& studio) {
+    customersIdCounter = studio.customersIdCounter;
     for(Trainer* trainer : studio.trainers){
-        Trainer* copyTrainer = trainer;
+        Trainer* copyTrainer = new Trainer(*trainer);
         trainers.push_back(copyTrainer);
     }
     for(Workout workout : studio.workout_options){
-        Workout* copyWorkout  = new Workout(workout.getId(),workout.getName(),workout.getPrice(),workout.getType());
-        workout_options.push_back(*copyWorkout);
+        Workout copyWorkout  =  Workout(workout.getId(),workout.getName(),workout.getPrice(),workout.getType());
+        workout_options.push_back(copyWorkout);
     }
-//    for(BaseAction* action : studio.actionsLog){
-//        BaseAction* copyAction = action.copyAction(action);
-//        actionsLog.push_back(copyAction);
-//    }
+    for(BaseAction* action : studio.actionsLog){
+        BaseAction* copyAction = action->clone();
+        actionsLog.push_back(copyAction);
+    }
 }
 
 void Studio::Steel(Studio &studio) {
@@ -255,7 +281,6 @@ void Studio::Steel(Studio &studio) {
     studio.workout_options.clear();
     actionsLog = std::move(studio.actionsLog);
     studio.actionsLog.clear();
-
 }
 
 
