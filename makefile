@@ -3,7 +3,7 @@ all: studio
 
 studio: bin/Customer.o bin/Workout.o bin/Action.o bin/Trainer.o bin/Studio.o bin/main.o
 	@echo "LINKING"
-	g++ -o studio bin/Customer.o bin/Workout.o bin/Action.o bin/Trainer.o bin/Studio.o bin/main.o
+	g++ -o bin/studio bin/Customer.o bin/Workout.o bin/Action.o bin/Trainer.o bin/Studio.o bin/main.o
 	@echo "BUILD FINISHED :)"
 
 bin/main.o: src/main.cpp
