@@ -29,7 +29,6 @@ std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_optio
     for(int i = 0; i < workout_options.size(); ++i){
         if(workout_options[i].getType() == CARDIO){
             filteredWorkouts.push_back(workout_options[i].getId());
-            std::cout << getName() + " Is Doing " + workout_options[i].getName() << std::endl;
         }
     }
     return filteredWorkouts;
@@ -59,7 +58,6 @@ std::vector<int> CheapCustomer::order(const std::vector<Workout> &workout_option
         }
     }
     filteredWorkouts.push_back(cheapest -> getId());
-    std::cout << getName() + " Is Doing " + cheapest -> getName() << std::endl;
     return filteredWorkouts ;
 };
 
@@ -90,10 +88,6 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
     });
 
 //    replace references with workout ids
-    for(int i = 0; i <filteredWorkouts.size(); i++){
-        sortedWorkouts.push_back(filteredWorkouts[i]->getId());
-        std::cout << getName() + " Is Doing " + filteredWorkouts[i] -> getName() << std::endl;
-    }
     return sortedWorkouts;
 };
 
@@ -145,9 +139,6 @@ std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_opt
         if(cheapestAnaerobic != nullptr)
             filteredWorkouts.push_back(cheapestAnaerobic->getId());
 
-        for (int i=0; i<filteredWorkouts.size(); i++){
-            std::cout << getName() + " Is Doing " + workout_options[filteredWorkouts[i]].getName() << std::endl;
-        }
         return filteredWorkouts;
 };
 
@@ -158,25 +149,5 @@ std::string FullBodyCustomer::toString() const {
 Customer* FullBodyCustomer::clone() const{
     return new FullBodyCustomer(getName(),getId());
 }
-//
-//int main(int argc, char** argv) {
-//    FullBodyCustomer amit = FullBodyCustomer("amit", 4);
-//    Workout running = Workout( 1, "running",  70, CARDIO);
-//    Workout yoga = Workout( 2, "yoga",  20, MIXED);
-//    Workout weights = Workout( 3, "weights",  25, ANAEROBIC);
-//    Workout cycling = Workout( 4, "cycling",  1, MIXED);
-//    Workout heat = Workout( 5, "heat",  25, CARDIO);
-//    Workout crossfit = Workout( 6, "heat",  70, ANAEROBIC);
-//    Workout boxing = Workout( 7, "boxing",  60, ANAEROBIC);
-//
-//    //this is a workouts pointer
-//    std::vector<Workout> *workouts = new vector<Workout>{running,yoga,weights,cycling,heat,crossfit,boxing};
-//
-//    //passing the workouts object itself, the function gets it by reference.
-//    std::vector<int> output = amit.order(*workouts);
-//
-//    for(auto &workout_id: output){
-//        std::cout << workout_id << std::endl;
-//    }
-//}
+
 

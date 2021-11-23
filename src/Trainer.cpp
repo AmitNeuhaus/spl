@@ -34,10 +34,7 @@ void Trainer::removeCustomer(int id){
         }
     }
     orderList.clear();
-    for (OrderPair pair : newOrderList) {
-        orderList.push_back(pair);
-
-    }
+    orderList = std::move(newOrderList);
 
 
 }

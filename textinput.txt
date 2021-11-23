@@ -4,12 +4,9 @@ close 2
 open 3 Alice,chp Bob,mc
 order 3
 status 2
-backup
 open 0 Shuli,chp
 order 0
+status 0
 move 3 0 5
 status 0
-restore
-status 0
-finished
 closeall

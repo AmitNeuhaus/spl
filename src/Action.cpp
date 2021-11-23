@@ -77,12 +77,11 @@ void Order::act(Studio &studio) {
             // todo: check how to store in var efficiently.
             std::vector<int> orderedWorkouts = customers[i]->order(studio.getWorkoutOptions());
             trainerRef->order(customers[i]->getId(), orderedWorkouts, studio.getWorkoutOptions());
+            for(int workoutId : orderedWorkouts){
+                std::cout << customers[i]->getName() + " Is Doing " + studio.getWorkoutOptions()[workoutId].getName()<<std::endl;
+            }
+        }
 
-        }
-        std::vector<OrderPair> trainerSessionOrders = trainerRef->getOrders();
-        for (int i = 0; i < trainerSessionOrders.size(); ++i) {
-            //cout the order pair
-        }
         complete();
     }else{
         error("Trainer does not exist or is not open");
@@ -134,11 +133,12 @@ void MoveCustomer::act(Studio &studio) {
     Trainer* dstTrainerRef = studio.getTrainer(dstTrainer);
     if (canMove(srcTrainerRef,dstTrainerRef,id)){
         Customer* customer = srcTrainerRef->getCustomer(id);
-        //remove customer from src trainer:
+        //add customer to new trainer:
         dstTrainerRef->addCustomer(customer);
         dstTrainerRef->order(customer->getId(),customer->order(studio.getWorkoutOptions()),studio.getWorkoutOptions());
+        //remove customer from src trainer:
         srcTrainerRef->removeCustomer(id);
-        //add customer to new trainer:
+
         complete();
     }
     else{
@@ -243,7 +243,7 @@ PrintTrainerStatus::~PrintTrainerStatus(){}
 void PrintTrainerStatus::act(Studio &studio) {
     Trainer* trainer = studio.getTrainer(trainerId);
     if (trainer->isOpen()){
-        std::cout << "Trainer " + std::to_string(trainerId) +"status: open"<< std::endl;
+        std::cout << "Trainer " + std::to_string(trainerId) +" status: open"<< std::endl;
         std::cout << "Customers:" << std::endl;
         for(Customer* customer:trainer->getCustomers()){
             std::cout << std::to_string(customer->getId()) << " " << customer->getName() << std::endl;
@@ -254,7 +254,7 @@ void PrintTrainerStatus::act(Studio &studio) {
         }
         std::cout << "Current Trainer's Salary: "<< std::to_string(trainer->getSalary())<<std::endl;
     }else{
-        std::cout << "Trainer " + std::to_string(trainerId) +"status: close"<< std::endl;
+        std::cout << "Trainer " + std::to_string(trainerId) +" status: close"<< std::endl;
     }
     complete();
 }
