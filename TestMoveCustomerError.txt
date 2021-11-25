@@ -1,0 +1,13 @@
+TestMoveCustomerError
+open 2 Amit,swt Tom,mcl Nitai,chp
+move 2 3 1
+SholdResultInERROR:3IsClose
+open 3 Omer,fbd Maor,mcl
+close 2
+move 3 2 4
+SholdResultInERROR:2IsClose
+open 2 Gefen,fbd Lilach,swt Yuval,fbd Yarden,swt
+move 3 2 4
+SholdResultInERROR:2IsFull
+log
+closeall
