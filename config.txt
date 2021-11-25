@@ -1,7 +1,7 @@
 # Number of trainers
 4
 # Traines
-6,6,8,4
+6,6,4,4
 # Work Options
 Yoga, Anaerobic, 90
 Pilates, Anaerobic, 110

@@ -294,7 +294,13 @@ PrintTrainerStatus* PrintTrainerStatus::clone(){
 BackupStudio::BackupStudio() {}
 
 void BackupStudio::act(Studio &studio) {
-    backup = new Studio(studio);
+    if (backup == nullptr){
+        backup = new Studio(studio);
+    }
+    else{
+        delete backup;
+        backup = new Studio(studio);
+    }
     complete();
 }
 
@@ -321,6 +327,8 @@ void RestoreStudio::act(Studio &studio) {
     if (backup  != nullptr){
         studio = *backup;
         complete();
+    }else{
+        error("No backup available");
     }
 
 }

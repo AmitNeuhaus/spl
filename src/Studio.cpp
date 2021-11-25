@@ -132,6 +132,11 @@ void Studio::start() {
                     openTrainerInstance -> act(*this);
                     //TODO: think if need to check that act completed successfully.
                     actionsLog.push_back(openTrainerInstance);
+                    if (openTrainerInstance->getStatus() == ERROR){
+                        for (Customer* customer:customersList) {
+                            delete customer;
+                        }
+                    }
                 }
                 else if (action == "order" ) {
                     int trainerId = std::stoi( command[1] );
