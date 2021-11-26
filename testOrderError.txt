@@ -1,9 +1,0 @@
-testOrder
-open 2 Amit,swt Tom,chp Nitai,mcl Omer,mcl
-order 2
-order 3
-SholdResultInERROR:OrderCloseTrainer
-order 6
-SholdResultInERROR:OrderTrainerNotExcist
-log
-closeall
