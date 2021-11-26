@@ -28,7 +28,7 @@ public:
     int getSalary();
     bool isOpen();
     bool isFull();
-    std::string toString();
+
 private:
     Customer* createCustomer(Customer *customer);
     void Copy(const Trainer& _trainer);
