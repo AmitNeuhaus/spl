@@ -44,21 +44,26 @@ OpenTrainer::~OpenTrainer(){
 }
 
 void OpenTrainer::act(Studio &studio) {
-    for(Customer* customer: customers){
-        rep+= customer->toString()+" ";
-    }
     Trainer* trainerRef = studio.getTrainer(trainerId);
     if (trainerRef != nullptr && !(trainerRef -> isOpen())){
-    int trainerCapacity = trainerRef -> getCapacity();
     trainerRef -> openTrainer();
-    int maxCustomers = trainerCapacity < int(customers.size())? trainerCapacity: customers.size();
-    for (int i=0; i < maxCustomers; i++){
-        trainerRef -> addCustomer(customers[i]);
+    for (int i=0; i < int(customers.size()); i++){
+        if(customers[i]->getId()!=-1){
+            rep+= customers[i]->toString()+" ";
+            trainerRef -> addCustomer(customers[i]);
+        }else{
+            delete customers[i];
+        }
+
     }
     complete();
     }
     else{
-        error("Workout session does not exist or is already open");
+        error("Trainer does not exist or is already open");
+        for(Customer* customer:customers){
+            rep+= customer->toString()+" ";
+            delete customer;
+        }
     }
 }
 

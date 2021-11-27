@@ -1,7 +1,5 @@
-open 2 Amit,swt Tom,mcl Nitai,fbd
-open 2 Dvir,chp
-SholdResultInERROR:OpenAnOpenTrainer
-open 6 Maor,swt
-SholdResultInERROR:TrainerNotExcist
+open 7 yarden,chp amit,mcl dan,fbd tomer,mcl ronit,swt itay,chp shaya,fbd
+open 1 tom,mcl
+status 1
 log
 closeall
