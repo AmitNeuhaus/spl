@@ -17,7 +17,7 @@ Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vect
     int w_id = 0;
     if (file.is_open()){
         while(getline(file,line)){
-            if (line[0] != '#'){  //ignore comments line.
+            if ( !(line.empty()) && line[0] != '#'){  //ignore comments line.
                 std::stringstream s_line(line);
                 if (lineCounter == 0){  //first line is the number of trainers in the studio, reserve the exact space needed.
                     int numOfTrainers = std::stoi(line);
