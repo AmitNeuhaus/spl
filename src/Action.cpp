@@ -54,7 +54,7 @@ void OpenTrainer::act(Studio &studio) {
     complete();
     }
     else{
-        error("Workout session does not exist or is already open");
+        error("Trainer does not exist or is already open");
     }
 }
 

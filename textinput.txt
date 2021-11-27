@@ -1,0 +1,3 @@
+open 1 yarden,chp amit,mcl dan,fbd tomer,mcl ronit,swt itay,chp shaya,fbd
+status 1
+closeall
