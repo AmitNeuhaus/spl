@@ -47,7 +47,7 @@ void OpenTrainer::act(Studio &studio) {
     Trainer* trainerRef = studio.getTrainer(trainerId);
     if (trainerRef != nullptr && !(trainerRef -> isOpen())){
     trainerRef -> openTrainer();
-    for (int i=0; i < customers.size(); i++){
+    for (int i=0; i < int(customers.size()); i++){
         rep+= customers[i]->toString()+" ";
         trainerRef -> addCustomer(customers[i]);
     }
