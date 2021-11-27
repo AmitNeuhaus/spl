@@ -44,15 +44,11 @@ OpenTrainer::~OpenTrainer(){
 }
 
 void OpenTrainer::act(Studio &studio) {
-    for(Customer* customer: customers){
-        rep+= customer->toString()+" ";
-    }
     Trainer* trainerRef = studio.getTrainer(trainerId);
     if (trainerRef != nullptr && !(trainerRef -> isOpen())){
-    int trainerCapacity = trainerRef -> getCapacity();
     trainerRef -> openTrainer();
-    int maxCustomers = trainerCapacity < int(customers.size())? trainerCapacity: customers.size();
-    for (int i=0; i < maxCustomers; i++){
+    for (int i=0; i < customers.size(); i++){
+        rep+= customers[i]->toString()+" ";
         trainerRef -> addCustomer(customers[i]);
     }
     complete();

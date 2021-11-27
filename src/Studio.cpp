@@ -87,7 +87,7 @@ void Studio::start() {
 
 
 
-    std::ifstream file("./textinput.txt");
+    std::ifstream file("../textinput.txt");
     bool fileinput=false;
     while (open) {
         std::vector<std::string> command;
@@ -120,7 +120,10 @@ void Studio::start() {
                     // open a customer list on stack
                     std::vector<Customer *> customersList = std::vector<Customer *>();
                     int amountOfCustomers = command.size() - 2 ;// number of parameters excluding action and trainer Id (divide 2 because of workout types)
-                    for (int i=0; i < amountOfCustomers; i++){
+                    Trainer* trainerRef = getTrainer(trainerId);
+                    int trainerCapacity = trainerRef -> getCapacity();
+                    int maxCustomers = trainerCapacity < amountOfCustomers? trainerCapacity: amountOfCustomers;
+                    for (int i=0; i < maxCustomers; i++){
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i+2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
