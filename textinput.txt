@@ -1,5 +1,0 @@
-open 7 yarden,chp amit,mcl dan,fbd tomer,mcl ronit,swt itay,chp shaya,fbd
-open 1 tom,mcl
-status 1
-log
-closeall

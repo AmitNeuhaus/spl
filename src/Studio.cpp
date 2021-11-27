@@ -1,12 +1,14 @@
-//
-// Created by AMIT Neuhaus on 08/11/2021.
-//
 
 #include "../include/Studio.h"
 
+//Class Studio:
 
+//Public Methods:
+
+//Default Constructor.
 Studio::Studio():open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>()) {}
 
+//Constructor based on a configuration file.
 Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     std::ifstream file(configFilePath);
     std::string line;
@@ -15,13 +17,15 @@ Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vect
     int w_id = 0;
     if (file.is_open()){
         while(getline(file,line)){
-            if (line[0] != '#'){
+            if (line[0] != '#'){  //ignore comments line.
                 std::stringstream s_line(line);
-                if (lineCounter == 0){
+                if (lineCounter == 0){  //first line is the number of trainers in the studio, reserve the exact space needed.
+                    int numOfTrainers = std::stoi(line);
+                    trainers.reserve(numOfTrainers);
                     lineCounter++;
                 }
 
-                else if (lineCounter == 1){
+                else if (lineCounter == 1){  //Second line is each trainers' capacity. create a new trainer and adds it to the trainers list.
                     while (s_line.good()){
                         std::getline(s_line,substr,',');
                         if (substr[0]==' '){
@@ -33,7 +37,7 @@ Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vect
                     }
                     lineCounter++;
                 }
-                else{
+                else{  //All other lines are workouts. Parse the lines and create a new instance of workout and add it to the workout options list.
                     std::string name;
                     WorkoutType type;
                     int price;
@@ -48,15 +52,7 @@ Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vect
                             counter++;
                         }
                         else if (counter == 1){
-                            if (substr == "Anaerobic"){
-                                type = ANAEROBIC;
-                            }
-                            else if(substr == "Mixed"){
-                                type = MIXED;
-                            }
-                            else if(substr == "Cardio"){
-                                type = CARDIO;
-                            }
+                            type = getType(substr);
                             counter++;
                         }
                         else{
@@ -79,6 +75,7 @@ Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vect
 
     file.close();
 }
+
 
 void Studio::start() {
     // TODO: parsing the first word in the command line  == action
@@ -204,12 +201,15 @@ void Studio::start() {
         }
 
 
+//Getters:
 
+//Return: integer, number of trainers in the studio.
 int Studio::getNumOfTrainers() const {
     return trainers.size();
 }
 
-
+//Input: integer, trainer id.
+//Return: pointer, to a specific trainer if it exists in the studio, null pointer otherwise.
 Trainer *Studio::getTrainer(int tid) {
     if (tid>int(trainers.size()-1)){
         return nullptr;
@@ -218,10 +218,11 @@ Trainer *Studio::getTrainer(int tid) {
     return t;
 }
 
+//Return: vector reference, to the action log of the studio.
 const std::vector<BaseAction *> &Studio::getActionsLog() const {
     return actionsLog;
 }
-
+//Return: vector reference, to the workout options of the studio.
 std::vector<Workout> &Studio::getWorkoutOptions() {
     return workout_options;
 }
@@ -233,6 +234,7 @@ Studio::Studio(const Studio &studio):open(false),trainers(std::vector<Trainer*>(
     Copy(studio);
 }
 
+//ass-op
 Studio &Studio::operator=(Studio &studio) {
     if (this!=&studio){
         Clean();
@@ -241,10 +243,12 @@ Studio &Studio::operator=(Studio &studio) {
     return (*this);
 }
 
+//move c-tor
 Studio::Studio(Studio &&studio):open(false),trainers(std::vector<Trainer*>()), workout_options(std::vector<Workout>()),actionsLog(std::vector<BaseAction*>())  {
     Steel(studio);
 }
 
+//move ass-op
 Studio &Studio::operator=(Studio &&studio) {
     if (this!=&studio){
         Clean();
@@ -253,10 +257,13 @@ Studio &Studio::operator=(Studio &&studio) {
     return (*this);
 }
 
+//d-tor:
 Studio::~Studio() {
     Clean();
 }
 
+//Private Methods
+//Clean all fields and heap blocks used by this studio.
 void Studio::Clean() {
     for(Trainer* trainer : trainers){
         delete trainer;
@@ -269,6 +276,7 @@ void Studio::Clean() {
     actionsLog.clear();
 }
 
+//Create a new copy of a studio.
 void Studio::Copy(const Studio& studio) {
     customersIdCounter = studio.customersIdCounter;
     for(Trainer* trainer : studio.trainers){
@@ -285,6 +293,7 @@ void Studio::Copy(const Studio& studio) {
     }
 }
 
+//Transfer all heap blocks from other studio to this studio and copy all primitive fields.
 void Studio::Steel(Studio &studio) {
     trainers=std::move(studio.trainers);
     studio.trainers.clear();
@@ -295,10 +304,12 @@ void Studio::Steel(Studio &studio) {
 }
 
 
-//std::vector<std::string>& getUserCommand(){
 
-// helpers --------------------------------------
+//Helpers:
 
+//Creates a copy of a customer.
+//input: string name, string strategy, integer customer id.
+//return:a pointer to new instance of customer on the heap.
 Customer* Studio::createCustomer(std::string name, std::string strategy, int id){
     if(strategy == "swt"){
         return new SweatyCustomer(name, id);
@@ -333,22 +344,19 @@ std::vector<std::string> Studio::splitNameAndStrategy(std::string nameAndStrateg
     }
     return out;
 }
-//int main(int argc,char** argv){
-//    std::string fileName;
-//    std::cout<<"----enter file name----: "<<std::endl;
-//    std::cin>>fileName;
-//    Studio s(fileName);
-//    std::cout<<"------number of trainers in studio-------"<<std::endl;
-//    std::cout<<s.getNumOfTrainers()<<std::endl;
-//    std::cout<<"------print all workouts in the studio-------"<<std::endl;
-//    for (Workout i : s.getWorkoutOptions()) {
-//        std::cout<<i.toString()<<std::endl;
-//    }
-//
-//    std::cout<<"-----print trainers id and capacity"<<std::endl;
-//    for(int i =0;i<s.getNumOfTrainers();i++){
-//        std::cout << std::to_string(i) << ": " <<s.getTrainer(i)->toString() <<std::endl;
-//    }
-//
-//}
 
+//Input: string, representation of the type.
+//Return: WorkoutType, based on a string representation of the type.
+WorkoutType Studio::getType(std::string substring) {
+    WorkoutType type = ANAEROBIC;
+    if (substring == "Anaerobic"){
+        type = ANAEROBIC;
+    }
+    else if(substring == "Mixed"){
+        type = MIXED;
+    }
+    else if(substring == "Cardio"){
+        type = CARDIO;
+    }
+    return type;
+}

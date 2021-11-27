@@ -37,6 +37,7 @@ private:
     void Clean();
     void Copy(const Studio& studio);
     void Steel(Studio& studio);
+    WorkoutType getType(std::string substring);
 };
 
 #endif

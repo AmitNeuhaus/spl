@@ -1,9 +1,0 @@
-TestCloseError
-close 2
-SholdResultInERROR:TrainerNotOpen
-close 7
-SholdResultInERROR:TrainerNotExcist
-log
-closeall
-
-
