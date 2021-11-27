@@ -59,6 +59,9 @@ void OpenTrainer::act(Studio &studio) {
     }
     else{
         error("Workout session does not exist or is already open");
+        for (Customer* customer:customers) {
+            delete customer;
+        }
     }
 }
 
