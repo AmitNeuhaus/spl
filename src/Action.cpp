@@ -45,13 +45,16 @@ OpenTrainer::~OpenTrainer(){
 
 void OpenTrainer::act(Studio &studio) {
     Trainer* trainerRef = studio.getTrainer(trainerId);
+    //check if trainer is not null and not already open
     if (trainerRef != nullptr && !(trainerRef -> isOpen())){
     trainerRef -> openTrainer();
     for (int i=0; i < int(customers.size()); i++){
         if(customers[i]->getId()!=-1){
+            //add customer to the trainer and to the action rep string.
             rep+= customers[i]->toString()+" ";
             trainerRef -> addCustomer(customers[i]);
         }else{
+            // delete if overflow customer
             delete customers[i];
         }
 
@@ -59,6 +62,7 @@ void OpenTrainer::act(Studio &studio) {
     complete();
     }
     else{
+        // if trainer is already open / no trainer exists, delete all created customers after inserting to rep.
         error("Trainer does not exist or is already open");
         for(Customer* customer:customers){
             rep+= customer->toString()+" ";
@@ -87,9 +91,9 @@ Order::~Order(){}
 void Order::act(Studio &studio) {
     Trainer* trainerRef = studio.getTrainer(trainerId);
     if (trainerRef != nullptr && trainerRef -> isOpen()){
+        // get the order from each customer and insert it to the trainer order method.
         std::vector<Customer *> &customers = trainerRef->getCustomers();
         for (int i = 0; i < int(customers.size()); i++) {
-            // todo: check how to store in var efficiently.
             std::vector<int> orderedWorkouts = customers[i]->order(studio.getWorkoutOptions());
             trainerRef->order(customers[i]->getId(), orderedWorkouts, studio.getWorkoutOptions());
             for(int workoutId : orderedWorkouts){
@@ -144,6 +148,7 @@ MoveCustomer::~MoveCustomer() {}
 void MoveCustomer::act(Studio &studio) {
     Trainer* srcTrainerRef = studio.getTrainer(srcTrainer);
     Trainer* dstTrainerRef = studio.getTrainer(dstTrainer);
+    //check conditions to move customr
     if (canMove(srcTrainerRef,dstTrainerRef,id)){
         Customer* customer = srcTrainerRef->getCustomer(id);
         //add customer to new trainer:
@@ -215,6 +220,7 @@ CloseAll::CloseAll() {}
 CloseAll::~CloseAll(){}
 
 void CloseAll::act(Studio &studio) {
+    // go over all the trainers and close them.
     for(int i = 0 ; i<studio.getNumOfTrainers();++i){
         if (studio.getTrainer(i)->isOpen()){
             Close* closeTrainer= new Close(i);
@@ -299,10 +305,12 @@ PrintTrainerStatus* PrintTrainerStatus::clone(){
 BackupStudio::BackupStudio() {}
 
 void BackupStudio::act(Studio &studio) {
+    // if no backup , clone studio
     if (backup == nullptr){
         backup = new Studio(studio);
     }
     else{
+        // if backup exists, delete the current backup first
         delete backup;
         backup = new Studio(studio);
     }

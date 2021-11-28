@@ -10,7 +10,6 @@ using namespace std;
 //Customer ---------------------------------
 Customer::Customer(std::string c_name, int c_id):name(c_name),id(c_id){};
 Customer::~Customer(){}
-//order and toString are virtual therefore i don't need to implement them here
 std::string Customer::getName() const {
     return name;
 }
@@ -23,9 +22,8 @@ int Customer::getId() const {
 SweatyCustomer::SweatyCustomer(std::string name, int id):Customer(name,id){};
 SweatyCustomer::~SweatyCustomer(){};
 std::vector<int> SweatyCustomer::order(const std::vector<Workout> &workout_options){
-    // filteredWorkouts only lives in this scope - therefore on stack;
-    // option 2 initial in heap and delete before function close.
     std::vector<int> filteredWorkouts;
+    // pushes all the cardio into the filtered workouts
     for(size_t i = 0; i < workout_options.size(); ++i){
         if(workout_options[i].getType() == CARDIO){
             filteredWorkouts.push_back(workout_options[i].getId());
@@ -43,7 +41,6 @@ Customer* SweatyCustomer::clone() const{
 }
 
 //CheapCustomer --------------------------
-//TODO: in the assignment it says this customer only orders once, maybe we should save a pointer/id of the cheapest workout elsewhere after calling.
 CheapCustomer::CheapCustomer(std::string name, int id):Customer(name,id){};
 CheapCustomer::~CheapCustomer(){};
 
@@ -91,7 +88,6 @@ std::vector<int> HeavyMuscleCustomer::order(const std::vector<Workout> &workout_
     sortedWorkouts.reserve(filteredWorkouts.size());
 for (const Workout* workout: filteredWorkouts) {
         sortedWorkouts.push_back(workout->getId());
-
     }
     return sortedWorkouts;
 };
@@ -136,7 +132,7 @@ std::vector<int> FullBodyCustomer::order(const std::vector<Workout> &workout_opt
             }
         }
     }
-//        assign the ids to a new vector
+//        assign the ids to a new vector (protect if no workout with the desired type)
         if(cheapestCardio != nullptr)
             filteredWorkouts.push_back(cheapestCardio->getId());
         if(expensiveMixed != nullptr)

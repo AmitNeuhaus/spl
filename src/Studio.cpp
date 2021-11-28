@@ -78,17 +78,14 @@ Studio::Studio(const std::string &configFilePath):open(false),trainers(std::vect
 
 
 void Studio::start() {
-    // TODO: parsing the first word in the command line  == action
     std::cout << "Studio is now open!" << std::endl;
     open = true;
 
-
-
+    // commands from file---------------------
     std::ifstream file("../textinput.txt");
     bool fileinput=false;
     while (open) {
         std::vector<std::string> command;
-        // commands from file---------------------
         if(fileinput){
             std::string line;
             std::getline(file, line);
@@ -102,6 +99,7 @@ void Studio::start() {
         }else {
             command = getUserCommand();
         }
+        // Get the action from the user command
         std::string action = command[0];
 
         if(action=="file"){
@@ -109,9 +107,7 @@ void Studio::start() {
         }
 
         // commands from file---------------------
-
-//        std::vector<std::string> command = getUserCommand();
-//        std::string action = command[0];
+        //Switch case fot the user action's
                 if (action == "open") {
                     int trainerId = std::stoi( command[1] );
                     // open a customer list on stack
@@ -119,18 +115,22 @@ void Studio::start() {
                     int amountOfCustomers = command.size() - 2 ;// number of parameters excluding action and trainer Id (divide 2 because of workout types)
                     Trainer* trainerRef = getTrainer(trainerId);
                     int maxCustomers = -1;
+                    // if trainer exists,amount of customers is the min between capacity and amount of customers in command.
                     if (trainerRef != nullptr) {
                         int trainerCapacity = trainerRef->getCapacity();
                         maxCustomers = trainerCapacity < amountOfCustomers ? trainerCapacity : amountOfCustomers;
                     }
+                    // if there is no trainer, go over all the customers and created them for the log.
                     for (int i = 0; i < amountOfCustomers; i++) {
                         std::vector<std::string> nameAndStrategy = splitNameAndStrategy(command[i + 2]);
                         std::string name = nameAndStrategy[0];
                         std::string strategy = nameAndStrategy[1];
                         Customer *newCustomer;
                         if(maxCustomers<0 || i>=maxCustomers){
+                            // if customers is more than the capacity / there is not even trainer ref id =-1
                             newCustomer = createCustomer(name, strategy, -1);
                         }else{
+                            //create customers by the id counter of studio
                             newCustomer = createCustomer(name, strategy, customersIdCounter);
                             customersIdCounter++;
                         }
@@ -138,14 +138,12 @@ void Studio::start() {
                     }
                     OpenTrainer *openTrainerInstance = new OpenTrainer(trainerId, customersList);
                     openTrainerInstance -> act(*this);
-                    //TODO: think if need to check that act completed successfully.
                     actionsLog.push_back(openTrainerInstance);
                 }
                 else if (action == "order" ) {
                     int trainerId = std::stoi( command[1] );
                     Order *orderInstance = new Order(trainerId);
                     orderInstance->act(*this);
-                    //TODO: think if need to check that act completed successfully.
                     actionsLog.push_back(orderInstance);
                 }
                 else if (action == "move") {
