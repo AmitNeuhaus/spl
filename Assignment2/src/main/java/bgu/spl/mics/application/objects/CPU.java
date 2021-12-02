@@ -1,6 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.CPUInterface;
+import java.util.Collection;
 
 /**
  * Passive object representing a single CPU.
@@ -10,20 +10,18 @@ import bgu.spl.mics.CPUInterface;
 public class CPU implements CPUInterface {
 
     private int cores;
-    private DataBatch db;
+    private Collection<DataBatch> data;
     private boolean busy;
     private Cluster cluster;
 
-    /**
-     * @param db
-     */
+
     @Override
-    public void proccess(DataBatch db) {
+    public void process(DataBatch db) {
 
     }
 
     @Override
-    public void setDB(DataBatch db) {
+    public void insertDB(DataBatch db) {
 
     }
 
