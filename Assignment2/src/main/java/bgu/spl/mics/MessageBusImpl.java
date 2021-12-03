@@ -1,9 +1,9 @@
 package bgu.spl.mics;
 
-import com.sun.tools.javac.comp.Todo;
+
+
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Queue;
 
 /**
@@ -14,8 +14,8 @@ import java.util.Queue;
 
 public class MessageBusImpl implements MessageBus {
 
-	private Collection<Queue> queues;
-	private Collection<Event> eventsMapping;
+	protected Collection<Queue> queues;
+	protected Collection<Event> eventsMapping;
 
 	/**
 	 * @pre  eventsMapping.get(type).contains(m) == false
@@ -46,8 +46,6 @@ public class MessageBusImpl implements MessageBus {
 
 	/**
 	 * e.type == result.type
-	 * e != null
-	 * result !=null
 	 * @param e      The completed event.
 	 * @param result The resolved result of the completed event.
 	 * @param <T>
@@ -128,6 +126,52 @@ public class MessageBusImpl implements MessageBus {
 		return null;
 	}
 
-	
+
+
+	//Queries:
+
+	@Override
+	public boolean isMicroServiceRegistered(MicroService m) {
+		return false;
+	}
+
+	@Override
+	public int getNumberOfMicroServices() {
+		return 0;
+	}
+
+	@Override
+	public <T> boolean isListeningToEvent(Class<? extends Event<T>> type, MicroService m) {
+		return false;
+	}
+
+	@Override
+	public <T> int getNumOfEventListeners(Class<? extends Event<T>> type) {
+		return 0;
+	}
+
+	@Override
+	public  boolean isListeningToBroadcast(Class<? extends Broadcast> type) {
+		return false;
+	}
+
+	@Override
+	public  int getNumOfBroadcastListeners(Class<? extends Broadcast> type, MicroService m) {
+		return 0;
+	}
+
+	@Override
+	public <T,E> Iterable<Queue<E>> getEventListeners(Class<? extends Event<T>> type) {
+		return null;
+	}
+
+	@Override
+	public <E> Iterable<Queue<E>> getBroadcastListeners(Class<? extends Broadcast> type) {
+		return null;
+	}
+
 
 }
+
+
+
