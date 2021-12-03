@@ -7,7 +7,7 @@ public interface GPUInterface {
     /**
      * Gets a model from the GpuService.
      * @param model
-     * @pre model == null (gpu is already working on a model)
+     * @pre model.status != "Training" (gpu is already working on a model)
      * @post this.model == model
      */
     void insertModel(Model model);
@@ -16,7 +16,7 @@ public interface GPUInterface {
     /**
      * Split model's data into DataBatches of 100 samples , and stores it in the disk.
      * @pre diskSize() == 0
-     * @post diskSize()() == data.size / 1000
+     * @post diskSize() == data.size / 1000
      */
     void splitToBatches(Data data);
 
@@ -24,9 +24,9 @@ public interface GPUInterface {
     /**
      * Todo: Talk if we should send only one DataBatch or multiple of them.
      * Send DataBatch to the Cluster.
-     * @pre diskSize()() > 0;
+     * @pre diskSize() > 0;
      * @pre db.processed = False;
-     * @post diskSize()() == @pre diskSize()() -1
+     * @post diskSize() == @pre diskSize() -1
      */
     void sendData(DataBatch db);
 
@@ -35,15 +35,15 @@ public interface GPUInterface {
      * Insert's a db from the cluster to the vRam (after processed by a CPU)
      * @pre isVramFull == False;
      * @pre db.processed  == True;
-     * @post vram.size == @pre vram.size() +1
+     * @post vram.size() == @pre vram.size() +1
      */
     void insertDbToVram(DataBatch db);
 
 
     /**
      * Insert's a db from the cluster to the vRam (after processed by a CPU)
-     * @pre db.trained == true;
-     * @post trainedDiskSize() == @pre trainedDiskSize() +1
+     * @pre db.processed == true;
+     * @post trainedDisk.size() == @pre trainedDiskSize() +1
      */
     void insertTrainedDbToDisk(DataBatch db);
 
@@ -66,6 +66,8 @@ public interface GPUInterface {
     /**
      * Return a result of the model after finished {@Train} for ALL the data batches.
      * @pre trainedDiskSize() == data.size / 1000
+     * @pre vram.size() == 0
+     * @post trainedDiskSize() == 0
      */
     Future returnResult();
 
@@ -82,16 +84,16 @@ public interface GPUInterface {
     /**
      * size of the disk.
      */
-    int diskSize();
+    int getDiskSize();
 
 
     /**
      * size of the disk.
      */
-    int trainedDiskSize();
+    int getTrainedDiskSize();
 
     /**
      * size of the vram.
      */
-    int vramSize();
+    int getVramSize();
 }

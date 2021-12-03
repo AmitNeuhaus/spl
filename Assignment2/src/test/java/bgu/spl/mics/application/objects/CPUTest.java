@@ -37,8 +37,7 @@ class CPUTest {
     }
 
     @Test
-    //Todo: How to check if db is processed.
-    //Todo: Should we check error throwing in different scenarios?
+    //Todo: Should we check error throwing in different scenarios? --yes
     void sendProcessedDB() {
         int dataSize = cpu.dataSize();
         cpu.sendProcessedDB(new DataBatch());

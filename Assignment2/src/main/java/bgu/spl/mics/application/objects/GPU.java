@@ -58,17 +58,17 @@ public class GPU implements GPUInterface{
     }
 
     @Override
-    public int diskSize() {
+    public int getDiskSize() {
         return 0;
     }
 
     @Override
-    public int trainedDiskSize() {
+    public int getTrainedDiskSize() {
         return 0;
     }
 
     @Override
-    public int vramSize() {
+    public int getVramSize() {
         return 0;
     }
 

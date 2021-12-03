@@ -9,6 +9,7 @@ public interface CPUInterface {
       * @pre isBusy == False
       * @pre db.processed == False
       * @post isBusy == False
+      * @post db.processed == True
       */
      void process(DataBatch db);
 
