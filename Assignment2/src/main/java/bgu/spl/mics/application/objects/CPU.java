@@ -26,7 +26,7 @@ public class CPU implements CPUInterface {
     }
 
     @Override
-    public DataBatch returnProcessedDB(DataBatch db) {
+    public DataBatch sendProcessedDB(DataBatch db) {
         return null;
     }
 
@@ -34,4 +34,10 @@ public class CPU implements CPUInterface {
     public boolean isBusy() {
         return false;
     }
+
+    @Override
+    public int dataSize() {
+        return 0;
+    }
+
 }

@@ -7,6 +7,7 @@ public interface CPUInterface {
       * This methods process one db from the data Container.
       * @param db
       * @pre isBusy == False
+      * @pre db.processed == False
       * @post isBusy == False
       */
      void process(DataBatch db);
@@ -15,7 +16,7 @@ public interface CPUInterface {
      /**
       * This methods get a DataBatch from the cluster and insert it to the data container of the cpu. (Command)
       * @param db
-      * @pre
+      * @pre db.processed == False;
       * @post data.size() == @pre data.size() +1
       */
      public void insertDB(DataBatch db);
@@ -27,7 +28,7 @@ public interface CPUInterface {
       * @pre db.processed == True
       * @post data.size() == data.size() - 1
       */
-     public DataBatch returnProcessedDB(DataBatch db);
+     public DataBatch sendProcessedDB(DataBatch db);
 
 
      /**
@@ -36,4 +37,10 @@ public interface CPUInterface {
       * @post none
      */
      public boolean isBusy();
+
+
+     /**
+      * Size of inserted data(Query)
+      */
+     public int dataSize();
 }

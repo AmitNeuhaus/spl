@@ -1,11 +1,18 @@
 package bgu.spl.mics;
 
+import java.util.Collection;
+import java.util.Queue;
+
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
  * Write your implementation here!
  * Only private fields and methods can be added to this class.
  */
+
 public class MessageBusImpl implements MessageBus {
+
+	private Collection<Queue> queues;
+
 
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {

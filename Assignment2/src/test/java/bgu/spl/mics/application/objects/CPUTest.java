@@ -1,26 +1,48 @@
 package bgu.spl.mics.application.objects;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class CPUTest {
-    CPU cpu;
+
+
+    private CPU cpu;
 
     @BeforeEach
     void setUp(){
         cpu = new CPU();
     }
+
+
     @Test
-    void setDB() {
-        Assertions.assertEquals(cpu.isBusy(),false);
-        Assertions.assertThrows(IllegalArgumentException.class,()->cpu.setDB(null));
+    void process() {
+        assertFalse(cpu.isBusy());
+        DataBatch db = new DataBatch();
+        assertFalse(db.isProcessed());
+        cpu.process(db);
+        assertFalse(cpu.isBusy());
+        assertTrue(db.isProcessed());
     }
 
     @Test
-    void returnProcessedDB() {
+    void insertDB() {
+        int dataSize = cpu.dataSize();
+        DataBatch db = new DataBatch();
+        assertFalse(db.isProcessed());
+        cpu.insertDB(db);
+        assertEquals(cpu.dataSize(), dataSize + 1);
+    }
+
+    @Test
+    //Todo: How to check if db is processed.
+    //Todo: Should we check error throwing in different scenarios?
+    void sendProcessedDB() {
+        int dataSize = cpu.dataSize();
+        cpu.sendProcessedDB(new DataBatch());
+        assertEquals(cpu.dataSize(), dataSize - 1);
     }
 
     @Test
