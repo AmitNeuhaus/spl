@@ -15,4 +15,10 @@ public class Data {
     private Type type;
     private int processed;
     private int size;
+
+    Data(Type type_, int size_, int processed_){
+        type=type_;
+        size=size_;
+        processed = processed_;
+    }
 }

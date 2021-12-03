@@ -28,9 +28,7 @@ public interface GPUInterface {
      * @pre db.processed = False;
      * @post diskSize() == @pre diskSize() -1
      */
-    void sendData(DataBatch db);
-
-
+    void sendData();
     /**
      * Insert's a db from the cluster to the vRam (after processed by a CPU)
      * @pre isVramFull == False;
@@ -68,6 +66,7 @@ public interface GPUInterface {
      * @pre trainedDiskSize() == data.size / 1000
      * @pre vram.size() == 0
      * @post trainedDiskSize() == 0
+     * @post diskSize() == 0
      */
     Future returnResult();
 
