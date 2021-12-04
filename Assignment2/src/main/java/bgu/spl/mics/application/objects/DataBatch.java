@@ -6,7 +6,27 @@ package bgu.spl.mics.application.objects;
  */
 
 public class DataBatch implements DataBatchInterface {
+    private boolean processed;
+    private boolean trained;
+
+
+    DataBatch(){
+        processed = false;
+        trained = false;
+    }
     public boolean isProcessed(){
-        return false;
+        return processed;
+    };
+
+    public void setProcessed(boolean status){
+        processed = status;
+    };
+
+    public boolean isTrained(){
+        return trained;
+    };
+
+    public void setTrained(boolean status){
+        trained = status ;
     };
 }

@@ -38,9 +38,7 @@ public class GPU implements GPUInterface{
     }
 
     @Override
-    public void sendData(DataBatch db) {
-
-    }
+    public void sendData() {}
 
     @Override
     public void insertDbToVram(DataBatch db) {

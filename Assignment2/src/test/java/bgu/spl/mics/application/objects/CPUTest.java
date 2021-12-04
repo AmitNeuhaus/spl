@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class CPUTest {
 
-
     private CPU cpu;
 
     @BeforeEach

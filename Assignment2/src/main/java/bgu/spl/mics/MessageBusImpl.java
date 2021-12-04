@@ -1,8 +1,5 @@
 package bgu.spl.mics;
 
-
-
-
 import java.util.Collection;
 import java.util.Queue;
 
@@ -14,8 +11,8 @@ import java.util.Queue;
 
 public class MessageBusImpl implements MessageBus {
 
-	protected Collection<Queue> queues;
-	protected Collection<Event> eventsMapping;
+	private Collection<Queue> queues;
+	private Collection<Event> eventsMapping;
 
 	/**
 	 * @pre  isListeningToEvent(e) == false
