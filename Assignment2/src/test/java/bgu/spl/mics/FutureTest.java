@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FutureTest<T> {
+class FutureTest {
 
 
     private Future<Integer> future;
@@ -27,6 +27,8 @@ class FutureTest<T> {
         future.resolve(results);
         assertTrue(future.isDone());
         assertNotEquals(future.get(), null);
+        assertEquals(future.get(), results);
+
     }
 
     @Test
@@ -35,27 +37,72 @@ class FutureTest<T> {
 
     @Test
     void testGetWithinTimeout() throws InterruptedException {
-
-        long timeout = 50;
-        TimeUnit units = TimeUnit.MILLISECONDS;
         Integer expectedResult =1000;
-        //scenario 1 task takes less than timeout
-        Thread.sleep(15);
-        Integer result = future.get(timeout,units);
-        assertEquals(result, expectedResult);
+
+        class Resolver implements Runnable {
+            public void run(){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                future.resolve(expectedResult);
+            }
+        }
+
+        class Getter implements Runnable {
+
+            public Integer result;
+            public void run(){
+               result = future.get(2000,TimeUnit.MILLISECONDS);
+            }
+        }
+        Getter g = new Getter();
+        Thread t1 = new Thread (new Resolver());
+        Thread t2 = new Thread (g);
+        t1.start();
+        t2.start();
+
+//        scenario 1 task takes less than timeout
+        System.out.println("before");
+        System.out.println("ok");
+        assertEquals(g.result, expectedResult);
     }
 
 
     @Test
     void testGetLongerThanTimeout() throws InterruptedException {
 
-        long timeout = 50;
-        TimeUnit units = TimeUnit.MILLISECONDS;
+        Integer expectedResult = 1000;
 
-        //scenario 1 task takes less than timeout
-        Thread.sleep(70);
-        Integer result = future.get(timeout,units);
-        assertNull(result);
+        class Resolver implements Runnable {
+            public void run() {
+                try {
+                    Thread.sleep(4000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                future.resolve(expectedResult);
+            }
+        }
+
+        class Getter implements Runnable {
+
+            public Integer result;
+
+            public void run() {
+                result = future.get(2000, TimeUnit.MILLISECONDS);
+            }
+        }
+        Getter g = new Getter();
+        Thread t1 = new Thread(new Resolver());
+        Thread t2 = new Thread(g);
+        t1.start();
+        t2.start();
+
+//        scenario 1 task takes less than timeout
+        System.out.println("before");
+        System.out.println("ok");
+        assertNull(g.result);
     }
-
 }
