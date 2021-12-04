@@ -149,12 +149,12 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
-	public  boolean isListeningToBroadcast(Class<? extends Broadcast> type) {
+	public  boolean isListeningToBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		return false;
 	}
 
 	@Override
-	public  int getNumOfBroadcastListeners(Class<? extends Broadcast> type, MicroService m) {
+	public  int getNumOfBroadcastListeners(Class<? extends Broadcast> type) {
 		return 0;
 	}
 

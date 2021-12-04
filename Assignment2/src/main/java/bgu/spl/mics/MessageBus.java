@@ -138,9 +138,9 @@ public interface MessageBus {
 
     <T> int getNumOfEventListeners(Class<? extends Event<T>> type);
 
-    boolean isListeningToBroadcast(Class<? extends Broadcast> type);
+    boolean isListeningToBroadcast(Class<? extends Broadcast> type, MicroService m);
 
-    int getNumOfBroadcastListeners(Class<? extends Broadcast> type, MicroService m);
+    int getNumOfBroadcastListeners(Class<? extends Broadcast> type);
 
     <T,E> Iterable<Queue<E>> getEventListeners(Class<? extends Event<T>> type) ;
 

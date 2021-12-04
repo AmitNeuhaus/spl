@@ -73,10 +73,12 @@ class MessageBusTest {
     @Test
     void subscribeEvent() {
         //subscribe an un registered microservice-> should raise exception
-        assertThrows("Should throw exception (unregistered microservice)",Exception.class, () ->  messageBus.subscribeEvent(event.getClass(),microService));
+        int numOfSubs = messageBus.getNumOfEventListeners(event.getClass());
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs);
         //assert the microservice was subscribed
         messageBus.register(microService);
-        int numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
+        numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
         assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),false);
         messageBus.subscribeEvent(event.getClass(),microService);
         assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
@@ -93,20 +95,22 @@ class MessageBusTest {
     @Test
     void subscribeBroadcast() {
         //subscribe an un registered microservice-> should raise exception
-        assertThrows("Should throw exception (unregistered microservice)",Exception.class, () ->  messageBus.subscribeBroadcast(broadcast.getClass(),microService));
+        int numOfSubs = messageBus.getNumOfBroadcastListeners(broadcast.getClass());
+        messageBus.subscribeBroadcast(broadcast.getClass(),microService);
+        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass()),numOfSubs);
         //assert the microservice was subscribed
         messageBus.register(microService);
-        int numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
-        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),false);
-        messageBus.subscribeEvent(event.getClass(),microService);
-        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
-        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs +1);
+        numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass());
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass(),microService),false);
+        messageBus.subscribeBroadcast(broadcast.getClass(),microService);
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass(),microService),true);
+        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass()),numOfSubs +1);
 
         //assert that we can't double subscribe to the same broadcast
-        numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
-        messageBus.subscribeEvent(event.getClass(),microService);
-        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
-        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs );
+        numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass());
+        messageBus.subscribeBroadcast(broadcast.getClass(),microService);
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass(),microService),true);
+        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass()),numOfSubs );
     }
 
     @Test
@@ -144,7 +148,7 @@ class MessageBusTest {
             messageBus.sendEvent(event);
             assertEquals(firstListener.contains(event),true);
             iterator = messageBus.getEventListeners(event.getClass()).iterator();
-            assertTrue(iterator.next() != firstListener); //TODO check @pre first = @post last
+            assertTrue(iterator.next() != firstListener);
         }
     }
 
