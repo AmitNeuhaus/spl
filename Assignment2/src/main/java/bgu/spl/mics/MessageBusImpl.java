@@ -47,7 +47,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * e.type == result.type
+	 *
 	 * @param e      The completed event.
 	 * @param result The resolved result of the completed event.
 	 *
@@ -74,7 +74,6 @@ public class MessageBusImpl implements MessageBus {
 	/**
 	 * @pre  (listener : getEventListeners(e)) listener.contains(e) == false
 	 * @post getEventListeners(e)[0].contains(e) == true
-	 *
 	 * @param e     	The event to add to the queue.
 	 * @param <T>
 	 * @return
@@ -103,7 +102,6 @@ public class MessageBusImpl implements MessageBus {
 	 * @pre isRegistered(m)  == true
 	 * @post isRegistered(m) == false
 	 * @post getNumberOfMicroServices() == @pre getNumberOfMicroServices() - 1
-	 * @post
 	 *
 	 * @param m the micro-service to create a queue for.
 	 */
@@ -114,9 +112,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * @pre if(queues.get(m).isEmpty()){@post m.getStatus == TIMED_WAITING }
-	 * 		else{@return == queues.get(m).top()
-	 * 			@post queues.get(m).size() == @pre queues.get(m).size()-1;}
+	 *
 	 * @param m The micro-service requesting to take a message from its message
 	 *          queue.
 	 * @return
@@ -171,6 +167,12 @@ public class MessageBusImpl implements MessageBus {
 	public <E> Iterable<Queue<E>> getBroadcastListeners(Class<? extends Broadcast> type) {
 		return null;
 	}
+
+	@Override
+	public int getMicroserviceQueueSize(MicroService m) {
+		return 0;
+	}
+
 
 
 }

@@ -1,14 +1,14 @@
 package bgu.spl.mics;
 
-import java.lang.reflect.Field;
-import java.util.*;
 
+import java.util.*;
+import static org.junit.Assert.*;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+
 
 class MessageBusTest {
 
@@ -18,6 +18,7 @@ class MessageBusTest {
     private ExampleBroadcast broadcast;
 
 
+    //TODO change tests order register is first
 
     @BeforeEach
     void setUp(){
@@ -31,72 +32,6 @@ class MessageBusTest {
         event = new ExampleEvent("event");
         broadcast = new ExampleBroadcast("broadcast");
     }
-
-    @Test
-    void subscribeEvent() {
-        //assert the microservice was subscribed
-        int numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
-        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),false);
-        messageBus.subscribeEvent(event.getClass(),microService);
-        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
-        assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs +1);
-
-        //assert that we can't double subscribe to the same event
-        numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
-        messageBus.subscribeEvent(event.getClass(),microService);
-        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
-        assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs);
-
-    }
-
-    @Test
-    void subscribeBroadcast() {
-        //assert the microservice was subscribed
-        int numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
-        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),false);
-        messageBus.subscribeEvent(event.getClass(),microService);
-        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
-        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs +1);
-
-        //assert that we can't double subscribe to the same broadcast
-        numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
-        messageBus.subscribeEvent(event.getClass(),microService);
-        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
-        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs );
-    }
-
-    @Test
-    void complete() {
-    }
-
-    @Test
-    void sendBroadcast() {
-        Iterable<Queue<Object>> broadcastListeners = messageBus.getBroadcastListeners(broadcast.getClass()) ;
-        for (Queue<Object> listener : broadcastListeners){
-            assertEquals(listener.contains(broadcast),false);
-        }
-        messageBus.sendBroadcast(broadcast);
-        for (Queue<Object> listener : broadcastListeners){
-            assertEquals(listener.contains(broadcast),true);
-        }
-    }
-
-    @Test
-    void sendEvent() {
-        Iterable<Queue<Object>> eventListeners = messageBus.getEventListeners(event.getClass());
-        Iterator<Queue<Object>> iterator= eventListeners.iterator();
-        Queue<Object> firstListener = iterator.hasNext() ? iterator.next(): null;
-        if (firstListener!= null){
-            for(Queue<Object> listener : eventListeners){
-                assertEquals(listener.contains(event),false);
-            }
-            messageBus.sendEvent(event);
-            assertEquals(firstListener.contains(event),true);
-            iterator = messageBus.getEventListeners(event.getClass()).iterator();
-            assertTrue(iterator.next() != firstListener); //TODO check @pre first = @post last
-        }
-    }
-
 
     @Test
     void register() {
@@ -133,7 +68,101 @@ class MessageBusTest {
 
     }
 
+
+
     @Test
-    void awaitMessage() {
+    void subscribeEvent() {
+        //subscribe an un registered microservice-> should raise exception
+        assertThrows("Should throw exception (unregistered microservice)",Exception.class, () ->  messageBus.subscribeEvent(event.getClass(),microService));
+        //assert the microservice was subscribed
+        messageBus.register(microService);
+        int numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
+        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),false);
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
+        assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs +1);
+
+        //assert that we can't double subscribe to the same event
+        numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
+        assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs);
+
+    }
+
+    @Test
+    void subscribeBroadcast() {
+        //subscribe an un registered microservice-> should raise exception
+        assertThrows("Should throw exception (unregistered microservice)",Exception.class, () ->  messageBus.subscribeBroadcast(broadcast.getClass(),microService));
+        //assert the microservice was subscribed
+        messageBus.register(microService);
+        int numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),false);
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
+        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs +1);
+
+        //assert that we can't double subscribe to the same broadcast
+        numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
+        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs );
+    }
+
+    @Test
+    void complete() {
+        messageBus.register(microService);
+        messageBus.subscribeEvent(event.getClass(),microService);
+        messageBus.sendEvent(event);
+        String result = "Completed";
+        messageBus.complete(event,result);
+        assertEquals(event.getFuture().get(),result);
+        assertEquals(event.getFuture().isDone(),true);
+    }
+
+    @Test
+    void sendBroadcast() {
+        Iterable<Queue<Object>> broadcastListeners = messageBus.getBroadcastListeners(broadcast.getClass()) ;
+        for (Queue<Object> listener : broadcastListeners){
+            assertEquals(listener.contains(broadcast),false);
+        }
+        messageBus.sendBroadcast(broadcast);
+        for (Queue<Object> listener : broadcastListeners){
+            assertEquals(listener.contains(broadcast),true);
+        }
+    }
+
+    @Test
+    void sendEvent() {
+        Iterable<Queue<Object>> eventListeners = messageBus.getEventListeners(event.getClass());
+        Iterator<Queue<Object>> iterator= eventListeners.iterator();
+        Queue<Object> firstListener = iterator.hasNext() ? iterator.next(): null;
+        if (firstListener!= null){
+            for(Queue<Object> listener : eventListeners){
+                assertEquals(listener.contains(event),false);
+            }
+            messageBus.sendEvent(event);
+            assertEquals(firstListener.contains(event),true);
+            iterator = messageBus.getEventListeners(event.getClass()).iterator();
+            assertTrue(iterator.next() != firstListener); //TODO check @pre first = @post last
+        }
+    }
+
+
+
+
+    @Test
+    void awaitMessage() throws InterruptedException {
+        assertThrows("Should throw exception(microservice was never registered)",IllegalStateException.class,()->messageBus.awaitMessage(microService));
+        messageBus.register(microService);
+        messageBus.subscribeEvent(event.getClass(),microService);
+        messageBus.sendEvent(event);
+        int queueSize = messageBus.getMicroserviceQueueSize(microService);
+        Message message = messageBus.awaitMessage(microService);
+        assertEquals(messageBus.getMicroserviceQueueSize(microService),queueSize - 1);
+        assertEquals(message,event);
+
+
+
     }
 }
