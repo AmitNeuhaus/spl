@@ -20,7 +20,7 @@ public interface CPUInterface {
       * @pre db.processed == False;
       * @post data.size() == @pre data.size() +1
       */
-     public void insertDB(DataBatch db);
+      void insertDB(DataBatch db);
 
 
      /**
@@ -29,19 +29,10 @@ public interface CPUInterface {
       * @pre db.processed == True
       * @post data.size() == data.size() - 1
       */
-     public DataBatch sendProcessedDB(DataBatch db);
-
-
-     /**
-      * check if CPU is currently processing a batch (Query)
-      * @pre none
-      * @post none
-     */
-     public boolean isBusy();
-
+      DataBatch sendProcessedDB(DataBatch db);
 
      /**
       * Size of inserted data(Query)
       */
-     public int dataSize();
+      int dataSize();
 }

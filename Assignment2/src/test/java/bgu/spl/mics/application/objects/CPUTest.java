@@ -17,16 +17,6 @@ class CPUTest {
 
 
     @Test
-    void process() {
-        assertFalse(cpu.isBusy());
-        DataBatch db = new DataBatch();
-        assertFalse(db.isProcessed());
-        cpu.process(db);
-        assertFalse(cpu.isBusy());
-        assertTrue(db.isProcessed());
-    }
-
-    @Test
     void insertDB() {
         int dataSize = cpu.dataSize();
         DataBatch db = new DataBatch();
@@ -36,14 +26,10 @@ class CPUTest {
     }
 
     @Test
-    //Todo: Should we check error throwing in different scenarios? --yes
     void sendProcessedDB() {
         int dataSize = cpu.dataSize();
         cpu.sendProcessedDB(new DataBatch());
         assertEquals(cpu.dataSize(), dataSize - 1);
     }
 
-    @Test
-    void isBusy() {
-    }
 }

@@ -31,11 +31,6 @@ public class CPU implements CPUInterface {
     }
 
     @Override
-    public boolean isBusy() {
-        return false;
-    }
-
-    @Override
     public int dataSize() {
         return 0;
     }
