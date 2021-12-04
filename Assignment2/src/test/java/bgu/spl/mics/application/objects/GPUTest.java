@@ -69,12 +69,67 @@ class GPUTest {
     void insertDbToVram() {
         assertFalse(gpu.isVramFull());
         DataBatch db = new DataBatch();
+        //cant insert unporocessed db to vram
         assertThrows("cant insert unprocessed db to vram", Exception.class, ()-> gpu.insertDbToVram(db));
 
+        //cant insert trained db to vram
+        db.setTrained(true);
+        db.setProcessed(true);
+        assertThrows("cant insert trained db to vram", Exception.class, ()-> gpu.insertDbToVram(db));
+
+        //now db is only processed -> valid.
+        db.setTrained(false);
         db.setProcessed(true);
         int vramSize = gpu.getVramSize();
         gpu.insertDbToVram(db);
         assertEquals(gpu.getVramSize(), vramSize +1);
     }
+
+
+    @Test
+    void Train(){
+        // inserting processed db to vram;
+        DataBatch db = new DataBatch();
+        db.setProcessed(true);
+        gpu.insertDbToVram(db);
+        gpu.Train();
+        int vramSize = gpu.getVramSize();
+        int trainedDiskSize = gpu.getTrainedDiskSize();
+        //check that db is now trained & processed
+        assertTrue(db.isTrained());
+        assertTrue(db.isProcessed());
+        //check that vram size is now smaller by 1
+        assertEquals(gpu.getVramSize(),vramSize-1);
+
+        //check that trained disk in now +1
+        assertEquals(gpu.getTrainedDiskSize(),trainedDiskSize + 1);
+
+    }
+
+    @Test
+    void clearGpu(){
+
+        // filling all disks:
+        // disk - model databatches
+        // vram manualy inserted
+        // trainedDisk caling Test once
+        DataBatch db = new DataBatch();
+        Model model = new Model();
+        gpu.insertModel(model);
+        gpu.insertDbToVram(db);
+        gpu.insertDbToVram(db);
+        gpu.Train();
+
+        //clearing GPU disks
+        gpu.clearGpu();
+
+        //check disks are empty
+        assertEquals(gpu.getTrainedDiskSize(),0);
+        assertEquals(gpu.getDiskSize(),0);
+        assertEquals(gpu.getVramSize(),0);
+    }
+
+
+
 
 }

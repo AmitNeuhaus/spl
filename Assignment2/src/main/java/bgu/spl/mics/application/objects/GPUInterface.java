@@ -38,6 +38,7 @@ public interface GPUInterface {
      * @param db
      * @pre isVramFull == False;
      * @pre db.processed  == True;
+     * @pre db.trained  == False;
      * @post vram.size() == @pre vram.size() +1
      */
     void insertDbToVram(DataBatch db);
@@ -53,10 +54,8 @@ public interface GPUInterface {
 
     /**
      * Train a specific DataBatch
-     * @pre nextDataBatchVram().isProcessed = True;
-     * @pre nextDataBatchVram().isTrained = False;
-     * @post nextDataBatchVram().isProcessed = True;
-     * @post nextDataBatchVram().isTrained = True;
+     * @post  {@pre}nextDataBatchVram().isProcessed = True;
+     * @post {@pre}nextDataBatchVram().isTrained = True;
      * @post getVramSize() == {@pre} getVramSize() -1
      * @post getTrainedDiskSize() == {@pre} getTrainedDiskSize() + 1
      */
