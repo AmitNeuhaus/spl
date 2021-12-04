@@ -18,9 +18,10 @@ public class MessageBusImpl implements MessageBus {
 	protected Collection<Event> eventsMapping;
 
 	/**
-	 * @pre  eventsMapping.get(type).contains(m) == false
-	 * @post eventsMapping.get(type).size() == @pre eventsMapping.get(type).size +1
-	 * @post eventsMapping.get(type).contains(m) == true;
+	 * @pre  isListeningToEvent(e) == false
+	 * @post getNumOfEventListeners(e) == @pre getNumOfEventListeners(e) +1
+	 * @post isListeningToEvent(e) == false
+	 *
 	 * @param type The type to subscribe to,
 	 * @param m    The subscribing micro-service.
 	 * @param <T>
@@ -32,9 +33,10 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * @pre  eventsMapping.get(type).contains(m) == false
-	 * @post events.get(type).size == @pre events.get(type).size +1
-	 * @post events.get(type).contains(m) == true;
+	 * @pre  isListeningToBroadcast(b) == false
+	 * @post getNumOfBroadcastListeners(b) == @pre getNumOfBroadcastListeners(b) +1
+	 * @post isListeningToEvent(e) == false
+	 *
 	 * @param type 	The type to subscribe to.
 	 * @param m    	The subscribing micro-service.
 	 */
@@ -48,6 +50,7 @@ public class MessageBusImpl implements MessageBus {
 	 * e.type == result.type
 	 * @param e      The completed event.
 	 * @param result The resolved result of the completed event.
+	 *
 	 * @param <T>
 	 */
 	@Override
@@ -57,9 +60,8 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * @pre b!=null
-	 * @post for(MicroService : eventsMapping.get(b)){queues.get(MicroService).size() == @pre queues.get(MicroService).size() + 1
-	 * 											      queues.get(MicroService).contains(b)}
+	 * @pre (listener : getBroadcastListeners(b)) listener.contains(b) == false
+	 * @post (listener : getBroadcastListeners(b)) listener.contains(b) == true
 	 *
 	 * @param b 	The message to added to the queues.
 	 */
@@ -70,8 +72,9 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * @post events.get(e)[0].size() == @pre events.get(e)[0].size()+1
-	 * @post events.get(e)[0].contains(e)
+	 * @pre  (listener : getEventListeners(e)) listener.contains(e) == false
+	 * @post getEventListeners(e)[0].contains(e) == true
+	 *
 	 * @param e     	The event to add to the queue.
 	 * @param <T>
 	 * @return
@@ -84,10 +87,9 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	/**
-	 * @pre m!=null
-	 * @pre queues.contain(m) == false
-	 * @post queues.contain(m) == true
-	 * @post qoeoes.siz() == @pre queues.size+1
+	 * @pre  isRegistered(m) == false
+	 * @post isRegistered(m)  == true
+	 * @post getNumberOfMicroServices() == @pre getNumberOfMicroServices() + 1
 	 *
 	 * @param m the micro-service to create a queue for.
 	 */
@@ -97,10 +99,10 @@ public class MessageBusImpl implements MessageBus {
 
 	}
 	/**
-	 * @pre m != null
-	 * @pre queues.contain(m) ==  true
-	 * @post queues.contain(m) == false
-	 * @post qoeoes.size() == @pre queues.size-1
+
+	 * @pre isRegistered(m)  == true
+	 * @post isRegistered(m) == false
+	 * @post getNumberOfMicroServices() == @pre getNumberOfMicroServices() - 1
 	 * @post
 	 *
 	 * @param m the micro-service to create a queue for.

@@ -34,21 +34,35 @@ class MessageBusTest {
 
     @Test
     void subscribeEvent() {
+        //assert the microservice was subscribed
         int numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
         assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),false);
         messageBus.subscribeEvent(event.getClass(),microService);
         assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
         assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs +1);
 
+        //assert that we can't double subscribe to the same event
+        numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
+        assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs);
+
     }
 
     @Test
     void subscribeBroadcast() {
+        //assert the microservice was subscribed
         int numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
         assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),false);
         messageBus.subscribeEvent(event.getClass(),microService);
         assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
         assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs +1);
+
+        //assert that we can't double subscribe to the same broadcast
+        numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService);
+        messageBus.subscribeEvent(event.getClass(),microService);
+        assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass()),true);
+        assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass(),microService),numOfSubs );
     }
 
     @Test
@@ -85,22 +99,37 @@ class MessageBusTest {
 
 
     @Test
-    void register() { //TODO test register to a ms that is already registered
-        int queuesSize = messageBus.getNumberOfMicroServices();
+    void register() {
+        //assert the microservice was un registered.
+        int numOfMicroServices = messageBus.getNumberOfMicroServices();
         assertEquals(messageBus.isMicroServiceRegistered(microService),false);
         messageBus.register(microService);
         assertEquals(messageBus.isMicroServiceRegistered(microService),true);
-        assertEquals(messageBus.getNumberOfMicroServices(),queuesSize+1);
+        assertEquals(messageBus.getNumberOfMicroServices(),numOfMicroServices+1);
+
+        //assert that we can't double register.
+        numOfMicroServices = messageBus.getNumberOfMicroServices();
+        messageBus.register(microService);
+        assertEquals(messageBus.getNumberOfMicroServices(),numOfMicroServices);
+
 
     }
 
     @Test
-    void unregister() {//TODO use register try to un register an unregistered MS
-        int queuesSize = messageBus.getNumberOfMicroServices();
+    void unregister() {
+        //assert the microservice was un unregistered.
+        messageBus.register(microService);
+        int numOfMicroServices = messageBus.getNumberOfMicroServices();
         assertEquals(messageBus.isMicroServiceRegistered(microService),true);
         messageBus.unregister(microService);
         assertEquals(messageBus.isMicroServiceRegistered(microService),false);
-        assertEquals(messageBus.getNumberOfMicroServices(),queuesSize - 1);
+        assertEquals(messageBus.getNumberOfMicroServices(),numOfMicroServices - 1);
+
+        //assert double unregister don't raise an error.
+        numOfMicroServices = messageBus.getNumberOfMicroServices();
+        messageBus.unregister(microService);
+        assertEquals(messageBus.getNumberOfMicroServices(),numOfMicroServices);
+
 
     }
 
