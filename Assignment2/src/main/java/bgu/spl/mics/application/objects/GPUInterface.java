@@ -81,7 +81,7 @@ public interface GPUInterface {
      * check if the vRam is full (we will send unprocessed data from the disk only if we have place to get it back in the vram) (Query)
      * @return vramSize == vramCapacity
      */
-    boolean isVramFull(DataBatch db);
+    boolean isVramFull();
 
 
     /**

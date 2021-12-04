@@ -55,7 +55,7 @@ public class GPU implements GPUInterface{
 
 
     @Override
-    public boolean isVramFull(DataBatch db) {
+    public boolean isVramFull() {
         return false;
     }
 
