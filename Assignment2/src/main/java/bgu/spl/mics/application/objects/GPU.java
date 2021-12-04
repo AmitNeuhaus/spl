@@ -15,6 +15,8 @@ public class GPU implements GPUInterface{
      * Enum representing the type of the GPU.
      */
     enum Type {RTX3090, RTX2080, GTX1080}
+    enum TestResults {BAD, GOOD, NONE}
+
 
     private Type type;
     public Model model;
@@ -50,6 +52,8 @@ public class GPU implements GPUInterface{
 
     }
 
+
+
     @Override
     public boolean isVramFull(DataBatch db) {
         return false;
@@ -71,18 +75,29 @@ public class GPU implements GPUInterface{
     }
 
     @Override
-    public void Train(DataBatch db) {
-
-    }
-
-    @Override
-    public void Test(DataBatch db) {
-
-    }
-
-    @Override
-    public Future returnResult() {
+    public DataBatch nextDataBatchDisk() {
         return null;
+    }
+
+    @Override
+    public DataBatch nextDataBatchVram() {
+        return null;
+    }
+
+
+    @Override
+    public void Train() {
+
+    }
+
+    @Override
+    public boolean testModel() {
+        return false;
+    }
+
+    @Override
+    public void clearGpu() {
+
     }
 
 

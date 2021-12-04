@@ -7,16 +7,17 @@ public interface GPUInterface {
     /**
      * Gets a model from the GpuService.
      * @param model
+     * @pre diskSize() == 0
      * @pre model.status != "Training" (gpu is already working on a model)
      * @post this.model == model
+     * @post diskSize() == data.size / 1000
+     *
      */
     void insertModel(Model model);
 
 
     /**
-     * Split model's data into DataBatches of 100 samples , and stores it in the disk.
-     * @pre diskSize() == 0
-     * @post diskSize() == data.size / 1000
+     * Split model's data into DataBatches of 1000 samples , and stores it in the disk.
      */
     void splitToBatches(Data data);
 
@@ -25,12 +26,16 @@ public interface GPUInterface {
      * Todo: Talk if we should send only one DataBatch or multiple of them.
      * Send DataBatch to the Cluster.
      * @pre diskSize() > 0;
-     * @pre db.processed = False;
-     * @post diskSize() == @pre diskSize() -1
+     * @pre nextDataBatchDisk().isProcessed == false;
+     * @post diskSize() == {@pre} diskSize() -1
+     * @post nextDataBatchDisk() != {@pre} nextDataBatchDisk()
      */
     void sendData();
+
+
     /**
      * Insert's a db from the cluster to the vRam (after processed by a CPU)
+     * @param db
      * @pre isVramFull == False;
      * @pre db.processed  == True;
      * @post vram.size() == @pre vram.size() +1
@@ -48,29 +53,28 @@ public interface GPUInterface {
 
     /**
      * Train a specific DataBatch
-     * @pre db.processed = True;
-     * @pre db.trained = False;
-     * @post db.trained = True;
+     * @pre nextDataBatchVram().isProcessed = True;
+     * @pre nextDataBatchVram().isTrained = False;
+     * @post nextDataBatchVram().isProcessed = True;
+     * @post nextDataBatchVram().isTrained = True;
+     * @post getVramSize() == {@pre} getVramSize() -1
+     * @post getTrainedDiskSize() == {@pre} getTrainedDiskSize() + 1
      */
-    void Train(DataBatch db);
+    void Train();
 
 
     /**
      * Runs a Test of the Model
+     * @pre gpu.model.getStatus == Trained;
      */
-    void Test(DataBatch db);
+    boolean testModel();
 
 
     /**
-     * Return a result of the model after finished {@Train} for ALL the data batches.
-     * @pre trainedDiskSize() == data.size / 1000
-     * @pre vram.size() == 0
-     * @post trainedDiskSize() == 0
-     * @post diskSize() == 0
+     * Clear all gpu disks.
+     * @post getDiskSize() ,getTrainedDiskSize(), getVramSize() ==0
      */
-    Future returnResult();
-
-
+    void clearGpu();
     // ---------- Queries
 
     /**
@@ -95,4 +99,9 @@ public interface GPUInterface {
      * size of the vram.
      */
     int getVramSize();
+
+
+    DataBatch nextDataBatchDisk();
+
+    DataBatch nextDataBatchVram();
 }
