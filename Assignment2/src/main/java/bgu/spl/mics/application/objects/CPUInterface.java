@@ -34,5 +34,5 @@ public interface CPUInterface {
      /**
       * Size of inserted data(Query)
       */
-      int dataSize();
+      int getDataSize();
 }

@@ -18,18 +18,18 @@ class CPUTest {
 
     @Test
     void insertDB() {
-        int dataSize = cpu.dataSize();
+        int dataSize = cpu.getDataSize();
         DataBatch db = new DataBatch();
         assertFalse(db.isProcessed());
         cpu.insertDB(db);
-        assertEquals(cpu.dataSize(), dataSize + 1);
+        assertEquals(cpu.getDataSize(), dataSize + 1);
     }
 
     @Test
     void sendProcessedDB() {
-        int dataSize = cpu.dataSize();
+        int dataSize = cpu.getDataSize();
         cpu.sendProcessedDB(new DataBatch());
-        assertEquals(cpu.dataSize(), dataSize - 1);
+        assertEquals(cpu.getDataSize(), dataSize - 1);
     }
 
 }

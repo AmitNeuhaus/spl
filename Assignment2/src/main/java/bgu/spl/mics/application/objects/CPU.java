@@ -31,7 +31,7 @@ public class CPU implements CPUInterface {
     }
 
     @Override
-    public int dataSize() {
+    public int getDataSize() {
         return 0;
     }
 
