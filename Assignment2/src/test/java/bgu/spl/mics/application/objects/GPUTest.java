@@ -31,7 +31,6 @@ class GPUTest {
         gpu.insertModel(model);
         assertEquals(gpu.model.status, model.status);
 
-
         // inserting Tested model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.Tested);
         gpu.insertModel(model);
@@ -91,6 +90,9 @@ class GPUTest {
     @Test
     void insertDbToVram() {
         //Todo: i need to use insertDbToVram to check insertDbToVram we need to read how to do it properly.
+        // create new databatch and check if vram size = vram size +1
+        // check if the db is processed only
+        // check if refuse insertion if vram is full.
     }
 
     @Test
@@ -115,18 +117,7 @@ class GPUTest {
 
     @Test
     void train() {
-        DataBatch db = new DataBatch();
-        gpu.Train(db);
-        assertTrue(db.isTrained());
-
-        // Train again with the same db which was trained therefore throw Exception
-        try{
-            gpu.Train(db);
-            Assert.fail("Should have thrown Exception db is already trained.");
-        }catch(Exception e){ }
-
-
-
+        //Todo: provate method not test needed.
     }
 
     @Test
@@ -139,8 +130,9 @@ class GPUTest {
         for (int i=0; i < dataSize/1000; i++){
             DataBatch db = new DataBatch();
             db.setProcessed(true);
+            gpu.insertDbToVram(db);
+            //Train will happen automatically when VRAM is getting filled.
         }
-        assertEquals(gpu.getTrainedDiskSize(), dataSize/1000);
         gpu.returnResult();
         assertEquals(gpu.getDiskSize(),0);
         assertEquals(gpu.getVramSize(),0);
