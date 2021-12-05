@@ -92,9 +92,9 @@ class GPUTest {
         DataBatch db = new DataBatch();
         db.setProcessed(true);
         gpu.insertDbToVram(db);
-        gpu.Train();
         int vramSize = gpu.getVramSize();
         int trainedDiskSize = gpu.getTrainedDiskSize();
+        gpu.Train();
         //check that db is now trained & processed
         assertTrue(db.isTrained());
         assertTrue(db.isProcessed());
@@ -114,6 +114,7 @@ class GPUTest {
         // vram manualy inserted
         // trainedDisk caling Test once
         DataBatch db = new DataBatch();
+        db.setProcessed(true);
         Model model = new Model();
         gpu.insertModel(model);
         gpu.insertDbToVram(db);

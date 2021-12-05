@@ -23,7 +23,6 @@ public interface GPUInterface {
 
 
     /**
-     * Todo: Talk if we should send only one DataBatch or multiple of them.
      * Send DataBatch to the Cluster.
      * @pre diskSize() > 0;
      * @pre nextDataBatchDisk().isProcessed == false;
