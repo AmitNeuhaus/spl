@@ -18,9 +18,12 @@ public class Future<T> {
 
 	private boolean resolved;
 	private T result;
+	private long timeCounter;
 
 	public Future() {
-		//TODO: implement this
+		result = null;
+		resolved = false;
+		timeCounter = System.nanoTime();
 	}
 	
 	/**
@@ -32,8 +35,8 @@ public class Future<T> {
      */
 
 	public T get() {
-		//TODO: implement this.
-		return null;
+		while (!resolved){}
+		return result;
 	}
 	
 	/**
@@ -43,7 +46,8 @@ public class Future<T> {
 	 * @post future.get() != null
      */
 	public void resolve (T result) {
-		//TODO: implement this.
+		resolved = true;
+		this.result = result;
 	}
 	
 	/**
@@ -51,8 +55,7 @@ public class Future<T> {
 	 * @return resolved;
      */
 	public boolean isDone() {
-		//TODO: implement this.
-		return false;
+		return resolved;
 	}
 	
 	/**
@@ -70,8 +73,11 @@ public class Future<T> {
 	 * 		 else return null;
      */
 	public T get(long timeout, TimeUnit unit) {
-		//TODO: implement this.
+		while(unit.convert(System.nanoTime() - timeCounter, TimeUnit.NANOSECONDS) <= timeout){
+			if(isDone()){
+				return result;
+			}
+		}
 		return null;
 	}
-
 }
