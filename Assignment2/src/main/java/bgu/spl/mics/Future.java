@@ -15,6 +15,10 @@ public class Future<T> {
 	/**
 	 * This should be the the only public constructor in this class.
 	 */
+
+	private boolean resolved;
+	private T result;
+
 	public Future() {
 		//TODO: implement this
 	}
@@ -25,8 +29,8 @@ public class Future<T> {
      * not been completed.
      * <p>
      * @return return the result of type T if it is available, if not wait until it is available.
-     * 	       
      */
+
 	public T get() {
 		//TODO: implement this.
 		return null;
@@ -34,6 +38,9 @@ public class Future<T> {
 	
 	/**
      * Resolves the result of this Future object.
+	 * @pre isDone == false;
+	 * @post isDone == True;
+	 * @post future.get() != null
      */
 	public void resolve (T result) {
 		//TODO: implement this.
@@ -41,6 +48,7 @@ public class Future<T> {
 	
 	/**
      * @return true if this object has been resolved, false otherwise
+	 * @return resolved;
      */
 	public boolean isDone() {
 		//TODO: implement this.
@@ -52,11 +60,14 @@ public class Future<T> {
      * This method is non-blocking, it has a limited amount of time determined
      * by {@code timeout}
      * <p>
-     * @param timout 	the maximal amount of time units to wait for the result.
+     * @param timeout 	the maximal amount of time units to wait for the result.
      * @param unit		the {@link TimeUnit} time units to wait.
      * @return return the result of type T if it is available, if not, 
      * 	       wait for {@code timeout} TimeUnits {@code unit}. If time has
      *         elapsed, return null.
+	 *
+	 * @post if (resolvedTime) - (startTime) <= timeout {@return} T.
+	 * 		 else return null;
      */
 	public T get(long timeout, TimeUnit unit) {
 		//TODO: implement this.
