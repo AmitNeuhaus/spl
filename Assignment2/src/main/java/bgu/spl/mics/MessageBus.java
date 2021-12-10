@@ -62,7 +62,7 @@ public interface MessageBus {
      * @pre (listener : getBroadcastListeners(b)) listener.contains(b) == false
      * @post (listener : getBroadcastListeners(b)) listener.contains(b) == true
      */
-    void sendBroadcast(Broadcast b);
+    void sendBroadcast(Broadcast b) throws InterruptedException;
 
     /**
      * Adds the {@link Event} {@code e} to the message queue of one of the
@@ -78,7 +78,7 @@ public interface MessageBus {
      * @pre  (listener : getEventListeners(e)) listener.contains(e) == false
      * @post getEventListeners(e)[0].contains(e) == true
      */
-    <T> Future<T> sendEvent(Event<T> e);
+    <T> Future<T> sendEvent(Event<T> e) throws InterruptedException;
 
     /**
      * Allocates a message-queue for the {@link MicroService} {@code m}.
