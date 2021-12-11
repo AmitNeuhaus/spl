@@ -17,6 +17,8 @@ public class ExampleEvent implements Event<String>{
 
     @Override
     public Future<String> getFuture() {
-        return null;
+        Future<String> future = new Future();
+        future.resolve("this event is resolved");
+        return future;
     }
 }
