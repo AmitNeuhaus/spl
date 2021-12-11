@@ -1,4 +1,4 @@
-package bgu.spl.mics.example;
+package bgu.spl.mics.application.objects;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;

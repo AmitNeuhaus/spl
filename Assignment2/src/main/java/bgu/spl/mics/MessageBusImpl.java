@@ -1,8 +1,7 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.example.MicroServiceArray;
+import bgu.spl.mics.application.objects.MicroServiceArray;
 
-import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -18,7 +17,11 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>> microserviceToQueueMap;
 	private ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>> messagesToMicroserviceMap;
 
-	public MessageBusImpl() {
+	private static class MessageBusHolder{
+		private static MessageBusImpl instance = new MessageBusImpl();
+	}
+
+	private MessageBusImpl() {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
 	}
@@ -131,7 +134,10 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public void unregister(MicroService m) {
 		if (isMicroServiceRegistered(m)){
-			//Todo: unsubsribe from the eventType's queue of listening microservices
+			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+			for (MicroServiceArray<LinkedBlockingQueue<Message>> microserviceArray : messagesToMicroserviceMap.values()){
+				microserviceArray.getArray().remove(queue);
+			}
 		}
 	}
 
@@ -200,6 +206,11 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public int getMicroserviceQueueSize(MicroService m) {
 		return microserviceToQueueMap.get(m).size();
+	}
+
+
+	public static MessageBusImpl getInstance(){
+		return MessageBusHolder.instance;
 	}
 
 

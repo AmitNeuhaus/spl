@@ -24,7 +24,7 @@ class MessageBusTest {
 
     @BeforeEach
     void setUp(){
-       messageBus = new MessageBusImpl();
+       messageBus = MessageBusImpl.getInstance();
         microService = new MicroService("testMicroservice" ) {
             @Override
             protected void initialize() {
