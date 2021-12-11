@@ -1,6 +1,8 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.objects.MicroServiceArray;
+import bgu.spl.mics.example.messages.ExampleBroadcast;
+import bgu.spl.mics.example.messages.ExampleEvent;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,6 +26,14 @@ public class MessageBusImpl implements MessageBus {
 	private MessageBusImpl() {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
+		//TODO add events and arrays to messageToMicroserviceMap.
+		Class<? extends Message> type = ExampleBroadcast.class;
+		MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray();
+		messagesToMicroserviceMap.put(type, msArray);
+		type = ExampleEvent.class;
+		msArray = new MicroServiceArray();
+		messagesToMicroserviceMap.put(type, msArray);
+
 	}
 
 	/**
@@ -37,9 +47,14 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+		System.out.println("Trying to subscribe to event");
 		if(isMicroServiceRegistered(m)){
+			System.out.println("im in");
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
+			System.out.println("subscribed: "+ m.getName()+" to event");
+		}else{
+			System.out.println("not registered");
 		}
 	}
 
@@ -53,9 +68,15 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+		System.out.println("Trying to subscribe to broadcast");
 		if (isMicroServiceRegistered(m)){
+			System.out.println("im in");
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
+			System.out.println("subscribed: "+ m.getName()+" to broadcast ");
+		}
+		else{
+			System.out.println("not registered");
 		}
 
 	}
@@ -79,11 +100,16 @@ public class MessageBusImpl implements MessageBus {
 	 * @param b 	The message to added to the queues.
 	 */
 	@Override
-	public void sendBroadcast(Broadcast b) throws InterruptedException {
+	public void sendBroadcast(Broadcast b)  {
 		Class<? extends Message> type = b.getClass();
 		CopyOnWriteArrayList<LinkedBlockingQueue<Message>> arr = messagesToMicroserviceMap.get(type).getArray();
 		for (LinkedBlockingQueue<Message> microserviceQueue : arr) {
-			microserviceQueue.put(b);
+			try{
+				microserviceQueue.put(b);
+			}catch(Exception error){
+				System.out.println("cant put in queue: " + error);
+			}
+
 		}
 
 
@@ -98,13 +124,19 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	//Todo add future test - not sure how it used.
 	@Override
-	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException {
+	public <T> Future<T> sendEvent(Event<T> e)  {
 		Class<? extends Message> type = e.getClass();
 		MicroServiceArray<LinkedBlockingQueue<Message>> msArray = messagesToMicroserviceMap.get(type);
 		CopyOnWriteArrayList<LinkedBlockingQueue<Message>> arr = msArray.getArray();
 		int index = msArray.getNextIndex();
 		LinkedBlockingQueue<Message> queue = arr.get(index);
-		queue.put(e);
+		try{
+			queue.put(e);
+		}catch(Exception error){
+			System.out.println("cant put in queue: " + error);
+		}
+
+
 		return e.getFuture();
 	}
 
@@ -120,6 +152,7 @@ public class MessageBusImpl implements MessageBus {
 		if(!isMicroServiceRegistered(m)){
 			LinkedBlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 			microserviceToQueueMap.put(m,queue);
+			System.out.println("registered: "+ m.getName());
 		}
 	}
 
@@ -151,8 +184,14 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
-		Message msg = queue.take();
-		return msg;
+		if (queue!= null){
+			Message msg = queue.take();
+			return msg;
+		}
+		else{
+			System.out.println("your Q in null you full");
+		}
+		return null;
 	}
 
 
@@ -161,7 +200,7 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public boolean isMicroServiceRegistered(MicroService m) {
-		return microserviceToQueueMap.contains(m);
+		return microserviceToQueueMap.containsKey(m);
 	}
 
 	@Override

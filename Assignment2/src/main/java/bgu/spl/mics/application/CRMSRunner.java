@@ -25,8 +25,6 @@ public class CRMSRunner {
             @Override
             protected void initialize() {
                 msb.register(this);
-                msb.subscribeEvent(ExampleEvent.class,this);
-                msb.subscribeBroadcast(ExampleBroadcast.class,this);
                 subscribeEvent(ExampleEvent.class , ev -> {
                     System.out.println("Im handling an event");
                 });
@@ -49,11 +47,20 @@ public class CRMSRunner {
             }
 
             @Override
-            protected void initialize() throws InterruptedException {
-                ExampleEvent ev = new ExampleEvent("test event");
-                ExampleBroadcast br = new ExampleBroadcast("test broadcast");
-                msb.sendEvent(ev);
-                msb.sendBroadcast(br);
+            protected void initialize()  {
+                try{
+
+                    Thread.sleep(3000);
+                    msb.register(this);
+                    System.out.println("started thread 1");
+                    ExampleEvent ev = new ExampleEvent("test event");
+                    ExampleBroadcast br = new ExampleBroadcast("test broadcast");
+                    msb.sendEvent(ev);
+                    msb.sendBroadcast(br);
+                }catch(Exception error){
+                    System.out.println("I printed this shit: "+error);
+                }
+
             }
         }
         testMicroservice msHandler = new testMicroservice("Handler");
@@ -61,7 +68,8 @@ public class CRMSRunner {
         Runnable target;
         Thread t1 = new Thread(msSender);
         Thread t2 = new Thread(msHandler);
-        t1.start();
         t2.start();
+        t1.start();
+
     }
 }

@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.example.messages.ExampleEvent;
+
 import java.util.HashMap;
 /**
  * The MicroService is an abstract class that any micro-service in the system
@@ -122,7 +124,7 @@ public abstract class MicroService implements Runnable {
      *               {@code e}.
      */
     protected final <T> void complete(Event<T> e, T result) {
-        MessageBus.getInstance().complete(e,result);
+        MessageBusImpl.getInstance().complete(e,result);
     }
 
     /**
@@ -153,10 +155,15 @@ public abstract class MicroService implements Runnable {
     @Override
     public final void run() {
         initialize();
+
         while (!terminated) {
-            MessageBusImpl.getInstance().register(this);
-            initialize();
-            MessageBusImpl.getInstance().awaitMessage(this);
+            try {
+                Message msg = MessageBusImpl.getInstance().awaitMessage(this);
+                System.out.println("this is your message: "+msg.getClass());
+//                callbacks.get(msg);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
