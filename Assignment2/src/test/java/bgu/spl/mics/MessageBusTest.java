@@ -2,6 +2,8 @@ package bgu.spl.mics;
 
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
+
 import static org.junit.Assert.*;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
@@ -22,7 +24,7 @@ class MessageBusTest {
 
     @BeforeEach
     void setUp(){
-       messageBus = new MessageBusImpl();
+       messageBus = MessageBusImpl.getInstance();
         microService = new MicroService("testMicroservice" ) {
             @Override
             protected void initialize() {
@@ -114,7 +116,7 @@ class MessageBusTest {
     }
 
     @Test
-    void complete() {
+    void complete() throws InterruptedException {
         messageBus.register(microService);
         messageBus.subscribeEvent(event.getClass(),microService);
         messageBus.sendEvent(event);
@@ -125,7 +127,7 @@ class MessageBusTest {
     }
 
     @Test
-    void sendBroadcast() {
+    void sendBroadcast() throws InterruptedException {
         Iterable<Queue<Object>> broadcastListeners = messageBus.getBroadcastListeners(broadcast.getClass()) ;
         for (Queue<Object> listener : broadcastListeners){
             assertEquals(listener.contains(broadcast),false);
@@ -137,9 +139,9 @@ class MessageBusTest {
     }
 
     @Test
-    void sendEvent() {
-        Iterable<Queue<Object>> eventListeners = messageBus.getEventListeners(event.getClass());
-        Iterator<Queue<Object>> iterator= eventListeners.iterator();
+    void sendEvent() throws InterruptedException {
+        Iterable<LinkedBlockingQueue<Object>> eventListeners = messageBus.getEventListeners(event.getClass());
+        Iterator<LinkedBlockingQueue<Object>> iterator= eventListeners.iterator();
         Queue<Object> firstListener = iterator.hasNext() ? iterator.next(): null;
         if (firstListener!= null){
             for(Queue<Object> listener : eventListeners){

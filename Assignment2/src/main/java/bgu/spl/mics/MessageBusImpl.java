@@ -1,7 +1,10 @@
 package bgu.spl.mics;
 
-import java.util.Collection;
-import java.util.Queue;
+import bgu.spl.mics.application.objects.MicroServiceArray;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus interface.
@@ -11,8 +14,17 @@ import java.util.Queue;
 
 public class MessageBusImpl implements MessageBus {
 
-	private Collection<Queue> queues;
-	private Collection<Event> eventsMapping;
+	private ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>> microserviceToQueueMap;
+	private ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>> messagesToMicroserviceMap;
+
+	private static class MessageBusHolder{
+		private static MessageBusImpl instance = new MessageBusImpl();
+	}
+
+	private MessageBusImpl() {
+		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
+		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
+	}
 
 	/**
 	 * @pre  isListeningToEvent(e) == false
@@ -25,8 +37,10 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		// TODO Auto-generated method stub
-
+		if(isMicroServiceRegistered(m)){
+			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+			messagesToMicroserviceMap.get(type).getArray().add(queue);
+		}
 	}
 
 	/**
@@ -39,7 +53,10 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		// TODO Auto-generated method stub
+		if (isMicroServiceRegistered(m)){
+			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+			messagesToMicroserviceMap.get(type).getArray().add(queue);
+		}
 
 	}
 
@@ -52,8 +69,7 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public <T> void complete(Event<T> e, T result) {
-		// TODO Auto-generated method stub
-
+		e.getFuture().resolve(result);
 	}
 
 	/**
@@ -63,8 +79,13 @@ public class MessageBusImpl implements MessageBus {
 	 * @param b 	The message to added to the queues.
 	 */
 	@Override
-	public void sendBroadcast(Broadcast b) {
-		// TODO Auto-generated method stub
+	public void sendBroadcast(Broadcast b) throws InterruptedException {
+		Class<? extends Message> type = b.getClass();
+		CopyOnWriteArrayList<LinkedBlockingQueue<Message>> arr = messagesToMicroserviceMap.get(type).getArray();
+		for (LinkedBlockingQueue<Message> microserviceQueue : arr) {
+			microserviceQueue.put(b);
+		}
+
 
 	}
 
@@ -77,9 +98,14 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	//Todo add future test - not sure how it used.
 	@Override
-	public <T> Future<T> sendEvent(Event<T> e) {
-		// TODO Auto-generated method stub
-		return null;
+	public <T> Future<T> sendEvent(Event<T> e) throws InterruptedException {
+		Class<? extends Message> type = e.getClass();
+		MicroServiceArray<LinkedBlockingQueue<Message>> msArray = messagesToMicroserviceMap.get(type);
+		CopyOnWriteArrayList<LinkedBlockingQueue<Message>> arr = msArray.getArray();
+		int index = msArray.getNextIndex();
+		LinkedBlockingQueue<Message> queue = arr.get(index);
+		queue.put(e);
+		return e.getFuture();
 	}
 
 	/**
@@ -91,9 +117,12 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public void register(MicroService m) {
-		// TODO Auto-generated method stub
-
+		if(!isMicroServiceRegistered(m)){
+			LinkedBlockingQueue<Message> queue = new LinkedBlockingQueue<>();
+			microserviceToQueueMap.put(m,queue);
+		}
 	}
+
 	/**
 
 	 * @pre isRegistered(m)  == true
@@ -104,8 +133,12 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public void unregister(MicroService m) {
-		// TODO Auto-generated method stub
-
+		if (isMicroServiceRegistered(m)){
+			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+			for (MicroServiceArray<LinkedBlockingQueue<Message>> microserviceArray : messagesToMicroserviceMap.values()){
+				microserviceArray.getArray().remove(queue);
+			}
+		}
 	}
 
 	/**
@@ -117,8 +150,9 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public Message awaitMessage(MicroService m) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
+		LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+		Message msg = queue.take();
+		return msg;
 	}
 
 
@@ -127,47 +161,56 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public boolean isMicroServiceRegistered(MicroService m) {
-		return false;
+		return microserviceToQueueMap.contains(m);
 	}
 
 	@Override
 	public int getNumberOfMicroServices() {
-		return 0;
+		return microserviceToQueueMap.size();
 	}
 
 	@Override
 	public <T> boolean isListeningToEvent(Class<? extends Event<T>> type, MicroService m) {
-		return false;
+		LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+		CopyOnWriteArrayList<LinkedBlockingQueue<Message>> arr = messagesToMicroserviceMap.get(type).getArray();
+		return arr.contains(queue);
 	}
 
 	@Override
 	public <T> int getNumOfEventListeners(Class<? extends Event<T>> type) {
-		return 0;
+		return messagesToMicroserviceMap.get(type).getArray().size();
 	}
 
 	@Override
 	public  boolean isListeningToBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		return false;
+		LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
+		CopyOnWriteArrayList<LinkedBlockingQueue<Message>> arr = messagesToMicroserviceMap.get(type).getArray();
+		return arr.contains(queue);
 	}
 
 	@Override
 	public  int getNumOfBroadcastListeners(Class<? extends Broadcast> type) {
-		return 0;
+		return messagesToMicroserviceMap.get(type).getArray().size();
 	}
 
 	@Override
-	public <T,E> Iterable<Queue<E>> getEventListeners(Class<? extends Event<T>> type) {
-		return null;
+	public <T,E> Iterable getEventListeners(Class<? extends Event<T>> type) {
+		return messagesToMicroserviceMap.get(type).getArray();
 	}
 
 	@Override
-	public <E> Iterable<Queue<E>> getBroadcastListeners(Class<? extends Broadcast> type) {
-		return null;
+	public <E> Iterable getBroadcastListeners(Class<? extends Broadcast> type) {
+		return messagesToMicroserviceMap.get(type).getArray();
 	}
 
 	@Override
 	public int getMicroserviceQueueSize(MicroService m) {
-		return 0;
+		return microserviceToQueueMap.get(m).size();
+	}
+
+
+	public static MessageBusImpl getInstance(){
+		return MessageBusHolder.instance;
 	}
 
 
