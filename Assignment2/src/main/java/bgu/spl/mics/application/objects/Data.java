@@ -21,4 +21,8 @@ public class Data {
         size=size_;
         processed = processed_;
     }
+
+    public Type getType(){
+        return type;
+    }
 }

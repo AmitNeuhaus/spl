@@ -19,4 +19,6 @@ public class Cluster {
 		return null;
 	}
 
+    public void insertProcessedData(DataBatch db) {
+    }
 }

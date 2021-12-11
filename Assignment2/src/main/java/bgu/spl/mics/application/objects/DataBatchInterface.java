@@ -1,6 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-public interface DataBatchInterface {
+public interface DataBatchInterface  {
 
     boolean isProcessed();
 }
