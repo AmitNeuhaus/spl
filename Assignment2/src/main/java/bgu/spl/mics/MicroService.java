@@ -159,8 +159,8 @@ public abstract class MicroService implements Runnable {
         while (!terminated) {
             try {
                 Message msg = MessageBusImpl.getInstance().awaitMessage(this);
-                System.out.println("this is your message: "+msg.getClass());
-//                callbacks.get(msg);
+                System.out.println("this is your unhandled message: "+msg.getClass());
+//                callbacks.get(msg).call(msg);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

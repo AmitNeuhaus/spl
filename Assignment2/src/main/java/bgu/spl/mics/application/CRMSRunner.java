@@ -1,9 +1,12 @@
 package bgu.spl.mics.application;
 
+import bgu.spl.mics.Callback;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
+import bgu.spl.mics.example.services.testExampleCallBack2;
+import bgu.spl.mics.example.testCallBack;
 
 /** This is the Main class of Compute Resources Management System application. You should parse the input file,
  * create the different instances of the objects, and run the system.
@@ -25,13 +28,10 @@ public class CRMSRunner {
             @Override
             protected void initialize() {
                 msb.register(this);
-                subscribeEvent(ExampleEvent.class , ev -> {
-                    System.out.println("Im handling an event");
-                });
-
-                subscribeBroadcast(ExampleBroadcast.class, br ->{
-                    System.out.println("Im handling a broadcast");
-                });
+                testCallBack c1 = new testCallBack();
+                testExampleCallBack2 c2 = new testExampleCallBack2();
+                subscribeEvent(ExampleEvent.class , c1);
+                subscribeBroadcast(ExampleBroadcast.class, c2);
             }
 
         }
@@ -58,7 +58,7 @@ public class CRMSRunner {
                     msb.sendEvent(ev);
                     msb.sendBroadcast(br);
                 }catch(Exception error){
-                    System.out.println("I printed this shit: "+error);
+                    System.out.println("I printed this shit: " + error);
                 }
 
             }

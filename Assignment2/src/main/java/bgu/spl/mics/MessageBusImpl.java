@@ -185,8 +185,7 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 		if (queue!= null){
-			Message msg = queue.take();
-			return msg;
+			return queue.take();
 		}
 		else{
 			System.out.println("your Q in null you full");
