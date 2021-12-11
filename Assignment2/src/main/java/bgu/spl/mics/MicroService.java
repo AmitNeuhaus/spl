@@ -99,8 +99,7 @@ public abstract class MicroService implements Runnable {
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        //TODO: implement this.
-        return null; //TODO: delete this line :)
+        return sendEvent(e);
     }
 
     /**
@@ -110,7 +109,7 @@ public abstract class MicroService implements Runnable {
      * @param b The broadcast message to send
      */
     protected final void sendBroadcast(Broadcast b) {
-        //TODO: implement this.
+        MessageBusImpl.getInstance().sendBroadcast(b);
     }
 
     /**
@@ -154,12 +153,12 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
+        MessageBusImpl.getInstance().register(this);
         initialize();
-
         while (!terminated) {
             try {
                 Message msg = MessageBusImpl.getInstance().awaitMessage(this);
-                System.out.println("this is your message: "+msg.getClass());
+                System.out.println("this is your message: " + msg.getClass());
 //                callbacks.get(msg);
             } catch (InterruptedException e) {
                 e.printStackTrace();

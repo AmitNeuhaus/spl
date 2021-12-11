@@ -29,7 +29,7 @@ public interface CPUInterface {
       * @pre db.processed == True
       * @post data.size() == data.size() - 1
       */
-      DataBatch sendProcessedDB(DataBatch db);
+      void sendProcessedDB(DataBatch db);
 
      /**
       * Size of inserted data(Query)

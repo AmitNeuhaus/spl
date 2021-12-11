@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.MicroServiceArray;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
@@ -27,13 +28,9 @@ public class MessageBusImpl implements MessageBus {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
 		//TODO add events and arrays to messageToMicroserviceMap.
-		Class<? extends Message> type = ExampleBroadcast.class;
+		Class<? extends Message> type = TickBroadcast.class;
 		MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray();
 		messagesToMicroserviceMap.put(type, msArray);
-		type = ExampleEvent.class;
-		msArray = new MicroServiceArray();
-		messagesToMicroserviceMap.put(type, msArray);
-
 	}
 
 	/**
