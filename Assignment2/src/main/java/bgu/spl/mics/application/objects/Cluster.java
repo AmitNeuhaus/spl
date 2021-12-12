@@ -21,4 +21,7 @@ public class Cluster {
 
     public void insertProcessedData(DataBatch db) {
     }
+
+    public void insertUnProcessedData(DataBatch db) {
+    }
 }

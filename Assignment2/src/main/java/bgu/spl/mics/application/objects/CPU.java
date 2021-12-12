@@ -18,6 +18,7 @@ public class CPU implements CPUInterface {
     private Queue<DataBatch> data;
     private boolean busy;
     private Cluster cluster;
+    private int totalProcessTime;
 
     public CPU(int cores, CPUService cpuService){
         this.cpuService = cpuService;
@@ -25,6 +26,7 @@ public class CPU implements CPUInterface {
         data = new LinkedList<DataBatch>();
         busy = false;
         cluster = Cluster.getInstance();
+        totalProcessTime = 0;
     }
 
     @Override
@@ -37,6 +39,7 @@ public class CPU implements CPUInterface {
         db.setProcessed(true);
         sendProcessedDB(db);
         busy = false;
+        totalProcessTime = totalProcessTime + processTime;
         System.out.println("finsihed processing time is " + cpuService.getTime());
     }
 
@@ -66,5 +69,8 @@ public class CPU implements CPUInterface {
         }else{
            return (32/cores);
         }
+    }
+    public int getTotalProcessTime(){
+        return totalProcessTime;
     }
 }

@@ -1,11 +1,15 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.TestModelEvent;
+import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.objects.GPU;
+import bgu.spl.mics.application.objects.Model;
 
 /**
  * GPU service is responsible for handling the
  * {@link TrainModelEvent} and {@link TestModelEvent},
- * in addition to sending the {@link DataPreProcessEvent}.
+ * in addition to sending the {@link //DataPreProcessEvent}.
  * This class may not hold references for objects which it is not responsible for.
  *
  * You can add private fields and public methods to this class.
@@ -13,14 +17,50 @@ import bgu.spl.mics.MicroService;
  */
 public class GPUService extends MicroService {
 
+    private GPU gpu;
+
     public GPUService(String name) {
-        super("Change_This_Name");
-        // TODO Implement this
+        super("GPU Service");
     }
 
     @Override
     protected void initialize() {
-        // TODO Implement this
 
+        //Train Event:
+        subscribeEvent(TrainModelEvent.class, trainEvent -> {
+            Model model = trainEvent.getModel();
+            if (model.status == Model.statusEnum.PreTrained){
+                gpu.clearGpu();
+                model.setStatus(Model.statusEnum.Training);
+                gpu.insertModel(model);
+                gpu.splitToBatches(model.getData());
+                while(gpu.getTrainedDiskSize() < model.getDataSize()/1000){
+                    if (!gpu.isVramFull() && gpu.getDiskSize() > 0){
+                        //TODO think about immediately sending VRAM capacity data batches for processing
+                        gpu.sendData();
+                    }
+                    if(gpu.getVramSize()>0){
+                        gpu.Train();
+                    }
+                }
+                model.setStatus(Model.statusEnum.Trained);
+                complete(trainEvent,model);
+                gpu.clearGpu();
+            }
+        });
+
+
+        //Test Event:
+        subscribeEvent(TestModelEvent.class, testEvent -> {
+            Model model = testEvent.getModel();
+            if (model.status == Model.statusEnum.Trained){
+                gpu.clearGpu();
+                gpu.insertModel(model);
+                boolean result = gpu.testModel();
+                model.setStatus(Model.statusEnum.Tested);
+                complete(testEvent,result);
+                gpu.clearGpu();
+            }
+        });
     }
 }

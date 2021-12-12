@@ -17,7 +17,7 @@ import bgu.spl.mics.example.messages.ExampleEvent;
 public class CRMSRunner {
     public static void main(String[] args) {
         MessageBusImpl msb = MessageBusImpl.getInstance();
-        CPUService cpuService = new CPUService("CPUService");
+        CPUService cpuService = new CPUService("");
         CPU cpu1 = new CPU(8, cpuService);
         TimeService timeService = new TimeService(7, 1000);
         DataBatch dataBatch = new DataBatch();

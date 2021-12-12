@@ -18,7 +18,7 @@ public class CPUService extends MicroService {
 
 
     public CPUService(String name) {
-        super(name);
+        super("CPU Service");
         currentTime = 0;
 
     }
@@ -29,7 +29,6 @@ public class CPUService extends MicroService {
 
     @Override
     protected void initialize() {
-        MessageBusImpl msb = MessageBusImpl.getInstance();
         subscribeBroadcast(TickBroadcast.class, eventTime -> {
             System.out.println("started tickbroadcast callback");
             currentTime = (int)eventTime.getData();
