@@ -13,17 +13,24 @@ public class Model {
         Trained,
         Tested
     }
+     public enum results{
+        None,
+        Good,
+        Bad
+     }
 
    private String name;
    private Data data;
    private Student student;
-   public statusEnum status;
+   private statusEnum status;
+   private results result;
 
    public Model(String name, Data data, Student student){
        this.name = name;
        this.data = data;
        this.student = student;
        status = statusEnum.PreTrained;
+       result = results.None;
    }
 
    public Model(){
@@ -33,11 +40,19 @@ public class Model {
        status = statusEnum.PreTrained;
    }
 
-    public int getDataSize(){
-        return 0;
-    }
+    public int getDataSize(){return data.getSize();}
+
     public Data getData(){return data;}
-    public void setStatus(statusEnum modelStatus){}
+
+    public void setStatus(statusEnum modelStatus){status = modelStatus;}
+
+    public statusEnum getStatus(){return status;}
+
     public Student getStudent(){return student;}
 
+    public String getName(){return name;}
+
+    public results getResult() {return result;}
+
+    public void setResult(results result){this.result = result;}
 }

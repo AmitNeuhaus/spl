@@ -55,7 +55,7 @@ public class GPU implements GPUInterface{
 
     @Override
     public void insertModel(Model model) {
-        if (disk.size() == 0 && model.status != Model.statusEnum.Training){
+        if (disk.size() == 0 && model.getStatus() != Model.statusEnum.Training){
             this.model = model;
         }
     }
@@ -144,15 +144,15 @@ public class GPU implements GPUInterface{
     }
 
     @Override
-    public boolean testModel() {
+    public Model.results testModel() {
         Random random = new Random();
         int num = 1 + random.nextInt(10);
         if (model.getStudent().getDegree() == Student.Degree.MSc && num <= 6){
-            return true;
+            return Model.results.Good;
         }else if (model.getStudent().getDegree() == Student.Degree.PhD && num <= 8){
-            return true;
+            return Model.results.Good;
         }
-        return false;
+        return Model.results.Bad;
     }
 
     @Override

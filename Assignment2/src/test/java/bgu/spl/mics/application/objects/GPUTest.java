@@ -22,22 +22,22 @@ class GPUTest {
     void insertModel() {
         Model model = new Model();
         int dataSize = model.getDataSize();
-        assertNotEquals(model.status, Model.statusEnum.Training);
-        assertNotEquals(model.status, Model.statusEnum.Tested);
+        assertNotEquals(model.getStatus(), Model.statusEnum.Training);
+        assertNotEquals(model.getStatus(), Model.statusEnum.Tested);
 
         assertEquals(gpu.getDiskSize(), 0);
         // inserting PreTrained model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.PreTrained);
         gpu.insertModel(model);
         assertEquals(gpu.model, model);
-        assertEquals(gpu.model.status, model.status);
+        assertEquals(gpu.model.getStatus(), model.getStatus());
         assertEquals(gpu.getDiskSize(), dataSize/1000);
 
         // inserting PreTrained model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.Trained);
         gpu.insertModel(model);
         assertEquals(gpu.model, model);
-        assertEquals(gpu.model.status, model.status);
+        assertEquals(gpu.model.getStatus(), model.getStatus());
         assertEquals(gpu.getDiskSize(), dataSize/1000);
 
         // inserting Tested model ->  Expected: throw Error

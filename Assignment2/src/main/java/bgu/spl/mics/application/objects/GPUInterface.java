@@ -65,7 +65,7 @@ public interface GPUInterface {
      * Runs a Test of the Model
      * @pre gpu.model.getStatus == Trained;
      */
-    boolean testModel();
+    Model.results testModel();
 
 
     /**
