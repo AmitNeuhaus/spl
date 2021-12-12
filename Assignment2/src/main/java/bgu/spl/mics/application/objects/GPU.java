@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.Future;
+import bgu.spl.mics.application.services.GPUService;
 import bgu.spl.mics.application.services.GPUTimeService;
 
 import java.util.Collection;
@@ -32,6 +33,25 @@ public class GPU implements GPUInterface{
     LinkedBlockingQueue<DataBatch> trainedDisk;
     LinkedBlockingQueue<DataBatch> vRam;
 
+    public GPU(Type type,GPUTimeService gpuTimeService){
+        this.type = type;
+        this.gpuTimeService = gpuTimeService;
+        this.vramCapacity = getVramCapacity();
+        cluster = Cluster.getInstance();
+        disk = new LinkedBlockingQueue<>();
+        trainedDisk = new LinkedBlockingQueue<>();
+        vRam = new LinkedBlockingQueue<>(vramCapacity);
+    }
+
+    public GPU(GPUTimeService gpuTimeService){
+        this.type = Type.RTX3090;
+        this.gpuTimeService = gpuTimeService;
+        this.vramCapacity = getVramCapacity();
+        cluster = Cluster.getInstance();
+        disk = new LinkedBlockingQueue<>();
+        trainedDisk = new LinkedBlockingQueue<>();
+        vRam = new LinkedBlockingQueue<>(vramCapacity);
+    }
 
     @Override
     public void insertModel(Model model) {
@@ -46,9 +66,9 @@ public class GPU implements GPUInterface{
         for (int i = 0; i<numberOfBatches;i++){
             //TODO consult with Noyhoz
             if (i<=vramCapacity){
-                cluster.insertUnProcessedData(new DataBatch(data));
+                cluster.insertUnProcessedData(new DataBatch(data,i*1000));
             }
-            disk.add(new DataBatch(data));
+            disk.add(new DataBatch(data,i*1000));
         }
     }
 
@@ -119,6 +139,7 @@ public class GPU implements GPUInterface{
             while(gpuTimeService.getTime() - start < trainTime){}
             db.setTrained(true);
             insertTrainedDbToDisk(db);
+            model.getData().addProcessedData();
         }
     }
 
@@ -141,13 +162,23 @@ public class GPU implements GPUInterface{
         vRam.clear();
     }
 
-    public int calculateTrianTime(){
+    private int calculateTrianTime(){
         if (type == Type.RTX3090){
             return 1;
         }else if(type == Type.RTX2080){
             return 2;
         }else{
             return 4;
+        }
+    }
+
+    private int getVramCapacity(){
+        if (type == Type.RTX3090){
+            return 32;
+        }else if(type == Type.RTX2080){
+            return 16;
+        }else{
+            return 8;
         }
     }
 

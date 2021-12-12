@@ -16,6 +16,7 @@ public class GPUTimeService extends MicroService {
         currentTime = 0;
     }
 
+
     public int getTime(){
         return currentTime;
     }
@@ -23,10 +24,7 @@ public class GPUTimeService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, eventTime -> {
-            System.out.println("started tickbroadcast callback");
             currentTime = (int)eventTime.getData();
-            System.out.println(eventTime.getData());
-            System.out.println(currentTime);
         });
     }
 }

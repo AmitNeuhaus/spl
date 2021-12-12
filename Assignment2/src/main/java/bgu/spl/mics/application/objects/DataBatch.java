@@ -12,18 +12,21 @@ public class DataBatch implements DataBatchInterface {
     private Data data;
     private boolean processed;
     private boolean trained;
+    private int startIndex;
 
 
     public DataBatch(){
         this.data = new Data(Data.Type.Images,5000,0);
         processed = false;
         trained = false;
+        startIndex = 0;
     }
 
-    public DataBatch(Data data){
+    public DataBatch(Data data,int startIndex){
         this.data = data;
         processed = false;
         trained = false;
+        this.startIndex = startIndex;
     }
     public boolean isProcessed(){
         return processed;
@@ -44,4 +47,6 @@ public class DataBatch implements DataBatchInterface {
     public Data.Type getDataType(){
         return data.getType();
     }
+
+    public int getStartIndex(){return startIndex;}
 }

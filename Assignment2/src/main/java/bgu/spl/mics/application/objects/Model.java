@@ -19,6 +19,20 @@ public class Model {
    private Student student;
    public statusEnum status;
 
+   public Model(String name, Data data, Student student){
+       this.name = name;
+       this.data = data;
+       this.student = student;
+       status = statusEnum.PreTrained;
+   }
+
+   public Model(){
+       name = "Test model";
+       data = new Data(Data.Type.Images,10000,0);
+       student = new Student();
+       status = statusEnum.PreTrained;
+   }
+
     public int getDataSize(){
         return 0;
     }

@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.application.services.GPUTimeService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,8 @@ class GPUTest {
 
     @BeforeEach
     void setUp(){
-        gpu = new GPU();
+        GPUTimeService gpuTimeService = new GPUTimeService("GPU Time Service");
+        gpu = new GPU(gpuTimeService);
     }
 
     @Test

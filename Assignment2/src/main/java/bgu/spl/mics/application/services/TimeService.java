@@ -37,7 +37,6 @@ public class TimeService extends MicroService{
 
 	class IncrementTick extends TimerTask {
 		public void run() {
-			System.out.println("Tick getting incremented");
 			currentTick++;
 			System.out.println(currentTick);
 			if (currentTick == terminateTick) {

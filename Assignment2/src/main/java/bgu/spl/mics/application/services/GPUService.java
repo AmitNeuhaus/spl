@@ -19,22 +19,25 @@ public class GPUService extends MicroService {
 
     private GPU gpu;
 
-    public GPUService(String name) {
+    public GPUService(String name,GPU gpu) {
         super("GPU Service");
+        this.gpu = gpu;
     }
+
 
     @Override
     protected void initialize() {
 
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
+            System.out.println("started training");
             Model model = trainEvent.getModel();
             if (model.status == Model.statusEnum.PreTrained){
                 gpu.clearGpu();
                 model.setStatus(Model.statusEnum.Training);
                 gpu.insertModel(model);
                 gpu.splitToBatches(model.getData());
-                while(gpu.getTrainedDiskSize() < model.getDataSize()/1000){
+                while(model.getData().getProcessed() < model.getDataSize()){
                     if (!gpu.isVramFull() && gpu.getDiskSize() > 0){
                         //TODO think about immediately sending VRAM capacity data batches for processing
                         gpu.sendData();
@@ -46,6 +49,7 @@ public class GPUService extends MicroService {
                 model.setStatus(Model.statusEnum.Trained);
                 complete(trainEvent,model);
                 gpu.clearGpu();
+                System.out.println("finished training");
             }
         });
 

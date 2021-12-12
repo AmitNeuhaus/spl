@@ -8,6 +8,9 @@ public class TrainModelEvent implements Event<Model> {
     private Model model;
     private Future<Model> future = null;
 
+    public TrainModelEvent(Model model){
+        this.model = model;
+    }
     public Future<Model> getFuture(){
         if (future == null){
             future = new Future<Model>();

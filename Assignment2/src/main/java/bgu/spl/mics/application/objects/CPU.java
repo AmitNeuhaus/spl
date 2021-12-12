@@ -20,8 +20,8 @@ public class CPU implements CPUInterface {
     private Cluster cluster;
     private int totalProcessTime;
 
-    public CPU(int cores, CPUService cpuService){
-        this.cpuService = cpuService;
+    public CPU(int cores){
+        this.cpuService = new CPUService("CPU service");
         this.cores = cores;
         data = new LinkedList<DataBatch>();
         busy = false;
@@ -37,10 +37,10 @@ public class CPU implements CPUInterface {
         int processTime = calculateProcessTime(db);
         while(cpuService.getTime() - start < processTime){}
         db.setProcessed(true);
+        System.out.println("finished processing!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ");
         sendProcessedDB(db);
         busy = false;
         totalProcessTime = totalProcessTime + processTime;
-        System.out.println("finsihed processing time is " + cpuService.getTime());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CPU implements CPUInterface {
 
     @Override
     public void sendProcessedDB(DataBatch db) {
-        if (db.isProcessed()){cluster.insertProcessedData(db);}
+        if (cluster!=null && db.isProcessed()){cluster.insertProcessedData(db);}
     }
 
     @Override

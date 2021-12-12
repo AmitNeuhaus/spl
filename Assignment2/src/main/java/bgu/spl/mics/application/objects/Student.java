@@ -18,6 +18,17 @@ public class Student {
     private int publications;
     private int papersRead;
 
+
+    public Student(){
+        name = 0;
+        department = "Computer Science";
+        status = Degree.MSc;
+        publications = 0;
+        papersRead = 0;
+    }
+
+
+
     public Degree getDegree(){
         return status;
     }
