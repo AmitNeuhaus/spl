@@ -1,6 +1,8 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.MicroServiceArray;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
@@ -28,9 +30,11 @@ public class MessageBusImpl implements MessageBus {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
 		//TODO add events and arrays to messageToMicroserviceMap.
-		Class<? extends Message> type = TickBroadcast.class;
-		MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray();
-		messagesToMicroserviceMap.put(type, msArray);
+		Class<? extends Message>[] messages = new Class[]{TestModelEvent.class, TrainModelEvent.class, TickBroadcast.class};
+		for (Class<? extends Message> type : messages){
+			MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray<>();
+			messagesToMicroserviceMap.put(type,msArray);
+		}
 	}
 
 	/**
@@ -44,9 +48,7 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		System.out.println("Trying to subscribe to event");
 		if(isMicroServiceRegistered(m)){
-			System.out.println("im in");
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
 			System.out.println("subscribed: "+ m.getName()+" to event");
@@ -65,9 +67,7 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	@Override
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		System.out.println("Trying to subscribe to broadcast");
 		if (isMicroServiceRegistered(m)){
-			System.out.println("im in");
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
 			System.out.println("subscribed: "+ m.getName()+" to broadcast ");

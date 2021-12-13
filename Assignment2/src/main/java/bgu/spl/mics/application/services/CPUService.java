@@ -30,10 +30,7 @@ public class CPUService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, eventTime -> {
-            System.out.println("started tickbroadcast callback");
             currentTime = (int)eventTime.getData();
-            System.out.println(eventTime.getData());
-            System.out.println(currentTime);
         });
     }
 }

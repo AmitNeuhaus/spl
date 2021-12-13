@@ -25,7 +25,7 @@ public abstract class MicroService implements Runnable {
 
     private boolean terminated = false;
     private final String name;
-    private HashMap<Class<? extends Message>, Callback<? extends Message>> callbacks = new HashMap<>();
+    private HashMap<Class<? extends Message>,Callback> callbacks = new HashMap<>();
 
     /**
      * @param name the micro-service name (used mainly for debugging purposes -
@@ -153,13 +153,18 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
+        System.out.println("NOT FULLY IMPLEMENTED YET");
         MessageBusImpl.getInstance().register(this);
         initialize();
         while (!terminated) {
             try {
                 Message msg = MessageBusImpl.getInstance().awaitMessage(this);
-                System.out.println("this is your message: " + msg.getClass());
-//                callbacks.get(msg);
+                if (callbacks.get(msg.getClass()) == null){
+                    System.out.println("its null");
+                }else{
+                    callbacks.get(msg.getClass()).call(msg);
+                }
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

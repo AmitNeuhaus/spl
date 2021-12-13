@@ -19,24 +19,25 @@ public class GPUService extends MicroService {
 
     private GPU gpu;
 
-    public GPUService(String name) {
+    public GPUService(String name,GPU gpu) {
         super("GPU Service");
+        this.gpu = gpu;
     }
+
 
     @Override
     protected void initialize() {
 
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
+            System.out.println("started training");
             Model model = trainEvent.getModel();
-            if (model.status == Model.statusEnum.PreTrained){
-                gpu.clearGpu();
+            if (model.getStatus() == Model.statusEnum.PreTrained){
                 model.setStatus(Model.statusEnum.Training);
                 gpu.insertModel(model);
                 gpu.splitToBatches(model.getData());
-                while(gpu.getTrainedDiskSize() < model.getDataSize()/1000){
-                    if (!gpu.isVramFull() && gpu.getDiskSize() > 0){
-                        //TODO think about immediately sending VRAM capacity data batches for processing
+                while(model.getData().getProcessed() < model.getDataSize()){
+                    if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){
                         gpu.sendData();
                     }
                     if(gpu.getVramSize()>0){
@@ -45,7 +46,7 @@ public class GPUService extends MicroService {
                 }
                 model.setStatus(Model.statusEnum.Trained);
                 complete(trainEvent,model);
-                gpu.clearGpu();
+                System.out.println("finished training");
             }
         });
 
@@ -53,13 +54,12 @@ public class GPUService extends MicroService {
         //Test Event:
         subscribeEvent(TestModelEvent.class, testEvent -> {
             Model model = testEvent.getModel();
-            if (model.status == Model.statusEnum.Trained){
-                gpu.clearGpu();
+            if (model.getStatus() == Model.statusEnum.Trained && model.getResult() == Model.results.None){
                 gpu.insertModel(model);
-                boolean result = gpu.testModel();
+                Model.results result = gpu.testModel();
                 model.setStatus(Model.statusEnum.Tested);
+                model.setResult(result);
                 complete(testEvent,result);
-                gpu.clearGpu();
             }
         });
     }

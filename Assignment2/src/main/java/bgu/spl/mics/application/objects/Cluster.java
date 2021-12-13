@@ -16,12 +16,15 @@ public class Cluster {
      */
 	public static Cluster getInstance() {
 		//TODO: Implement this
+        System.out.println("NOT IMPLEMENTED IN CLUSTER");
 		return null;
 	}
 
     public void insertProcessedData(DataBatch db) {
+        System.out.println("NOT IMPLEMENTED IN CLUSTER");
     }
 
     public void insertUnProcessedData(DataBatch db) {
+        System.out.println("NOT IMPLEMENTED IN CLUSTER");
     }
 }

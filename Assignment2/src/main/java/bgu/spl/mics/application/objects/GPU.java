@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.Future;
+import bgu.spl.mics.application.services.GPUService;
 import bgu.spl.mics.application.services.GPUTimeService;
 
 import java.util.Collection;
@@ -25,6 +26,7 @@ public class GPU implements GPUInterface{
     public Model model;
     Cluster cluster;
     private GPUTimeService gpuTimeService;
+    private int numOfBatchesToSend;
 
     // Memory:
     int vramCapacity;
@@ -32,10 +34,31 @@ public class GPU implements GPUInterface{
     LinkedBlockingQueue<DataBatch> trainedDisk;
     LinkedBlockingQueue<DataBatch> vRam;
 
+    public GPU(Type type,GPUTimeService gpuTimeService){
+        this.type = type;
+        this.gpuTimeService = gpuTimeService;
+        this.vramCapacity = getVramCapacity();
+        cluster = Cluster.getInstance();
+        disk = new LinkedBlockingQueue<>();
+        trainedDisk = new LinkedBlockingQueue<>();
+        vRam = new LinkedBlockingQueue<>(vramCapacity);
+        numOfBatchesToSend = vramCapacity;
+    }
+
+    public GPU(GPUTimeService gpuTimeService){
+        this.type = Type.RTX3090;
+        this.gpuTimeService = gpuTimeService;
+        this.vramCapacity = getVramCapacity();
+        cluster = Cluster.getInstance();
+        disk = new LinkedBlockingQueue<>();
+        trainedDisk = new LinkedBlockingQueue<>();
+        vRam = new LinkedBlockingQueue<>(vramCapacity);
+        numOfBatchesToSend = vramCapacity;
+    }
 
     @Override
     public void insertModel(Model model) {
-        if (disk.size() == 0 && model.status != Model.statusEnum.Training){
+        if (disk.size() == 0 && model.getStatus() != Model.statusEnum.Training){
             this.model = model;
         }
     }
@@ -45,10 +68,11 @@ public class GPU implements GPUInterface{
         int numberOfBatches = data.getSize()/1000;
         for (int i = 0; i<numberOfBatches;i++){
             //TODO consult with Noyhoz
-            if (i<=vramCapacity){
-                cluster.insertUnProcessedData(new DataBatch(data));
+            if (numOfBatchesToSend > 0){
+                disk.add(new DataBatch(data,i*1000));
+                sendData();
             }
-            disk.add(new DataBatch(data));
+            disk.add(new DataBatch(data,i*1000));
         }
     }
 
@@ -56,6 +80,7 @@ public class GPU implements GPUInterface{
     public void sendData() {
         if (disk.size()>0){
             cluster.insertUnProcessedData(disk.poll());
+            numOfBatchesToSend--;
         }
     }
 
@@ -109,29 +134,33 @@ public class GPU implements GPUInterface{
         return vRam.peek();
     }
 
+    public int getNumOfBatchesToSend(){return numOfBatchesToSend;}
+
 
     @Override
     public void Train() {
         if (!vRam.isEmpty()){
             DataBatch db = vRam.poll();
+            numOfBatchesToSend++;
             int start = gpuTimeService.getTime();
-            int trainTime = calculateTrianTime();
+            int trainTime = calculateTrainTime();
             while(gpuTimeService.getTime() - start < trainTime){}
             db.setTrained(true);
             insertTrainedDbToDisk(db);
+            model.getData().addProcessedData();
         }
     }
 
     @Override
-    public boolean testModel() {
+    public Model.results testModel() {
         Random random = new Random();
         int num = 1 + random.nextInt(10);
         if (model.getStudent().getDegree() == Student.Degree.MSc && num <= 6){
-            return true;
+            return Model.results.Good;
         }else if (model.getStudent().getDegree() == Student.Degree.PhD && num <= 8){
-            return true;
+            return Model.results.Good;
         }
-        return false;
+        return Model.results.Bad;
     }
 
     @Override
@@ -141,13 +170,23 @@ public class GPU implements GPUInterface{
         vRam.clear();
     }
 
-    public int calculateTrianTime(){
+    private int calculateTrainTime(){
         if (type == Type.RTX3090){
             return 1;
         }else if(type == Type.RTX2080){
             return 2;
         }else{
             return 4;
+        }
+    }
+
+    private int getVramCapacity(){
+        if (type == Type.RTX3090){
+            return 32;
+        }else if(type == Type.RTX2080){
+            return 16;
+        }else{
+            return 8;
         }
     }
 

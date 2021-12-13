@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import bgu.spl.mics.application.services.GPUTimeService;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,29 +14,30 @@ class GPUTest {
 
     @BeforeEach
     void setUp(){
-        gpu = new GPU();
+        GPUTimeService gpuTimeService = new GPUTimeService("GPU Time Service");
+        gpu = new GPU(gpuTimeService);
     }
 
     @Test
     void insertModel() {
         Model model = new Model();
         int dataSize = model.getDataSize();
-        assertNotEquals(model.status, Model.statusEnum.Training);
-        assertNotEquals(model.status, Model.statusEnum.Tested);
+        assertNotEquals(model.getStatus(), Model.statusEnum.Training);
+        assertNotEquals(model.getStatus(), Model.statusEnum.Tested);
 
         assertEquals(gpu.getDiskSize(), 0);
         // inserting PreTrained model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.PreTrained);
         gpu.insertModel(model);
         assertEquals(gpu.model, model);
-        assertEquals(gpu.model.status, model.status);
+        assertEquals(gpu.model.getStatus(), model.getStatus());
         assertEquals(gpu.getDiskSize(), dataSize/1000);
 
         // inserting PreTrained model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.Trained);
         gpu.insertModel(model);
         assertEquals(gpu.model, model);
-        assertEquals(gpu.model.status, model.status);
+        assertEquals(gpu.model.getStatus(), model.getStatus());
         assertEquals(gpu.getDiskSize(), dataSize/1000);
 
         // inserting Tested model ->  Expected: throw Error

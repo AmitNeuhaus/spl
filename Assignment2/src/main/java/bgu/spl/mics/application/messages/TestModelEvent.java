@@ -4,15 +4,16 @@ import bgu.spl.mics.Event;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.application.objects.Model;
 
-public class TestModelEvent implements Event<Boolean> {
+
+public class TestModelEvent implements Event<Model.results> {
     private Model model;
-    private Future<Boolean> future = null;
+    private Future<Model.results> future = null;
 
 
     @Override
-    public Future<Boolean> getFuture() {
+    public Future<Model.results> getFuture() {
         if (future == null){
-            future = new Future<Boolean>();
+            future = new Future<Model.results>();
         }
         return future;
     }
