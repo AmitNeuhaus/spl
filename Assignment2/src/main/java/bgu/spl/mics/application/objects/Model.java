@@ -22,6 +22,8 @@ public class Model {
     public int getDataSize(){
         return 0;
     }
+    public Data getData(){return data;}
     public void setStatus(statusEnum modelStatus){}
+    public Student getStudent(){return student;}
 
 }

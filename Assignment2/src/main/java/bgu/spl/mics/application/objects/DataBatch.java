@@ -19,6 +19,12 @@ public class DataBatch implements DataBatchInterface {
         processed = false;
         trained = false;
     }
+
+    public DataBatch(Data data){
+        this.data = data;
+        processed = false;
+        trained = false;
+    }
     public boolean isProcessed(){
         return processed;
     };
