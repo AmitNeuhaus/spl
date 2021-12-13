@@ -26,6 +26,7 @@ public class GPU implements GPUInterface{
     public Model model;
     Cluster cluster;
     private GPUTimeService gpuTimeService;
+    private int numOfBatchesToSend;
 
     // Memory:
     int vramCapacity;
@@ -41,6 +42,7 @@ public class GPU implements GPUInterface{
         disk = new LinkedBlockingQueue<>();
         trainedDisk = new LinkedBlockingQueue<>();
         vRam = new LinkedBlockingQueue<>(vramCapacity);
+        numOfBatchesToSend = vramCapacity;
     }
 
     public GPU(GPUTimeService gpuTimeService){
@@ -51,6 +53,7 @@ public class GPU implements GPUInterface{
         disk = new LinkedBlockingQueue<>();
         trainedDisk = new LinkedBlockingQueue<>();
         vRam = new LinkedBlockingQueue<>(vramCapacity);
+        numOfBatchesToSend = vramCapacity;
     }
 
     @Override
@@ -65,8 +68,9 @@ public class GPU implements GPUInterface{
         int numberOfBatches = data.getSize()/1000;
         for (int i = 0; i<numberOfBatches;i++){
             //TODO consult with Noyhoz
-            if (i<=vramCapacity){
-                cluster.insertUnProcessedData(new DataBatch(data,i*1000));
+            if (numOfBatchesToSend > 0){
+                disk.add(new DataBatch(data,i*1000));
+                sendData();
             }
             disk.add(new DataBatch(data,i*1000));
         }
@@ -76,6 +80,7 @@ public class GPU implements GPUInterface{
     public void sendData() {
         if (disk.size()>0){
             cluster.insertUnProcessedData(disk.poll());
+            numOfBatchesToSend--;
         }
     }
 
@@ -129,13 +134,16 @@ public class GPU implements GPUInterface{
         return vRam.peek();
     }
 
+    public int getNumOfBatchesToSend(){return numOfBatchesToSend;}
+
 
     @Override
     public void Train() {
         if (!vRam.isEmpty()){
             DataBatch db = vRam.poll();
+            numOfBatchesToSend++;
             int start = gpuTimeService.getTime();
-            int trainTime = calculateTrianTime();
+            int trainTime = calculateTrainTime();
             while(gpuTimeService.getTime() - start < trainTime){}
             db.setTrained(true);
             insertTrainedDbToDisk(db);
@@ -162,7 +170,7 @@ public class GPU implements GPUInterface{
         vRam.clear();
     }
 
-    private int calculateTrianTime(){
+    private int calculateTrainTime(){
         if (type == Type.RTX3090){
             return 1;
         }else if(type == Type.RTX2080){

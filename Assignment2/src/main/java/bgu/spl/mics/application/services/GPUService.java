@@ -33,13 +33,11 @@ public class GPUService extends MicroService {
             System.out.println("started training");
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
-                gpu.clearGpu();
                 model.setStatus(Model.statusEnum.Training);
                 gpu.insertModel(model);
                 gpu.splitToBatches(model.getData());
                 while(model.getData().getProcessed() < model.getDataSize()){
-                    if (!gpu.isVramFull() && gpu.getDiskSize() > 0){
-                        //TODO think about immediately sending VRAM capacity data batches for processing
+                    if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){
                         gpu.sendData();
                     }
                     if(gpu.getVramSize()>0){
@@ -48,7 +46,6 @@ public class GPUService extends MicroService {
                 }
                 model.setStatus(Model.statusEnum.Trained);
                 complete(trainEvent,model);
-                gpu.clearGpu();
                 System.out.println("finished training");
             }
         });
@@ -58,13 +55,11 @@ public class GPUService extends MicroService {
         subscribeEvent(TestModelEvent.class, testEvent -> {
             Model model = testEvent.getModel();
             if (model.getStatus() == Model.statusEnum.Trained && model.getResult() == Model.results.None){
-                gpu.clearGpu();
                 gpu.insertModel(model);
                 Model.results result = gpu.testModel();
                 model.setStatus(Model.statusEnum.Tested);
                 model.setResult(result);
                 complete(testEvent,result);
-                gpu.clearGpu();
             }
         });
     }
