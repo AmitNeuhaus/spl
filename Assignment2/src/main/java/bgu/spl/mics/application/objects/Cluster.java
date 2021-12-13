@@ -1,6 +1,12 @@
 package bgu.spl.mics.application.objects;
 
 
+import bgu.spl.mics.MessageBusImpl;
+
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Passive object representing the cluster.
  * <p>
@@ -14,17 +20,68 @@ public class Cluster {
 	/**
      * Retrieves the single instance of this class.
      */
-	public static Cluster getInstance() {
-		//TODO: Implement this
-        System.out.println("NOT IMPLEMENTED IN CLUSTER");
-		return null;
-	}
 
-    public void insertProcessedData(DataBatch db) {
-        System.out.println("NOT IMPLEMENTED IN CLUSTER");
+	CopyOnWriteArrayList<CPU> cpuList = new CopyOnWriteArrayList<>();
+    ConcurrentHashMap<GPU,GPU> gpuHash = new ConcurrentHashMap<>();
+
+    // Params for continous Weighted Round Robin.
+    int maxRounds;
+    int currentRound=1;
+    int currentCpu=0;
+
+    private static class ClusterHolder{
+        private static Cluster instance = new Cluster();
     }
 
-    public void insertUnProcessedData(DataBatch db) {
-        System.out.println("NOT IMPLEMENTED IN CLUSTER");
+    public Cluster(){
+        maxRounds = calculateMaxCpuWeight();
+    }
+	public static Cluster getInstance() {
+        return ClusterHolder.instance;
+	}
+
+	public void registerGPUToCluster(GPU gpu){
+        //TODO: check if needed.
+        gpuHash.put(gpu,gpu);
+    }
+
+    public void registerCPUToCluster(CPU cpu){
+        // We will Construct the CPUS by their power order (DESCENDING).
+        cpuList.add(cpu);
+    }
+
+    public synchronized void insertUnProcessedData(DataBatch db) {
+        // Implementing Weighted RoundRobin Algorithm.
+        currentCpu = currentCpu % cpuList.size();
+        CPU currentCpuInstance = cpuList.get(currentCpu);
+        if(currentRound <= currentCpuInstance.getWeight() ) {
+            currentCpuInstance.insertDB(db);
+        }
+        currentCpu++;
+
+        if (currentCpu == cpuList.size() -1)
+            currentRound++;
+        if (currentRound == maxRounds){
+            currentRound = 1;
+        }
+    }
+
+
+    public void insertProcessedData(DataBatch db) {
+        GPU sender = db.getGpuSender();
+        // TODO: might be unecessary if holding GPU instance in databatch;
+        GPU gpuInstance = gpuHash.get(sender);
+        gpuInstance.insertDbToVram(db);
+    }
+
+
+    public int calculateMaxCpuWeight(){
+        // max Weight
+        int max = 0;
+        for (CPU cpu: cpuList){
+            if (cpu.getWeight() > max)
+                max = cpu.getWeight();
+        }
+        return max;
     }
 }

@@ -13,6 +13,7 @@ public class DataBatch implements DataBatchInterface {
     private boolean processed;
     private boolean trained;
     private int startIndex;
+    GPU gpuSender;
 
 
     public DataBatch(){
@@ -46,6 +47,10 @@ public class DataBatch implements DataBatchInterface {
 
     public Data.Type getDataType(){
         return data.getType();
+    }
+
+    public GPU getGpuSender() {
+        return gpuSender;
     }
 
     public int getStartIndex(){return startIndex;}

@@ -39,6 +39,7 @@ public class GPU implements GPUInterface{
         this.gpuTimeService = gpuTimeService;
         this.vramCapacity = getVramCapacity();
         cluster = Cluster.getInstance();
+        cluster.registerGPUToCluster(this);
         disk = new LinkedBlockingQueue<>();
         trainedDisk = new LinkedBlockingQueue<>();
         vRam = new LinkedBlockingQueue<>(vramCapacity);
