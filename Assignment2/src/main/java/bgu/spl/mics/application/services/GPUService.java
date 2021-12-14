@@ -47,6 +47,7 @@ public class GPUService extends MicroService {
                 model.setStatus(Model.statusEnum.Trained);
                 complete(trainEvent,model);
                 System.out.println("finished training");
+                gpu.clearGpu();
             }
         });
 
@@ -60,6 +61,7 @@ public class GPUService extends MicroService {
                 model.setStatus(Model.statusEnum.Tested);
                 model.setResult(result);
                 complete(testEvent,result);
+                gpu.clearGpu();
             }
         });
     }

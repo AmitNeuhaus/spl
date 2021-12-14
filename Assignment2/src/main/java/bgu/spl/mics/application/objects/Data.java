@@ -16,10 +16,10 @@ public class Data {
     private int processed;
     private int size;
 
-    Data(Type type_, int size_, int processed_){
+    Data(Type type_, int size_){
         type=type_;
         size=size_;
-        processed = processed_;
+        processed = 0;
     }
 
     public Type getType(){
@@ -31,6 +31,10 @@ public class Data {
     public void addProcessedData(){processed += 1000;}
 
     public  int getProcessed(){return processed;}
+
+    public String toString(){
+        return "Type: "+type+'\n'+"Size: "+size+'\n'+"Processed: " + processed;
+    }
 
 
 }
