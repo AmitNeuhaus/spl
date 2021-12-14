@@ -44,4 +44,23 @@ public class CRMSRunner {
 
 
     }
+
+
+
+    public static void CalculateCPUWeights(int[] allCpuCores){
+
+        if (allCpuCores.length == 0){
+            throw new IllegalArgumentException("No cpu cores inserted");
+        }
+
+        int[] weights = new int[allCpuCores.length];
+        int overAllCores=0;
+        for (int i =0; i <allCpuCores.length ; i++){
+            overAllCores += allCpuCores[i];
+        }
+
+        for (int i =0; i <allCpuCores.length ; i++){
+            weights[i] = allCpuCores[i]/ overAllCores;
+        }
+    }
 }

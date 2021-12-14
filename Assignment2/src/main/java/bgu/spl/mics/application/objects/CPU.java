@@ -19,6 +19,7 @@ public class CPU implements CPUInterface {
     private boolean busy;
     private Cluster cluster;
     private int totalProcessTime;
+    private int weight;
 
     public CPU(int cores){
         this.cpuService = new CPUService("CPU service");
@@ -26,6 +27,7 @@ public class CPU implements CPUInterface {
         data = new LinkedList<DataBatch>();
         busy = false;
         cluster = Cluster.getInstance();
+        cluster.registerCPUToCluster(this);
         totalProcessTime = 0;
     }
 
@@ -60,6 +62,8 @@ public class CPU implements CPUInterface {
         return data.size();
     }
 
+    public int getWeight(){return weight; }
+
     private int calculateProcessTime(DataBatch db){
         Data.Type type = db.getDataType();
         if (type == Data.Type.Images){
@@ -73,4 +77,7 @@ public class CPU implements CPUInterface {
     public int getTotalProcessTime(){
         return totalProcessTime;
     }
+
+    public int getCores(){return cores;}
 }
+
