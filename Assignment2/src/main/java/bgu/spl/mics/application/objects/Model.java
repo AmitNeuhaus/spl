@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.objects;
 
+import java.sql.ResultSet;
+
 /**
  * Passive object representing a Deep Learning model.
  * Add all the fields described in the assignment as private fields.
@@ -55,4 +57,8 @@ public class Model {
     public results getResult() {return result;}
 
     public void setResult(results result){this.result = result;}
+
+    public String toString(){
+       return "Name: "+name+'\n'+ "Student: "+ student.getName()+'\n'+"Status: "+status+'\n'+ "Result: "+result+'\n'+"Data: "+data.toString();
+    }
 }

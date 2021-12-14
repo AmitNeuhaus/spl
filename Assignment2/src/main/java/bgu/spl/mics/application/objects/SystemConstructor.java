@@ -148,6 +148,10 @@ public class SystemConstructor {
             System.out.println(cpu);
         }
 
+        for (Student student : con.getStudents()){
+            System.out.println(student.toString());
+        }
+
     }
 
 

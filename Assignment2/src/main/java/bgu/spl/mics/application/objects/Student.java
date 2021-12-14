@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -61,4 +62,12 @@ public class Student {
 
     public void addModel(Model model){if (model != null){models.addLast(model);}}
 
+    public String toString(){
+        String output =  "Name: " + name + '\n' + "Department: " + department + '\n' + "Degree: " + status + '\n' + "Publications: " + publications + '\n' + "PapersRead: "
+                + papersRead + '\n' + "Models: " +'\n';
+        for (Model model : models){
+            output= output+model.toString()+'\n';
+        }
+        return output;
+    }
 }

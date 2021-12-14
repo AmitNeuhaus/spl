@@ -32,5 +32,9 @@ public class Data {
 
     public  int getProcessed(){return processed;}
 
+    public String toString(){
+        return "Type: "+type+'\n'+"Size: "+size+'\n'+"Processed: " + processed;
+    }
+
 
 }
