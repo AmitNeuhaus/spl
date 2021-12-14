@@ -16,7 +16,7 @@ public class DataBatch implements DataBatchInterface {
 
 
     public DataBatch(){
-        this.data = new Data(Data.Type.Images,5000,0);
+        this.data = new Data(Data.Type.Images,5000);
         processed = false;
         trained = false;
         startIndex = 0;

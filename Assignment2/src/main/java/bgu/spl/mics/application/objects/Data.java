@@ -16,10 +16,10 @@ public class Data {
     private int processed;
     private int size;
 
-    Data(Type type_, int size_, int processed_){
+    Data(Type type_, int size_){
         type=type_;
         size=size_;
-        processed = processed_;
+        processed = 0;
     }
 
     public Type getType(){
