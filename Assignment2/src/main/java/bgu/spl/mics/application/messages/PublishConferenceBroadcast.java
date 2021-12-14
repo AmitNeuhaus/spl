@@ -9,23 +9,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PublishConferenceBroadcast implements Broadcast {
     ConferenceInformation conInfo;
-    CopyOnWriteArrayList<Model> modelsToPublish;
+    Model model;
 
-    public PublishConferenceBroadcast(ConferenceInformation conInfo, CopyOnWriteArrayList<Model> modelsToPublish){
+    public PublishConferenceBroadcast(ConferenceInformation conInfo, Model model){
         this.conInfo = conInfo;
-        this.modelsToPublish = modelsToPublish;
+        this.model= model;
     }
 
 
-    @Override
+
     public String getSenderId() {
         return conInfo.getName();
     }
 
-    @Override
     public Object getData() {
         return conInfo;
     }
 
-    public CopyOnWriteArrayList<Model> getPublishedModels(){return modelsToPublish;}
+    public Model getPublishedModel(){return model;}
 }
