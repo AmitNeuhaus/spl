@@ -52,17 +52,21 @@ public class Cluster {
 
     public synchronized void insertUnProcessedData(DataBatch db) {
         // Implementing Weighted RoundRobin Algorithm.
-        currentCpu = currentCpu % cpuList.size();
-        CPU currentCpuInstance = cpuList.get(currentCpu);
-        if(currentRound <= currentCpuInstance.getWeight() ) {
-            currentCpuInstance.insertDB(db);
-        }
-        currentCpu++;
+        boolean inserted = false;
+        while (!inserted) {
+            currentCpu = currentCpu % cpuList.size();
+            CPU currentCpuInstance = cpuList.get(currentCpu);
+            if (currentRound <= currentCpuInstance.getWeight()) {
+                currentCpuInstance.insertDB(db);
+                inserted = true;
+            }
+            currentCpu++;
 
-        if (currentCpu == cpuList.size() -1)
-            currentRound++;
-        if (currentRound == maxRounds){
-            currentRound = 1;
+            if (currentCpu == cpuList.size() - 1)
+                currentRound++;
+            if (currentRound == maxRounds) {
+                currentRound = 1;
+            }
         }
     }
 
