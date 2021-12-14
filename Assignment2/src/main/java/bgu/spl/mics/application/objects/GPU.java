@@ -1,10 +1,7 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.Future;
-import bgu.spl.mics.application.services.GPUService;
-import bgu.spl.mics.application.services.GPUTimeService;
 
-import java.util.Collection;
+import bgu.spl.mics.application.services.GPUTimeService;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 

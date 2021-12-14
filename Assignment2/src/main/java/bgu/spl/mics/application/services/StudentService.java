@@ -1,6 +1,9 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.PublishResultsEvent;
+import bgu.spl.mics.application.messages.TestModelEvent;
+import bgu.spl.mics.application.messages.TrainModelEvent;
 
 /**
  * Student is responsible for sending the {@link TrainModelEvent},
@@ -12,8 +15,11 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class StudentService extends MicroService {
+
+
+
     public StudentService(String name) {
-        super("Change_This_Name");
+        super("Student service");
         // TODO Implement this
     }
 
