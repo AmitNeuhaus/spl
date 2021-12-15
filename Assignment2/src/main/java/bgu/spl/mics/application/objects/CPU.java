@@ -21,8 +21,8 @@ public class CPU implements CPUInterface {
     private int totalProcessTime;
     private int weight;
 
-    public CPU(int cores){
-        this.cpuService = new CPUService("CPU service");
+    public CPU(int cores,CPUService cpuService){
+        this.cpuService = cpuService;
         this.cores = cores;
         data = new LinkedList<DataBatch>();
         busy = false;

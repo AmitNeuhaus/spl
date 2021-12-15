@@ -21,18 +21,18 @@ import bgu.spl.mics.application.services.TimeService;
 public class CRMSRunner {
     public static void main(String[] args) {
         MessageBusImpl msb = MessageBusImpl.getInstance();
-        GPUTimeService gpuTimeService = new GPUTimeService("GPU time service");
+        GPUTimeService gpuTimeService = new GPUTimeService();
         GPU gpu1 = new GPU(gpuTimeService);
         GPUService gpuService = new GPUService(gpu1);
-        TimeService timeService = new TimeService(25, 1000);
+//        TimeService timeService = new TimeService(25, 1000);
         TrainModelEvent trainModelEvent = new TrainModelEvent(new Model());
 
 
         Thread t1 = new Thread(gpuService);
-        Thread t2 = new Thread(timeService);
+//        Thread t2 = new Thread(timeService);
         Thread t3 = new Thread(gpuTimeService);
         t1.start();
-        t2.start();
+//        t2.start();
         t3.start();
         try{
             Thread.sleep(3000);
@@ -40,9 +40,6 @@ public class CRMSRunner {
         }catch(Exception ignored){
 
         }
-        t1.interrupt();
-        t2.interrupt();
-        t3.interrupt();
 
 
 
