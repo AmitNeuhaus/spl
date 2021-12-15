@@ -18,6 +18,22 @@ public class SystemConstructor {
         systemServices = new LinkedList<>();
         systemThreads = new LinkedList<>();
     }
+    private int[] calculateCPUWeights(int[] allCpuCores){
+        if (allCpuCores.length == 0){
+            throw new IllegalArgumentException("No cpu cores inserted");
+        }
+
+        int[] weights = new int[allCpuCores.length];
+        int overAllCores=0;
+        for (int i =0; i <allCpuCores.length ; i++){
+            overAllCores += allCpuCores[i];
+        }
+
+        for (int i =0; i <allCpuCores.length ; i++){
+            weights[i] = allCpuCores[i]/ overAllCores;
+        }
+        return weights;
+    }
 
     public void buildSystem(){
         //Build student services
@@ -53,10 +69,12 @@ public class SystemConstructor {
         }
 
         //Build system CPUServices
-        Integer[] cpuCores = fileParser.getCPU();
-        for(Integer cores : cpuCores){
+        int[] cpuCores = fileParser.getCPU();
+        int[] cpuWeghits = calculateCPUWeights(cpuCores);
+        int i = 0;
+        for(int cores : cpuCores){
             CPUService cpuService = new CPUService();
-            CPU cpu = new CPU(cores,cpuService);
+            CPU cpu = new CPU(cores,cpuService,cpuWeghits[i]);
             CPUManager cpuManager = new CPUManager(cpu);
             systemServices.add(cpuService);
             systemServices.add(cpuManager);
@@ -64,6 +82,7 @@ public class SystemConstructor {
             Thread thread2 = new Thread(cpuManager);
             systemThreads.add(thread1);
             systemThreads.add(thread2);
+            i++;
         }
 
         //Build TimeService
@@ -84,6 +103,8 @@ public class SystemConstructor {
             t.interrupt();
         }
     }
+
+
 
 
 }

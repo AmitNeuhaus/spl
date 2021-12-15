@@ -51,15 +51,14 @@ public class FileParser {
         return gpusType;
     }
 
-    public Integer[] getCPU(){
+    public int[] getCPU(){
         JsonArray jsonCPUS = fileObject.get("CPUS").getAsJsonArray();
-        Integer[] cpuCores = new Integer[jsonCPUS.size()];
+        int[] cpuCores = new int[jsonCPUS.size()];
         int i = 0;
         for (JsonElement cores : jsonCPUS){
             cpuCores[i] = cores.getAsInt();
             i++;
         }
-        Arrays.sort(cpuCores, Collections.reverseOrder());
         return cpuCores;
     }
 
