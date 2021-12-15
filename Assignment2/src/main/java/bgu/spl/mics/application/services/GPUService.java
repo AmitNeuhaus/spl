@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.FreeGpuBroadcast;
 import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.GPU;
@@ -27,7 +28,6 @@ public class GPUService extends MicroService {
 
     @Override
     protected void initialize() {
-
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
             System.out.println("Started Training");
@@ -48,6 +48,7 @@ public class GPUService extends MicroService {
                 complete(trainEvent,model);
                 System.out.println("finished training");
                 gpu.clearGpu();
+                sendBroadcast(new FreeGpuBroadcast(model));
             }
         });
 
@@ -62,6 +63,7 @@ public class GPUService extends MicroService {
                 model.setResult(result);
                 complete(testEvent,result);
                 gpu.clearGpu();
+                sendBroadcast(new FreeGpuBroadcast(model));
             }
         });
     }

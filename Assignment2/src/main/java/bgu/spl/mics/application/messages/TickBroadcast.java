@@ -9,13 +9,13 @@ public class TickBroadcast implements Broadcast {
         tick = currentTick;
     }
 
-    @Override
+
     public String getSenderId() {
         return null;
     }
 
-    @Override
-    public Object getData() {
+
+    public int getData() {
         return tick;
     }
 }

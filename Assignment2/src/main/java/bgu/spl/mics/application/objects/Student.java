@@ -1,8 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Passive object representing single student.
@@ -61,6 +59,8 @@ public class Student {
     public void addPapersRead(){papersRead++;}
 
     public void addModel(Model model){if (model != null){models.addLast(model);}}
+
+    public LinkedList<Model> getModels(){return models;}
 
     public String toString(){
         String output =  "Name: " + name + '\n' + "Department: " + department + '\n' + "Degree: " + status + '\n' + "Publications: " + publications + '\n' + "PapersRead: "

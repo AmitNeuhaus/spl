@@ -34,8 +34,14 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      */
 
-	public T get() {
-		while (!resolved){}
+	public T get()  {
+		while (!resolved){
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		return result;
 	}
 	
@@ -48,6 +54,7 @@ public class Future<T> {
 	public void resolve (T result) {
 		resolved = true;
 		this.result = result;
+		notifyAll();
 	}
 	
 	/**
@@ -80,4 +87,7 @@ public class Future<T> {
 		}
 		return null;
 	}
+
+
+
 }

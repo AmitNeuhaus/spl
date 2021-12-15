@@ -9,6 +9,9 @@ public class TestModelEvent implements Event<Model.results> {
     private Model model;
     private Future<Model.results> future = null;
 
+    public TestModelEvent(Model model){
+        this.model = model;
+    }
 
     @Override
     public Future<Model.results> getFuture() {

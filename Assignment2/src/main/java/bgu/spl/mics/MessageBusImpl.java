@@ -4,8 +4,8 @@ import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.MicroServiceArray;
-import bgu.spl.mics.example.messages.ExampleBroadcast;
-import bgu.spl.mics.example.messages.ExampleEvent;
+
+
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -53,7 +53,7 @@ public class MessageBusImpl implements MessageBus {
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
 			System.out.println("subscribed: "+ m.getName()+" to event");
 		}else{
-			System.out.println("not registered");
+			throw new IllegalArgumentException("ERROR: micro service: " + m.getName()+" is not registered");
 		}
 	}
 
@@ -73,7 +73,7 @@ public class MessageBusImpl implements MessageBus {
 			System.out.println("subscribed: "+ m.getName()+" to broadcast ");
 		}
 		else{
-			System.out.println("not registered");
+			throw new IllegalArgumentException("ERROR: micro service: " + m.getName()+" is not registered");
 		}
 
 	}
@@ -88,6 +88,7 @@ public class MessageBusImpl implements MessageBus {
 	@Override
 	public <T> void complete(Event<T> e, T result) {
 		e.getFuture().resolve(result);
+
 	}
 
 	/**
@@ -104,7 +105,7 @@ public class MessageBusImpl implements MessageBus {
 			try{
 				microserviceQueue.put(b);
 			}catch(Exception error){
-				System.out.println("cant put in queue: " + error);
+				error.printStackTrace();
 			}
 
 		}
@@ -130,7 +131,7 @@ public class MessageBusImpl implements MessageBus {
 		try{
 			queue.put(e);
 		}catch(Exception error){
-			System.out.println("cant put in queue: " + error);
+			error.printStackTrace();
 		}
 
 
@@ -149,7 +150,6 @@ public class MessageBusImpl implements MessageBus {
 		if(!isMicroServiceRegistered(m)){
 			LinkedBlockingQueue<Message> queue = new LinkedBlockingQueue<>();
 			microserviceToQueueMap.put(m,queue);
-			System.out.println("registered: "+ m.getName());
 		}
 	}
 
@@ -186,9 +186,8 @@ public class MessageBusImpl implements MessageBus {
 			return msg;
 		}
 		else{
-			System.out.println("your Q in null you full");
+			throw new NullPointerException("ERROR: micro service queue is null for service: " + m.getName());
 		}
-		return null;
 	}
 
 

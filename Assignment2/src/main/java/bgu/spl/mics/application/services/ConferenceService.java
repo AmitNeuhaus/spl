@@ -35,7 +35,9 @@ public class ConferenceService extends MicroService {
     protected void initialize() {
        subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
            if((int)tickBroadcast.getData() == conInfo.getDate()){
-               sendBroadcast(new PublishConferenceBroadcast(conInfo,modelsToPublish));
+               for (Model model : modelsToPublish){
+                   sendBroadcast(new PublishConferenceBroadcast(conInfo,model));
+               }
                MessageBusImpl.getInstance().unregister(this);
                terminate();
            }

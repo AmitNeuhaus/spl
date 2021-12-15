@@ -40,6 +40,9 @@ public class CRMSRunner {
         }catch(Exception ignored){
 
         }
+        t1.interrupt();
+        t2.interrupt();
+        t3.interrupt();
 
 
 
