@@ -15,16 +15,15 @@ public class CPUManagerService extends MicroService {
     @Override
     protected void initialize() {
         while (!terminated) {
-            try {
-                while (cpu.getDataSize() == 0) {
-                    cpu.wait();
-                }
+//            try {
+//            System.out.println("something");
+//                while (cpu.getDataSize() == 0) {}
                 cpu.process();
-            } catch (InterruptedException e){
-                terminated = true;
-                System.out.println("Terminated CPU MANAGER");
-                terminate();
-            }
+//            } catch (InterruptedException e){
+//                terminated = true;
+//                System.out.println("Terminated CPU MANAGER");
+//                terminate();
+//            }
         }
     }
 }

@@ -33,8 +33,8 @@ public class GPUService extends MicroService {
             System.out.println("Started Training");
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
-                model.setStatus(Model.statusEnum.Training);
                 gpu.insertModel(model);
+                model.setStatus(Model.statusEnum.Training);
                 gpu.splitToBatches(model.getData());
                 while(model.getData().getProcessed() < model.getDataSize()){
                     if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){

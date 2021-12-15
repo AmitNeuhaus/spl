@@ -13,7 +13,7 @@ class CPUTest {
 
     @BeforeEach
     void setUp(){
-        cpu = new CPU(32);
+        cpu = new CPU(32,new CPUService(), 5);
     }
 
 

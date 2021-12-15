@@ -11,8 +11,8 @@ public class GPUTimeService extends MicroService {
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
-    public GPUTimeService(String name) {
-        super(name);
+    public GPUTimeService() {
+        super("GPU time service");
         currentTime = 0;
     }
 

@@ -23,11 +23,13 @@ public class DataBatch implements DataBatchInterface {
         startIndex = 0;
     }
 
-    public DataBatch(Data data,int startIndex){
+    public DataBatch(Data data,int startIndex,GPU gpuSender){
         this.data = data;
         processed = false;
         trained = false;
         this.startIndex = startIndex;
+        this.gpuSender = gpuSender;
+
     }
     public boolean isProcessed(){
         return processed;

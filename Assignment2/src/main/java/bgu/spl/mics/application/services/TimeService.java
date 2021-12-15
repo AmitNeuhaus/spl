@@ -3,6 +3,7 @@ package bgu.spl.mics.application.services;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.SystemConstructor;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,6 +24,18 @@ public class TimeService extends MicroService{
 	boolean finished;
 	int speed;
 	Timer timer;
+	SystemConstructor system;
+
+	public TimeService(int duration, int speed, SystemConstructor system) {
+		super("Time Service");
+		currentTick = 1;
+		finished = false;
+		terminateTick = duration;
+		timer = new Timer();
+		this.speed = speed;
+		this.system = system;
+		timer.schedule(new IncrementTick(), 0, speed); // schedule the task
+	}
 
 	public TimeService(int duration, int speed) {
 		super("Time Service");
@@ -34,11 +47,10 @@ public class TimeService extends MicroService{
 		timer.schedule(new IncrementTick(), 0, speed); // schedule the task
 	}
 
-
 	class IncrementTick extends TimerTask {
 		public void run() {
 			currentTick++;
-			System.out.println(currentTick);
+//			System.out.println(currentTick);
 			if (currentTick == terminateTick) {
 				System.out.println("Terminating Time service ");
 				timer.cancel();

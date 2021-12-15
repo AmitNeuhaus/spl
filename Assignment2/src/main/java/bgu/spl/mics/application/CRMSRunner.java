@@ -4,14 +4,11 @@ import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
-import bgu.spl.mics.application.objects.CPU;
-import bgu.spl.mics.application.objects.DataBatch;
-import bgu.spl.mics.application.objects.GPU;
-import bgu.spl.mics.application.objects.Model;
-import bgu.spl.mics.application.services.CPUService;
-import bgu.spl.mics.application.services.GPUService;
-import bgu.spl.mics.application.services.GPUTimeService;
-import bgu.spl.mics.application.services.TimeService;
+import bgu.spl.mics.application.objects.*;
+import bgu.spl.mics.application.services.*;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /** This is the Main class of Compute Resources Management System application. You should parse the input file,
@@ -21,28 +18,42 @@ import bgu.spl.mics.application.services.TimeService;
 public class CRMSRunner {
     public static void main(String[] args) {
         MessageBusImpl msb = MessageBusImpl.getInstance();
-        GPUTimeService gpuTimeService = new GPUTimeService("GPU time service");
+        GPUTimeService gpuTimeService = new GPUTimeService();
         GPU gpu1 = new GPU(gpuTimeService);
+        CPUService cpuService = new CPUService();
+        CPU cpu1 = new CPU(32 ,cpuService,5);
+
         GPUService gpuService = new GPUService(gpu1);
-        TimeService timeService = new TimeService(25, 1000);
+        TimeService timeService = new TimeService(1000, 1000);
         TrainModelEvent trainModelEvent = new TrainModelEvent(new Model());
+        CPUManagerService cpuManager = new CPUManagerService(cpu1);
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        executor.execute(gpuService);
+        executor.execute(timeService);
+        executor.execute(gpuTimeService);
+        executor.execute(cpuService);
+        executor.execute(cpuManager);
+        executor.shutdown();
+//        Thread t1 = new Thread(gpuService);
+//        Thread t2 = new Thread(timeService);
+//        Thread t3 = new Thread(gpuTimeService);
+//        Thread t4 = new Thread(cpuService);
+//        Thread t5 = new Thread(cpuManager);
+
+//        t1.start();
+//        t2.start();
+//        t3.start();
+//        t4.start();
+//        t5.start();
 
 
-        Thread t1 = new Thread(gpuService);
-        Thread t2 = new Thread(timeService);
-        Thread t3 = new Thread(gpuTimeService);
-        t1.start();
-        t2.start();
-        t3.start();
         try{
             Thread.sleep(3000);
             MessageBusImpl.getInstance().sendEvent(trainModelEvent);
         }catch(Exception ignored){
 
         }
-        t1.interrupt();
-        t2.interrupt();
-        t3.interrupt();
 
 
 

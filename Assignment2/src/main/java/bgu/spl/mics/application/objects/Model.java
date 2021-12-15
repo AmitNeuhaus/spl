@@ -37,7 +37,7 @@ public class Model {
 
    public Model(){
        name = "Test model";
-       data = new Data(Data.Type.Images,10000);
+       data = new Data(Data.Type.Images,2000);
        student = new Student();
        status = statusEnum.PreTrained;
    }

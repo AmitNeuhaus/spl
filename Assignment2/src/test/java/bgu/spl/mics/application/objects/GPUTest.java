@@ -14,7 +14,7 @@ class GPUTest {
 
     @BeforeEach
     void setUp(){
-        GPUTimeService gpuTimeService = new GPUTimeService("GPU Time Service");
+        GPUTimeService gpuTimeService = new GPUTimeService();
         gpu = new GPU(gpuTimeService);
     }
 

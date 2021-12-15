@@ -23,7 +23,7 @@ public class StudentService extends MicroService {
     Student student;
     Model currentModel;
 
-    public StudentService(String name,Student student) {
+    public StudentService(Student student) {
         super("Student service");
         this.student = student;
         currentModel = null;
