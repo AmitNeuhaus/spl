@@ -7,7 +7,6 @@ import bgu.spl.mics.application.messages.PublishResultsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConferenceInformation;
 import bgu.spl.mics.application.objects.Model;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**

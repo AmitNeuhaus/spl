@@ -17,7 +17,7 @@ public class CPUService extends MicroService {
     private int currentTime;
 
 
-    public CPUService(String name) {
+    public CPUService() {
         super("CPU Service");
         currentTime = 0;
 
