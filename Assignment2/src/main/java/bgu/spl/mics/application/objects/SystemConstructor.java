@@ -1,8 +1,8 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.application.services.ConferenceService;
+
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -65,15 +65,15 @@ public class SystemConstructor {
         return cpuCores;
     }
 
-    public ConfrenceInformation[] getConf(){
+    public ConferenceInformation[] getConf(){
         JsonArray jsonConf = fileObject.get("Conferences").getAsJsonArray();
-        ConfrenceInformation[] conferences = new ConfrenceInformation[jsonConf.size()];
+        ConferenceInformation[] conferences = new ConferenceInformation[jsonConf.size()];
         int i = 0;
         for (JsonElement conference : jsonConf){
             JsonObject confObject = conference.getAsJsonObject();
             String name = confObject.get("name").getAsString();
             int date = confObject.get("date").getAsInt();
-            ConfrenceInformation conf = new ConfrenceInformation(name,date);
+            ConferenceInformation conf = new ConferenceInformation(name,date);
             conferences[i] = conf;
             i++;
         }
@@ -137,7 +137,7 @@ public class SystemConstructor {
     public static void main(String[] args) {
         String fileName = "/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/example_input.json";
         SystemConstructor con = new SystemConstructor(fileName);
-        for (ConfrenceInformation conf : con.getConf()){
+        for (ConferenceInformation conf : con.getConf()){
             System.out.println("name: " + conf.getName() + " date: " + conf.getDate());
         }
         for (GPU.Type type : con.getGPU()){

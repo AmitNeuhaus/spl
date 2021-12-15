@@ -13,7 +13,11 @@ public class MicroServiceArray<E> {
     }
 
     public int getNextIndex(){
-      return ctr.incrementAndGet() % arr.size();
+        if (arr.size()>0){
+            return ctr.incrementAndGet() % arr.size();
+
+        }
+        throw new ArithmeticException("ERROR: in class microServiceArray");
     }
 
     public CopyOnWriteArrayList<E> getArray(){

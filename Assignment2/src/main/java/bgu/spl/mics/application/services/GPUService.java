@@ -48,7 +48,7 @@ public class GPUService extends MicroService {
                 complete(trainEvent,model);
                 System.out.println("finished training");
                 gpu.clearGpu();
-                sendBroadcast(new FreeGpuBroadcast());
+                sendBroadcast(new FreeGpuBroadcast(model));
             }
         });
 
@@ -63,7 +63,7 @@ public class GPUService extends MicroService {
                 model.setResult(result);
                 complete(testEvent,result);
                 gpu.clearGpu();
-                sendBroadcast(new FreeGpuBroadcast());
+                sendBroadcast(new FreeGpuBroadcast(model));
             }
         });
     }

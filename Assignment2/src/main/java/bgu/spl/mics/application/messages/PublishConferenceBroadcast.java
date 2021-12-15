@@ -22,7 +22,7 @@ public class PublishConferenceBroadcast implements Broadcast {
         return conInfo.getName();
     }
 
-    public Object getData() {
+    public ConferenceInformation getData() {
         return conInfo;
     }
 

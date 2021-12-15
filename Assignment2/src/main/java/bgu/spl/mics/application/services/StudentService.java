@@ -33,13 +33,13 @@ public class StudentService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(PublishConferenceBroadcast.class, publishBroadcast -> {
-            if (!(publishBroadcast.getPublishedModel().getStudent().getName().equals(student.getName()))){
+            if (!(publishBroadcast.getPublishedModel().getStudent() ==student)){
                 student.addPapersRead();
             }
         });
 
         subscribeBroadcast(FreeGpuBroadcast.class, freeGpuBroadcast -> {
-            if(future == null && student.getModels().size()>0){
+            if(freeGpuBroadcast.getStudent() == student && future == null && student.getModels().size()>0){
                 currentModel = student.getModels().removeFirst();
                 future =  sendEvent(new TrainModelEvent(currentModel));
                 //sent for training

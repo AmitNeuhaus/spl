@@ -48,6 +48,8 @@ public class TimeService extends MicroService{
 		}
 	}
 
+	//TODO add terminateAll function and constructor field.
+
 	@Override
 	protected void initialize() {
 
