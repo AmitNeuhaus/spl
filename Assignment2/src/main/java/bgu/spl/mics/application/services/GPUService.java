@@ -19,7 +19,7 @@ public class GPUService extends MicroService {
 
     private GPU gpu;
 
-    public GPUService(String name,GPU gpu) {
+    public GPUService(GPU gpu) {
         super("GPU Service");
         this.gpu = gpu;
     }
@@ -30,7 +30,7 @@ public class GPUService extends MicroService {
 
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
-            System.out.println("started training");
+            System.out.println("Started Training");
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 model.setStatus(Model.statusEnum.Training);

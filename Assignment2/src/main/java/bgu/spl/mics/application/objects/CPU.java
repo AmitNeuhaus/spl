@@ -32,7 +32,8 @@ public class CPU implements CPUInterface {
     }
 
     @Override
-    public void process(DataBatch db) {
+    public void process() {
+        DataBatch db = data.poll();
         int start = cpuService.getTime();
         System.out.println("started processing at: " + start);
         busy = true;
@@ -49,6 +50,7 @@ public class CPU implements CPUInterface {
     public void insertDB(DataBatch db) {
         if(!db.isProcessed()) {
             data.add(db);
+            notifyAll();
         }
     }
 
