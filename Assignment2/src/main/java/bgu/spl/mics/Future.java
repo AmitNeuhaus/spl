@@ -34,7 +34,7 @@ public class Future<T> {
      * @return return the result of type T if it is available, if not wait until it is available.
      */
 
-	public T get()  {
+	public synchronized T get()  {
 		while (!resolved){
 			try {
 				wait();
@@ -51,7 +51,7 @@ public class Future<T> {
 	 * @post isDone == True;
 	 * @post future.get() != null
      */
-	public void resolve (T result) {
+	public synchronized void resolve (T result) {
 		resolved = true;
 		this.result = result;
 		notifyAll();

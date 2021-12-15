@@ -39,7 +39,7 @@ public class SystemConstructor {
         //Build student services
         Student[] students = fileParser.getStudents();
         for(Student student : students){
-            StudentService studentService = new StudentService(student.getName());
+            StudentService studentService = new StudentService(student);
             systemServices.add(studentService);
             Thread thread = new Thread(studentService);
             systemThreads.add(thread);
@@ -75,7 +75,7 @@ public class SystemConstructor {
         for(int cores : cpuCores){
             CPUService cpuService = new CPUService();
             CPU cpu = new CPU(cores,cpuService,cpuWeghits[i]);
-            CPUManager cpuManager = new CPUManager(cpu);
+            CPUManagerService cpuManager = new CPUManagerService(cpu);
             systemServices.add(cpuService);
             systemServices.add(cpuManager);
             Thread thread1 = new Thread(cpuService);

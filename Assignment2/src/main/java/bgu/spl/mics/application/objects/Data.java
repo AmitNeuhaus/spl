@@ -28,7 +28,9 @@ public class Data {
 
     public int getSize(){return size;}
 
-    public void addProcessedData(){processed += 1000;}
+    public void addProcessedData(){
+        processed += 1000;
+    }
 
     public  int getProcessed(){return processed;}
 

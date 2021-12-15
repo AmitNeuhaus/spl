@@ -37,11 +37,20 @@ public class TimeService extends MicroService{
 		timer.schedule(new IncrementTick(), 0, speed); // schedule the task
 	}
 
+	public TimeService(int duration, int speed) {
+		super("Time Service");
+		currentTick = 1;
+		finished = false;
+		terminateTick = duration;
+		timer = new Timer();
+		this.speed = speed;
+		timer.schedule(new IncrementTick(), 0, speed); // schedule the task
+	}
 
 	class IncrementTick extends TimerTask {
 		public void run() {
 			currentTick++;
-			System.out.println(currentTick);
+//			System.out.println(currentTick);
 			if (currentTick == terminateTick) {
 				System.out.println("Terminating Time service ");
 				timer.cancel();

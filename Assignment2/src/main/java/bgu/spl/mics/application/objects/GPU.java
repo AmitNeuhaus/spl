@@ -52,6 +52,7 @@ public class GPU implements GPUInterface{
         trainedDisk = new LinkedBlockingQueue<>();
         vRam = new LinkedBlockingQueue<>(vramCapacity);
         numOfBatchesToSend = vramCapacity;
+        cluster.registerGPUToCluster(this);
     }
 
     @Override
@@ -67,10 +68,11 @@ public class GPU implements GPUInterface{
         for (int i = 0; i<numberOfBatches;i++){
             //TODO consult with Noyhoz
             if (numOfBatchesToSend > 0){
-                disk.add(new DataBatch(data,i*1000));
+                disk.add(new DataBatch(data,i*1000,this));
                 sendData();
+            }else {
+                disk.add(new DataBatch(data, i * 1000, this));
             }
-            disk.add(new DataBatch(data,i*1000));
         }
     }
 
@@ -141,8 +143,16 @@ public class GPU implements GPUInterface{
             DataBatch db = vRam.poll();
             numOfBatchesToSend++;
             int start = gpuTimeService.getTime();
+            System.out.println("started training at :" + start);
+
             int trainTime = calculateTrainTime();
-            while(gpuTimeService.getTime() - start < trainTime){}
+            try {
+                Thread.sleep(4000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+//            while(gpuTimeService.getTime() - start < trainTime){}
+            System.out.println("finidhed training at :" + gpuTimeService.getTime());
             db.setTrained(true);
             insertTrainedDbToDisk(db);
             model.getData().addProcessedData();
