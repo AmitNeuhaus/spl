@@ -11,7 +11,7 @@ public interface CPUInterface {
       * @post isBusy == False
       * @post db.processed == True
       */
-     void process(DataBatch db);
+     void process();
 
 
      /**

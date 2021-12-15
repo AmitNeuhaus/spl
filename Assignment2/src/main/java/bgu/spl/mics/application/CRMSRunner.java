@@ -23,7 +23,7 @@ public class CRMSRunner {
         MessageBusImpl msb = MessageBusImpl.getInstance();
         GPUTimeService gpuTimeService = new GPUTimeService("GPU time service");
         GPU gpu1 = new GPU(gpuTimeService);
-        GPUService gpuService = new GPUService("GPU service",gpu1);
+        GPUService gpuService = new GPUService(gpu1);
         TimeService timeService = new TimeService(25, 1000);
         TrainModelEvent trainModelEvent = new TrainModelEvent(new Model());
 
