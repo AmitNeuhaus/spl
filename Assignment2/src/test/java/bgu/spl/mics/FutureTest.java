@@ -21,7 +21,7 @@ class FutureTest {
     void get() {}
 
     @Test
-    void resolve() {
+    void resolve() throws InterruptedException {
         assertFalse(future.isDone());
         Integer results = 25;
         future.resolve(results);

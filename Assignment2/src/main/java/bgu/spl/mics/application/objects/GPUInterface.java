@@ -19,7 +19,7 @@ public interface GPUInterface {
     /**
      * Split model's data into DataBatches of 1000 samples , and stores it in the disk.
      */
-    void splitToBatches(Data data);
+    void splitToBatches();
 
 
     /**
@@ -58,7 +58,7 @@ public interface GPUInterface {
      * @post getVramSize() == {@pre} getVramSize() -1
      * @post getTrainedDiskSize() == {@pre} getTrainedDiskSize() + 1
      */
-    void Train();
+    void Train() throws InterruptedException;
 
 
     /**

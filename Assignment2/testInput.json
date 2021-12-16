@@ -1,0 +1,26 @@
+{
+    "Students":
+    [
+        {
+            "name": "Simba",
+            "department": "Computer Science",            
+            "status": "MSc",
+            "models":
+            [
+                {
+                    "name": "YOLO10",
+                    "type": "images",
+                    "size": 20000
+                }
+            ]
+        }
+    ],
+    "GPUS": ["RTX3090","RTX2080"],
+    "CPUS": [32,32,16],
+    "Conferences":
+    [
+        {"name": "ICML", "date": 20000}
+    ],
+    "TickTime": 1,
+    "Duration": 90
+}

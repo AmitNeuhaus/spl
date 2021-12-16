@@ -1,8 +1,6 @@
 package bgu.spl.mics;
 
-import bgu.spl.mics.application.messages.TestModelEvent;
-import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.messages.*;
 import bgu.spl.mics.application.objects.MicroServiceArray;
 
 
@@ -30,7 +28,7 @@ public class MessageBusImpl implements MessageBus {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
 		//TODO add events and arrays to messageToMicroserviceMap.
-		Class<? extends Message>[] messages = new Class[]{TestModelEvent.class, TrainModelEvent.class, TickBroadcast.class};
+		Class<? extends Message>[] messages = new Class[]{TestModelEvent.class, TrainModelEvent.class, TickBroadcast.class,PublishResultsEvent.class, PublishConferenceBroadcast.class, FreeGpuBroadcast.class};
 		for (Class<? extends Message> type : messages){
 			MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray<>();
 			messagesToMicroserviceMap.put(type,msArray);

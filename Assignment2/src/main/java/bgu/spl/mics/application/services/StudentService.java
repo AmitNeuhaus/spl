@@ -39,20 +39,24 @@ public class StudentService extends MicroService {
         });
 
         subscribeBroadcast(FreeGpuBroadcast.class, freeGpuBroadcast -> {
-            if(freeGpuBroadcast.getStudent() == student && future == null && student.getModels().size()>0){
-                currentModel = student.getModels().removeFirst();
-                future =  sendEvent(new TrainModelEvent(currentModel));
-                //sent for training
-                future.get();
-                future = sendEvent(new TestModelEvent(currentModel));
-                //sent for testing
-                Model.results result = (Model.results)future.get();
-                if (result == Model.results.Good){
-                    sendEvent(new PublishResultsEvent(currentModel,student));
-                    student.addPublication();
+
+                if((freeGpuBroadcast.getStudent() == student && future == null && student.getModels().size()>0) || freeGpuBroadcast.getStudent() == null){
+                    System.out.println("Student service received start broadcast");
+                    currentModel = student.getModels().removeFirst();
+                    future =  sendEvent(new TrainModelEvent(currentModel));
+                    //sent for training
+                    future.get();
+                    future = sendEvent(new TestModelEvent(currentModel));
+                    //sent for testing
+                    Model.results result = (Model.results)future.get();
+                    if (result == Model.results.Good){
+                        sendEvent(new PublishResultsEvent(currentModel,student));
+                        student.addPublication();
+                    }
+                    future = null;
                 }
-                future = null;
-            }
+
+
         });
 
     }

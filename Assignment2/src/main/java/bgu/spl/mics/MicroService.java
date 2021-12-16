@@ -99,7 +99,7 @@ public abstract class MicroService implements Runnable {
      * 	       			null in case no micro-service has subscribed to {@code e.getClass()}.
      */
     protected final <T> Future<T> sendEvent(Event<T> e) {
-        return sendEvent(e);
+        return MessageBusImpl.getInstance().sendEvent(e);
     }
 
     /**
@@ -153,7 +153,7 @@ public abstract class MicroService implements Runnable {
      */
     @Override
     public final void run() {
-        System.out.println("NOT FULLY IMPLEMENTED YET");
+        System.out.println(name +" started running");
         MessageBusImpl.getInstance().register(this);
         initialize();
         while (!terminated) {
@@ -167,7 +167,7 @@ public abstract class MicroService implements Runnable {
 
             } catch (InterruptedException e) {
                 terminate();
-                System.out.println(name + "was trminated");
+                System.out.println("TERMINATED: " + name );
             }
         }
     }

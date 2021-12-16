@@ -8,12 +8,22 @@ public class GPUTimeService extends MicroService {
     private int currentTime;
 
     /**
-     * @param name the micro-service name (used mainly for debugging purposes -
-     *             does not have to be unique)
      */
     public GPUTimeService() {
         super("GPU time service");
         currentTime = 0;
+    }
+
+    public synchronized void remindMeIn(int processTime) throws InterruptedException {
+        int start = currentTime;
+        System.out.println("Started training at: "+ start);
+
+            while (currentTime - start < processTime) {
+                wait();
+            }
+            System.out.println("Finished training at: "+ currentTime);
+
+
     }
 
 
@@ -24,7 +34,10 @@ public class GPUTimeService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, eventTime -> {
-            currentTime = eventTime.getData();
+            synchronized (this) {
+                currentTime = eventTime.getData();
+                notifyAll();
+            }
         });
     }
 }

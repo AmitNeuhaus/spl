@@ -6,17 +6,21 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.services.*;
 
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SystemConstructor {
 
     FileParser fileParser;
     LinkedList<MicroService> systemServices;
     LinkedList<Thread> systemThreads;
+    ExecutorService pool ;
 
     public SystemConstructor(String fileName){
         fileParser = new FileParser(fileName);
         systemServices = new LinkedList<>();
         systemThreads = new LinkedList<>();
+        pool = Executors.newFixedThreadPool(6);
     }
     private int[] calculateCPUWeights(int[] allCpuCores){
         if (allCpuCores.length == 0){
@@ -24,14 +28,21 @@ public class SystemConstructor {
         }
 
         int[] weights = new int[allCpuCores.length];
-        int overAllCores=0;
+        int minCores = allCpuCores[0];
+        int maxWeight = 0;
         for (int i =0; i <allCpuCores.length ; i++){
-            overAllCores += allCpuCores[i];
+            if (minCores>allCpuCores[i]){
+                minCores = allCpuCores[i];
+            }
         }
 
         for (int i =0; i <allCpuCores.length ; i++){
-            weights[i] = allCpuCores[i]/ overAllCores;
+            weights[i] = allCpuCores[i]/ minCores;
+            if (weights[i]>maxWeight){
+                maxWeight = weights[i];
+            }
         }
+        Cluster.getInstance().setMaxRounds(maxWeight);
         return weights;
     }
 
@@ -88,20 +99,26 @@ public class SystemConstructor {
         //Build TimeService
         int tickTime = fileParser.getTickTime();
         int duration = fileParser.getDuration();
-        TimeService timeservice = new TimeService(duration,tickTime,this);
+        TimeService timeservice = new TimeService(duration,tickTime*1000,this);
         systemServices.add(timeservice);
         Thread thread = new Thread(timeservice);
-        systemThreads.add(thread);
+        systemThreads.addFirst(thread);
     }
 
     public void runSystem(){
-
+        Thread timeService = systemThreads.removeFirst();
+        for (Thread t : systemThreads){
+            t.start();
+        }
+        timeService.start();
+        systemThreads.add(timeService);
     }
 
     public void terminateSystem(){
         for (Thread t : systemThreads){
             t.interrupt();
         }
+
     }
 
 

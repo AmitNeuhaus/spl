@@ -34,8 +34,8 @@ public class GPUService extends MicroService {
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 gpu.insertModel(model);
-                model.setStatus(Model.statusEnum.Training);
-                gpu.splitToBatches(model.getData());
+                model.setStatus(Model.statusEnum.Training);;
+                gpu.splitToBatches();
                 while(model.getData().getProcessed() < model.getDataSize()){
                     if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){
                         gpu.sendData();
@@ -46,7 +46,7 @@ public class GPUService extends MicroService {
                 }
                 model.setStatus(Model.statusEnum.Trained);
                 complete(trainEvent,model);
-                System.out.println("finished training");
+                System.out.println("finished training!!!!!!!!!!");
                 gpu.clearGpu();
                 sendBroadcast(new FreeGpuBroadcast(model));
             }

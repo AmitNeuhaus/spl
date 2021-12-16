@@ -88,4 +88,8 @@ public class Cluster {
         }
         return max;
     }
+
+    public void setMaxRounds(int max){
+        maxRounds = max;
+    }
 }

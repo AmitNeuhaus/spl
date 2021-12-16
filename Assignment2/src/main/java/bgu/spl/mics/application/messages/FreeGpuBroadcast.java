@@ -14,6 +14,11 @@ public class FreeGpuBroadcast implements Broadcast {
         this.student = model.getStudent();
     }
 
+    public FreeGpuBroadcast() {
+    }
+
+
+
     public Student getStudent(){
         return student;
     }

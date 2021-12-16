@@ -89,7 +89,7 @@ class GPUTest {
 
 
     @Test
-    void Train(){
+    void Train() throws InterruptedException {
         // inserting processed db to vram;
         DataBatch db = new DataBatch();
         db.setProcessed(true);
@@ -109,7 +109,7 @@ class GPUTest {
     }
 
     @Test
-    void clearGpu(){
+    void clearGpu() throws InterruptedException {
 
         // filling all disks:
         // disk - model databatches
