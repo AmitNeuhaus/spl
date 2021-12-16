@@ -64,7 +64,7 @@ public class SystemConstructor {
         for(Student student : students){
             StudentService studentService = new StudentService(student);
             systemServices.add(studentService);
-            Thread thread = new Thread(studentService);
+            Thread thread = new Thread(studentService, "Student Service Thread + " + student.getName());
             systemThreads.add(thread);
         }
 
@@ -73,7 +73,7 @@ public class SystemConstructor {
         for (ConferenceInformation confInfo : conferences){
             ConferenceService confService = new ConferenceService(confInfo);
             systemServices.add(confService);
-            Thread thread = new Thread(confService);
+            Thread thread = new Thread(confService, "Conference Service Thread + " + confInfo.getName());
             systemThreads.add(thread);
         }
 
@@ -85,8 +85,8 @@ public class SystemConstructor {
             GPUService gpuService = new GPUService(gpu);
             systemServices.add(gpuService);
             systemServices.add(gpuTimeService);
-            Thread thread1 = new Thread(gpuTimeService);
-            Thread thread2 = new Thread(gpuService);
+            Thread thread1 = new Thread(gpuTimeService, "GPU Time  Service Thread");
+            Thread thread2 = new Thread(gpuService, "GPU Service Thread");
             systemThreads.add(thread1);
             systemThreads.add(thread2);
         }
@@ -101,8 +101,8 @@ public class SystemConstructor {
             CPUManagerService cpuManager = new CPUManagerService(cpu);
             systemServices.add(cpuService);
             systemServices.add(cpuManager);
-            Thread thread1 = new Thread(cpuService);
-            Thread thread2 = new Thread(cpuManager);
+            Thread thread1 = new Thread(cpuService, "CPU Service Thread");
+            Thread thread2 = new Thread(cpuManager, "CPU Manager Thread");
             systemThreads.add(thread1);
             systemThreads.add(thread2);
             i++;
@@ -113,7 +113,7 @@ public class SystemConstructor {
         int duration = fileParser.getDuration();
         TimeService timeservice = new TimeService(duration,tickTime,this);
         systemServices.add(timeservice);
-        Thread thread = new Thread(timeservice);
+        Thread thread = new Thread(timeservice, "Time Service Thread");
         systemThreads.addFirst(thread);
     }
 
@@ -153,7 +153,14 @@ public class SystemConstructor {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        for (Thread t : systemThreads){
+            if(t.isAlive()){
+                System.out.println(t.getName() + " im alive");
+            };
+        }
     }
+
 
 
 
