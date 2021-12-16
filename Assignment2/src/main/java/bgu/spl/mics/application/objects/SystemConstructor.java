@@ -125,7 +125,7 @@ public class SystemConstructor {
         systemThreads.add(timeService);
     }
 
-    public void terminateSystem(){
+    public void terminateSystem(String outputPath){
         for (Thread t : systemThreads){
             t.interrupt();
         }
@@ -145,7 +145,7 @@ public class SystemConstructor {
         map.put("batchesProcessed",Cluster.getInstance().getBatchesProcessed());
 
         try {
-            Writer writer = new FileWriter("/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/testOutput.json");
+            Writer writer = new FileWriter(FilePath.outputFileName);
             gson.toJson(map,writer);
             writer.flush();
             writer.close();
