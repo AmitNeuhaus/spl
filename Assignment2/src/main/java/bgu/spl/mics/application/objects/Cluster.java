@@ -102,18 +102,24 @@ public class Cluster {
 
 
     public  void incrementCpuTimedUsed(int processTime){
-        int expected = cpuTimedUsed.intValue();
-        cpuTimedUsed.compareAndSet(expected,expected+processTime);
+        int expected;
+        do {
+           expected = cpuTimedUsed.intValue();
+        } while  (!cpuTimedUsed.compareAndSet(expected, expected + processTime));
     }
 
     public void incrementGpuTimedUsed(int processTime){
-        int expected = gpuTimedUsed.intValue();
-        gpuTimedUsed.compareAndSet(expected,expected+processTime);
+        int expected;
+        do{
+            expected = gpuTimedUsed.intValue();
+        }while(!gpuTimedUsed.compareAndSet(expected,expected+processTime));
     }
 
     public void  incrementBatchesProcessed(){
-        int expected = batchesProcessed.intValue();
-        batchesProcessed.compareAndSet(expected,expected+1);
+        int expected;
+        do {
+            expected = batchesProcessed.intValue();
+        }while(batchesProcessed.compareAndSet(expected,expected+1));
     }
 
 
