@@ -150,6 +150,7 @@ public class GPU implements GPUInterface{
             db.setTrained(true);
             insertTrainedDbToDisk(db);
             model.getData().addProcessedData();
+            cluster.incrementGpuTimedUsed(trainTime);
         }
     }
 

@@ -19,7 +19,6 @@ public class CPU implements CPUInterface {
     private LinkedBlockingQueue<DataBatch> data;
     private boolean busy;
     private Cluster cluster;
-    private int totalProcessTime;
     private int weight;
 
     public CPU(int cores,CPUService cpuService, int weight){
@@ -30,7 +29,7 @@ public class CPU implements CPUInterface {
         busy = false;
         cluster = Cluster.getInstance();
         cluster.registerCPUToCluster(this);
-        totalProcessTime = 0;
+
     }
 
     @Override
@@ -43,7 +42,7 @@ public class CPU implements CPUInterface {
         db.setProcessed(true);
         sendProcessedDB(db);
         busy = false;
-        totalProcessTime = totalProcessTime + processTime;
+        cluster.incrementCpuTimedUsed(processTime);
 
     }
 
@@ -58,7 +57,10 @@ public class CPU implements CPUInterface {
 
     @Override
     public void sendProcessedDB(DataBatch db) {
-        if (cluster!=null && db.isProcessed()){cluster.insertProcessedData(db);}
+        if (cluster!=null && db.isProcessed()){
+            cluster.insertProcessedData(db);
+            cluster.incrementBatchesProcessed();
+        }
     }
 
     @Override
@@ -78,9 +80,7 @@ public class CPU implements CPUInterface {
            return (32/cores);
         }
     }
-    public int getTotalProcessTime(){
-        return totalProcessTime;
-    }
+
 
     public int getCores(){return cores;}
 }

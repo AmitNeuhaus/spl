@@ -1,0 +1,82 @@
+{
+  "cpuTimeUsed": 3128,
+  "gpuTimeUsed": 700,
+  "Students": [
+    {
+      "name": "Simba",
+      "department": "Computer Science",
+      "status": "MSc",
+      "publications": 0,
+      "papersRead": 1,
+      "models": [],
+      "trainedModels": [
+        {
+          "name": "YOLO10",
+          "data": {
+            "type": "Images",
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Bad"
+        },
+        {
+          "name": "ResNet9000",
+          "data": {
+            "type": "Images",
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Bad"
+        }
+      ]
+    },
+    {
+      "name": "Nala",
+      "department": "Computer Science",
+      "status": "PhD",
+      "publications": 1,
+      "papersRead": 0,
+      "models": [],
+      "trainedModels": [
+        {
+          "name": "YOLO9000",
+          "data": {
+            "type": "Images",
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    }
+  ],
+  "Conferences": [
+    {
+      "name": "ICML",
+      "date": 20000,
+      "didPublish": true,
+      "modelsToPublish": [
+        {
+          "name": "YOLO9000",
+          "data": {
+            "type": "Images",
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    },
+    {
+      "name": "CVPR",
+      "date": 30000,
+      "didPublish": true,
+      "modelsToPublish": []
+    }
+  ],
+  "batchesProcessed": 500
+}

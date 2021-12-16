@@ -4,7 +4,15 @@ package bgu.spl.mics.application.objects;
 
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.services.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -13,6 +21,8 @@ public class SystemConstructor {
 
     FileParser fileParser;
     LinkedList<MicroService> systemServices;
+    Student[] students;
+    ConferenceInformation[] conferences;
     LinkedList<Thread> systemThreads;
     ExecutorService pool ;
 
@@ -21,6 +31,8 @@ public class SystemConstructor {
         systemServices = new LinkedList<>();
         systemThreads = new LinkedList<>();
         pool = Executors.newFixedThreadPool(6);
+        students = new Student[]{};
+        conferences = new ConferenceInformation[]{};
     }
     private int[] calculateCPUWeights(int[] allCpuCores){
         if (allCpuCores.length == 0){
@@ -48,7 +60,7 @@ public class SystemConstructor {
 
     public void buildSystem(){
         //Build student services
-        Student[] students = fileParser.getStudents();
+        students = fileParser.getStudents();
         for(Student student : students){
             StudentService studentService = new StudentService(student);
             systemServices.add(studentService);
@@ -57,9 +69,9 @@ public class SystemConstructor {
         }
 
         //Build conference services
-        ConferenceInformation[] conferences = fileParser.getConf();
+        conferences = fileParser.getConf();
         for (ConferenceInformation confInfo : conferences){
-            ConferenceService confService = new ConferenceService(confInfo.getName(), confInfo.getDate());
+            ConferenceService confService = new ConferenceService(confInfo);
             systemServices.add(confService);
             Thread thread = new Thread(confService);
             systemThreads.add(thread);
@@ -118,6 +130,31 @@ public class SystemConstructor {
         for (Thread t : systemThreads){
             t.interrupt();
         }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        HashMap map = new HashMap();
+        map.put("Students",students);
+        map.put("Conferences",conferences);
+        map.put("cpuTimeUsed",Cluster.getInstance().getCpuTimedUsed());
+        map.put("gpuTimeUsed",Cluster.getInstance().getGpuTimedUsed());
+        map.put("batchesProcessed",Cluster.getInstance().getBatchesProcessed());
+
+        try {
+            Writer writer = new FileWriter("/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/testOutput.json");
+            gson.toJson(map,writer);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
 
     }
 

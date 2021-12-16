@@ -6,6 +6,7 @@ import bgu.spl.mics.application.messages.FreeGpuBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.SystemConstructor;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 

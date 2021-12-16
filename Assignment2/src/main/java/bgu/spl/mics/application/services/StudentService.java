@@ -56,6 +56,7 @@ public class StudentService extends MicroService {
                         student.addPublication();
                     }
                     future = null;
+                    student.addTrainedModel(currentModel);
                     System.out.println(currentModel.toString());
                 }
 

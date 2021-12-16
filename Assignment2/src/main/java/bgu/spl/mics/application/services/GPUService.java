@@ -35,6 +35,7 @@ public class GPUService extends MicroService {
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 gpu.insertModel(model);
                 model.setStatus(Model.statusEnum.Training);;
+                //TODO split to batches send and train policy
                 gpu.splitToBatches();
                 while(model.getData().getProcessed() < model.getDataSize()){
                     if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){

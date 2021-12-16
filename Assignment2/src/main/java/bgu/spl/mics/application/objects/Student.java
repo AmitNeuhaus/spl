@@ -20,6 +20,7 @@ public class Student {
     private int publications;
     private int papersRead;
     private LinkedList<Model> models;
+    private LinkedList<Model> trainedModels;
 
     public Student(String name,String department, Degree status){
         this.name = name;
@@ -28,6 +29,7 @@ public class Student {
         publications = 0;
         papersRead = 0;
         models = new LinkedList<>();
+        trainedModels = new LinkedList<>();
     }
 
 
@@ -60,12 +62,16 @@ public class Student {
 
     public void addModel(Model model){if (model != null){models.addLast(model);}}
 
+    public void addTrainedModel(Model model){
+        trainedModels.add(model);
+    }
+
     public LinkedList<Model> getModels(){return models;}
 
     public String toString(){
         String output =  "Name: " + name + '\n' + "Department: " + department + '\n' + "Degree: " + status + '\n' + "Publications: " + publications + '\n' + "PapersRead: "
-                + papersRead + '\n' + "Models: " +'\n';
-        for (Model model : models){
+                + papersRead + '\n' + "TrainedModels: " +'\n';
+        for (Model model : trainedModels){
             output= output+model.toString()+'\n';
         }
         return output;
