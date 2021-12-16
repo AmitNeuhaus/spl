@@ -43,7 +43,6 @@ public class GPU implements GPUInterface{
         trainedDisk = new LinkedBlockingQueue<>();
         vRam = new LinkedBlockingQueue<>(vramCapacity);
         numOfBatchesToSend = vramCapacity;
-        currentBatchNum = 0;
     }
 
     public GPU(GPUTimeService gpuTimeService){
@@ -56,7 +55,6 @@ public class GPU implements GPUInterface{
         vRam = new LinkedBlockingQueue<>(vramCapacity);
         numOfBatchesToSend = vramCapacity;
         cluster.registerGPUToCluster(this);
-        currentBatchNum = 0;
 
     }
 
@@ -65,6 +63,7 @@ public class GPU implements GPUInterface{
         if (disk.size() == 0 && model.getStatus() != Model.statusEnum.Training){
             this.model = model;
             this.numberOfBatches = model.getDataSize()/1000;
+            this.currentBatchNum = 0;
         }
     }
 

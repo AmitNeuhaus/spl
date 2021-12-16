@@ -99,7 +99,7 @@ public class SystemConstructor {
         //Build TimeService
         int tickTime = fileParser.getTickTime();
         int duration = fileParser.getDuration();
-        TimeService timeservice = new TimeService(duration,tickTime*1000,this);
+        TimeService timeservice = new TimeService(duration,tickTime,this);
         systemServices.add(timeservice);
         Thread thread = new Thread(timeservice);
         systemThreads.addFirst(thread);

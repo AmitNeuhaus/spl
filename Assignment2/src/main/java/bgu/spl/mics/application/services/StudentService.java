@@ -33,8 +33,10 @@ public class StudentService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(PublishConferenceBroadcast.class, publishBroadcast -> {
+            System.out.println("received a conference broadcast with model: "+publishBroadcast.getPublishedModel().getName());
             if (!(publishBroadcast.getPublishedModel().getStudent() ==student)){
                 student.addPapersRead();
+                System.out.println(student.getPapersRead());
             }
         });
 
@@ -54,6 +56,7 @@ public class StudentService extends MicroService {
                         student.addPublication();
                     }
                     future = null;
+                    System.out.println(currentModel.toString());
                 }
 
 

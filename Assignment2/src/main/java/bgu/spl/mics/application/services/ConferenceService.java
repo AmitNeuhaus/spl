@@ -33,9 +33,11 @@ public class ConferenceService extends MicroService {
     @Override
     protected void initialize() {
        subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-           if((int)tickBroadcast.getData() == conInfo.getDate()){
+           if(tickBroadcast.getData() == conInfo.getDate()){
+               System.out.println("started publication on: "+tickBroadcast.getData() );
                for (Model model : modelsToPublish){
                    sendBroadcast(new PublishConferenceBroadcast(conInfo,model));
+                   System.out.println("publish model: "+ model.getName());
                }
                MessageBusImpl.getInstance().unregister(this);
                terminate();
@@ -45,6 +47,7 @@ public class ConferenceService extends MicroService {
 
        subscribeEvent(PublishResultsEvent.class, publishEvent -> {
            modelsToPublish.add(publishEvent.getModel());
+           System.out.println("model was added to conference model list: " + publishEvent.getModel().getName());
        });
 
 

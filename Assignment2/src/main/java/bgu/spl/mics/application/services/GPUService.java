@@ -30,7 +30,7 @@ public class GPUService extends MicroService {
     protected void initialize() {
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
-            System.out.println("Started Training");
+            System.out.println("Started Training model: " + trainEvent.getModel().getName());
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 gpu.insertModel(model);
@@ -57,6 +57,7 @@ public class GPUService extends MicroService {
         subscribeEvent(TestModelEvent.class, testEvent -> {
             Model model = testEvent.getModel();
             if (model.getStatus() == Model.statusEnum.Trained && model.getResult() == Model.results.None){
+                System.out.println("started testing model");
                 gpu.insertModel(model);
                 Model.results result = gpu.testModel();
                 model.setStatus(Model.statusEnum.Tested);
@@ -64,6 +65,7 @@ public class GPUService extends MicroService {
                 complete(testEvent,result);
                 gpu.clearGpu();
                 sendBroadcast(new FreeGpuBroadcast(model));
+                System.out.println("finished testing model result is: " + result);
             }
         });
     }
