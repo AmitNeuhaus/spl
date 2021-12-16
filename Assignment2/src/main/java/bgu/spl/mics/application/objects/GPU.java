@@ -24,6 +24,8 @@ public class GPU implements GPUInterface{
     Cluster cluster;
     private GPUTimeService gpuTimeService;
     private int numOfBatchesToSend;
+    private int numberOfBatches;
+    private int currentBatchNum;
 
     // Memory:
     int vramCapacity;
@@ -53,26 +55,23 @@ public class GPU implements GPUInterface{
         vRam = new LinkedBlockingQueue<>(vramCapacity);
         numOfBatchesToSend = vramCapacity;
         cluster.registerGPUToCluster(this);
+
     }
 
     @Override
     public void insertModel(Model model) {
         if (disk.size() == 0 && model.getStatus() != Model.statusEnum.Training){
             this.model = model;
+            this.numberOfBatches = model.getDataSize()/1000;
+            this.currentBatchNum = 0;
         }
     }
 
     @Override
-    public void splitToBatches(Data data) {
-        int numberOfBatches = data.getSize()/1000;
-        for (int i = 0; i<numberOfBatches;i++){
-            //TODO consult with Noyhoz
-            if (numOfBatchesToSend > 0){
-                disk.add(new DataBatch(data,i*1000,this));
-                sendData();
-            }else {
-                disk.add(new DataBatch(data, i * 1000, this));
-            }
+    public void splitToBatches() {
+        while(numberOfBatches>currentBatchNum){
+            disk.add(new DataBatch(model.getData(),currentBatchNum*1000,this));
+            currentBatchNum++;
         }
     }
 
@@ -136,26 +135,22 @@ public class GPU implements GPUInterface{
 
     public int getNumOfBatchesToSend(){return numOfBatchesToSend;}
 
+    public int getNumberOfBatches(){return numberOfBatches;}
+
+    public int getCurrentBatchNum(){return currentBatchNum;}
+
 
     @Override
-    public void Train() {
+    public void Train() throws InterruptedException {
         if (!vRam.isEmpty()){
             DataBatch db = vRam.poll();
             numOfBatchesToSend++;
-            int start = gpuTimeService.getTime();
-            System.out.println("started training at :" + start);
-
             int trainTime = calculateTrainTime();
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-//            while(gpuTimeService.getTime() - start < trainTime){}
-            System.out.println("finidhed training at :" + gpuTimeService.getTime());
+            gpuTimeService.remindMeIn(trainTime);
             db.setTrained(true);
             insertTrainedDbToDisk(db);
             model.getData().addProcessedData();
+            cluster.incrementGpuTimedUsed(trainTime);
         }
     }
 

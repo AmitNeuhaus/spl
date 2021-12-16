@@ -130,26 +130,26 @@ public class FileParser {
 
 
 
-
-    public static void main(String[] args) {
-        String fileName = "/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/example_input.json";
-        FileParser con = new FileParser(fileName);
-        for (ConferenceInformation conf : con.getConf()){
-            System.out.println("name: " + conf.getName() + " date: " + conf.getDate());
-        }
-        for (GPU.Type type : con.getGPU()){
-            System.out.println(type);
-        }
-
-        for (int cpu : con.getCPU()){
-            System.out.println(cpu);
-        }
-
-        for (Student student : con.getStudents()){
-            System.out.println(student.toString());
-        }
-
-    }
+//
+//    public static void main(String[] args) {
+//        String fileName = "/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/example_input.json";
+//        FileParser con = new FileParser(fileName);
+//        for (ConferenceInformation conf : con.getConf()){
+//            System.out.println("name: " + conf.getName() + " date: " + conf.getDate());
+//        }
+//        for (GPU.Type type : con.getGPU()){
+//            System.out.println(type);
+//        }
+//
+//        for (int cpu : con.getCPU()){
+//            System.out.println(cpu);
+//        }
+//
+//        for (Student student : con.getStudents()){
+//            System.out.println(student.toString());
+//        }
+//
+//    }
 
 
 

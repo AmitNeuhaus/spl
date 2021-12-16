@@ -23,6 +23,18 @@ public class CPUService extends MicroService {
 
     }
 
+    public synchronized void remindMeIn(int processTime) throws InterruptedException {
+        int start = currentTime;
+        System.out.println("Started processing at: "+ start);
+
+            while (currentTime - start < processTime) {
+                wait();
+            }
+            System.out.println("Finished processing at: "+ currentTime);
+
+
+    }
+
     public int getTime(){
         return currentTime;
     }
@@ -30,7 +42,10 @@ public class CPUService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(TickBroadcast.class, eventTime -> {
-            currentTime = eventTime.getData();
+            synchronized (this) {
+                currentTime = eventTime.getData();
+                notifyAll();
+            }
         });
     }
 }

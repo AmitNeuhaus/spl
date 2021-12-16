@@ -2,9 +2,11 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.FreeGpuBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.SystemConstructor;
 
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,11 +51,21 @@ public class TimeService extends MicroService{
 
 	class IncrementTick extends TimerTask {
 		public void run() {
+			if (currentTick == 1){
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				sendBroadcast(new FreeGpuBroadcast());
+				System.out.println("Time service sent start broadcast");
+			}
 			currentTick++;
 //			System.out.println(currentTick);
 			if (currentTick == terminateTick) {
 				System.out.println("Terminating Time service ");
 				timer.cancel();
+				system.terminateSystem();
 				terminate();
 			}
 			sendBroadcast(new TickBroadcast(currentTick));

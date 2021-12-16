@@ -30,12 +30,13 @@ public class GPUService extends MicroService {
     protected void initialize() {
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
-            System.out.println("Started Training");
+            System.out.println("Started Training model: " + trainEvent.getModel().getName());
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 gpu.insertModel(model);
-                model.setStatus(Model.statusEnum.Training);
-                gpu.splitToBatches(model.getData());
+                model.setStatus(Model.statusEnum.Training);;
+                //TODO split to batches send and train policy
+                gpu.splitToBatches();
                 while(model.getData().getProcessed() < model.getDataSize()){
                     if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){
                         gpu.sendData();
@@ -46,7 +47,7 @@ public class GPUService extends MicroService {
                 }
                 model.setStatus(Model.statusEnum.Trained);
                 complete(trainEvent,model);
-                System.out.println("finished training");
+                System.out.println("finished training!!!!!!!!!!");
                 gpu.clearGpu();
                 sendBroadcast(new FreeGpuBroadcast(model));
             }
@@ -57,6 +58,7 @@ public class GPUService extends MicroService {
         subscribeEvent(TestModelEvent.class, testEvent -> {
             Model model = testEvent.getModel();
             if (model.getStatus() == Model.statusEnum.Trained && model.getResult() == Model.results.None){
+                System.out.println("started testing model");
                 gpu.insertModel(model);
                 Model.results result = gpu.testModel();
                 model.setStatus(Model.statusEnum.Tested);
@@ -64,6 +66,7 @@ public class GPUService extends MicroService {
                 complete(testEvent,result);
                 gpu.clearGpu();
                 sendBroadcast(new FreeGpuBroadcast(model));
+                System.out.println("finished testing model result is: " + result);
             }
         });
     }

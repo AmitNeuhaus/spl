@@ -6,6 +6,7 @@ import bgu.spl.mics.MessageBusImpl;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Passive object representing the cluster.
@@ -23,6 +24,12 @@ public class Cluster {
 
 	CopyOnWriteArrayList<CPU> cpuList = new CopyOnWriteArrayList<>();
     ConcurrentHashMap<GPU,GPU> gpuHash = new ConcurrentHashMap<>();
+
+    //statistics fields:
+
+    private AtomicInteger cpuTimedUsed= new AtomicInteger(0);
+    private AtomicInteger gpuTimedUsed=new AtomicInteger(0);
+    private  AtomicInteger batchesProcessed=new AtomicInteger(0);
 
     // Params for continous Weighted Round Robin.
     int maxRounds;
@@ -87,5 +94,34 @@ public class Cluster {
                 max = cpu.getWeight();
         }
         return max;
+    }
+
+    public void setMaxRounds(int max){
+        maxRounds = max;
+    }
+
+
+    public  void incrementCpuTimedUsed(int processTime){
+        int expected = cpuTimedUsed.intValue();
+        cpuTimedUsed.compareAndSet(expected,expected+processTime);
+    }
+
+    public void incrementGpuTimedUsed(int processTime){
+        int expected = gpuTimedUsed.intValue();
+        gpuTimedUsed.compareAndSet(expected,expected+processTime);
+    }
+
+    public void  incrementBatchesProcessed(){
+        int expected = batchesProcessed.intValue();
+        batchesProcessed.compareAndSet(expected,expected+1);
+    }
+
+
+    public int getCpuTimedUsed(){return cpuTimedUsed.intValue();}
+
+    public int getGpuTimedUsed(){return gpuTimedUsed.intValue();}
+
+    public int getBatchesProcessed() {
+        return batchesProcessed.intValue();
     }
 }

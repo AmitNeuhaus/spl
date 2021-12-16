@@ -20,23 +20,29 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ConferenceService extends MicroService {
 
-    CopyOnWriteArrayList<Model> modelsToPublish;
+
     ConferenceInformation conInfo;
 
 
-    public ConferenceService(String name,int date) {
-        super("Conference service ");
-        conInfo = new ConferenceInformation(name,date);
-        modelsToPublish = new CopyOnWriteArrayList<>();
+
+    public ConferenceService(ConferenceInformation confInfo) {
+        super("Conference service");
+        this.conInfo = confInfo;
     }
+
+
+    public ConferenceInformation getConInfo(){return conInfo;}
 
     @Override
     protected void initialize() {
        subscribeBroadcast(TickBroadcast.class, tickBroadcast -> {
-           if((int)tickBroadcast.getData() == conInfo.getDate()){
-               for (Model model : modelsToPublish){
+           if(tickBroadcast.getData() == conInfo.getDate()){
+               System.out.println("started publication on: "+tickBroadcast.getData() );
+               for (Model model : conInfo.getModelsToPublish()){
                    sendBroadcast(new PublishConferenceBroadcast(conInfo,model));
+                   System.out.println("publish model: "+ model.getName());
                }
+               conInfo.publish();
                MessageBusImpl.getInstance().unregister(this);
                terminate();
            }
@@ -44,7 +50,8 @@ public class ConferenceService extends MicroService {
 
 
        subscribeEvent(PublishResultsEvent.class, publishEvent -> {
-           modelsToPublish.add(publishEvent.getModel());
+           conInfo.addModel(publishEvent.getModel());
+           System.out.println("model was added to conference model list: " + publishEvent.getModel().getName());
        });
 
 

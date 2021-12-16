@@ -33,26 +33,34 @@ public class StudentService extends MicroService {
     @Override
     protected void initialize() {
         subscribeBroadcast(PublishConferenceBroadcast.class, publishBroadcast -> {
+            System.out.println("received a conference broadcast with model: "+publishBroadcast.getPublishedModel().getName());
             if (!(publishBroadcast.getPublishedModel().getStudent() ==student)){
                 student.addPapersRead();
+                System.out.println(student.getPapersRead());
             }
         });
 
         subscribeBroadcast(FreeGpuBroadcast.class, freeGpuBroadcast -> {
-            if(freeGpuBroadcast.getStudent() == student && future == null && student.getModels().size()>0){
-                currentModel = student.getModels().removeFirst();
-                future =  sendEvent(new TrainModelEvent(currentModel));
-                //sent for training
-                future.get();
-                future = sendEvent(new TestModelEvent(currentModel));
-                //sent for testing
-                Model.results result = (Model.results)future.get();
-                if (result == Model.results.Good){
-                    sendEvent(new PublishResultsEvent(currentModel,student));
-                    student.addPublication();
+
+                if((freeGpuBroadcast.getStudent() == student && future == null && student.getModels().size()>0) || freeGpuBroadcast.getStudent() == null){
+                    System.out.println("Student service received start broadcast");
+                    currentModel = student.getModels().removeFirst();
+                    future =  sendEvent(new TrainModelEvent(currentModel));
+                    //sent for training
+                    future.get();
+                    future = sendEvent(new TestModelEvent(currentModel));
+                    //sent for testing
+                    Model.results result = (Model.results)future.get();
+                    if (result == Model.results.Good){
+                        sendEvent(new PublishResultsEvent(currentModel,student));
+                        student.addPublication();
+                    }
+                    future = null;
+                    student.addTrainedModel(currentModel);
+                    System.out.println(currentModel.toString());
                 }
-                future = null;
-            }
+
+
         });
 
     }

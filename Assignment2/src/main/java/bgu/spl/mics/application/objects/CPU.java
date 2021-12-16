@@ -19,7 +19,6 @@ public class CPU implements CPUInterface {
     private LinkedBlockingQueue<DataBatch> data;
     private boolean busy;
     private Cluster cluster;
-    private int totalProcessTime;
     private int weight;
 
     public CPU(int cores,CPUService cpuService, int weight){
@@ -30,46 +29,38 @@ public class CPU implements CPUInterface {
         busy = false;
         cluster = Cluster.getInstance();
         cluster.registerCPUToCluster(this);
-        totalProcessTime = 0;
+
     }
 
     @Override
-    public void process() {
-        if (getDataSize() > 0 ) {
-            DataBatch db = data.poll();
-            int start = cpuService.getTime();
-            System.out.println("started processing at: " + start);
-            busy = true;
-            int end = -1;
-            int processTime = calculateProcessTime(db);
-//            while (cpuService.getTime() - start < processTime) {
-//                 end = cpuService.getTime();
-//            }
-            try {
-                Thread.sleep(4000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            db.setProcessed(true);
-            System.out.println("finished processing at: " + end);
-            sendProcessedDB(db);
-            busy = false;
-            totalProcessTime = totalProcessTime + processTime;
-        }
+    public synchronized void process() throws InterruptedException{
+        while(getDataSize() == 0 ) {wait();}
+        DataBatch db = data.poll();
+        busy = true;
+        int processTime = calculateProcessTime(db);
+        cpuService.remindMeIn(processTime);
+        db.setProcessed(true);
+        sendProcessedDB(db);
+        busy = false;
+        cluster.incrementCpuTimedUsed(processTime);
+
     }
 
     @Override
-    public void insertDB(DataBatch db) {
+    public synchronized void insertDB(DataBatch db) {
         if(!db.isProcessed()) {
             data.add(db);
-            System.out.println("inserted data to cpu: "+ db + getDataSize());
-//            notifyAll();
+            System.out.println("inserted data to cpu: "+ db +"sender: " + db.getGpuSender());
+            notifyAll();
         }
     }
 
     @Override
     public void sendProcessedDB(DataBatch db) {
-        if (cluster!=null && db.isProcessed()){cluster.insertProcessedData(db);}
+        if (cluster!=null && db.isProcessed()){
+            cluster.insertProcessedData(db);
+            cluster.incrementBatchesProcessed();
+        }
     }
 
     @Override
@@ -89,9 +80,7 @@ public class CPU implements CPUInterface {
            return (32/cores);
         }
     }
-    public int getTotalProcessTime(){
-        return totalProcessTime;
-    }
+
 
     public int getCores(){return cores;}
 }
