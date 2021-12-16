@@ -21,7 +21,6 @@ public class CRMSRunner {
         SystemConstructor sysCon = new SystemConstructor(FilePath.inputFileNamePath);
         sysCon.buildSystem();
         sysCon.runSystem();
-
     }
 //        MessageBusImpl msb = MessageBusImpl.getInstance();
 //        GPUTimeService gpuTimeService = new GPUTimeService();

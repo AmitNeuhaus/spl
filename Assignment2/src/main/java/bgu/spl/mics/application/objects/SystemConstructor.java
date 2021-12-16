@@ -30,7 +30,7 @@ public class SystemConstructor {
         fileParser = new FileParser(fileName);
         systemServices = new LinkedList<>();
         systemThreads = new LinkedList<>();
-        pool = Executors.newFixedThreadPool(6);
+        pool = Executors.newCachedThreadPool();
         students = new Student[]{};
         conferences = new ConferenceInformation[]{};
     }
@@ -79,8 +79,8 @@ public class SystemConstructor {
 
         //Build system GPUServices
         GPU.Type[] gpuTypes = fileParser.getGPU();
+        GPUTimeService gpuTimeService = new GPUTimeService();
         for (GPU.Type gpuType : gpuTypes){
-            GPUTimeService gpuTimeService = new GPUTimeService();
             GPU gpu = new GPU(gpuType,gpuTimeService);
             GPUService gpuService = new GPUService(gpu);
             systemServices.add(gpuService);
@@ -95,8 +95,8 @@ public class SystemConstructor {
         int[] cpuCores = fileParser.getCPU();
         int[] cpuWeghits = calculateCPUWeights(cpuCores);
         int i = 0;
+        CPUService cpuService = new CPUService();
         for(int cores : cpuCores){
-            CPUService cpuService = new CPUService();
             CPU cpu = new CPU(cores,cpuService,cpuWeghits[i]);
             CPUManagerService cpuManager = new CPUManagerService(cpu);
             systemServices.add(cpuService);
@@ -153,9 +153,6 @@ public class SystemConstructor {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
     }
 
 
