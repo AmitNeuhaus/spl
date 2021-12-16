@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -137,7 +138,7 @@ public class SystemConstructor {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        HashMap map = new HashMap();
+        LinkedHashMap map = new LinkedHashMap();
         map.put("Students",students);
         map.put("Conferences",conferences);
         map.put("cpuTimeUsed",Cluster.getInstance().getCpuTimedUsed());

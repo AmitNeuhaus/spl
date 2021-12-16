@@ -1,13 +1,11 @@
 {
-  "cpuTimeUsed": 3128,
-  "gpuTimeUsed": 700,
   "Students": [
     {
       "name": "Simba",
       "department": "Computer Science",
       "status": "MSc",
       "publications": 0,
-      "papersRead": 1,
+      "papersRead": 0,
       "models": [],
       "trainedModels": [
         {
@@ -57,7 +55,7 @@
     {
       "name": "ICML",
       "date": 20000,
-      "didPublish": true,
+      "didPublish": false,
       "modelsToPublish": [
         {
           "name": "YOLO9000",
@@ -74,9 +72,11 @@
     {
       "name": "CVPR",
       "date": 30000,
-      "didPublish": true,
+      "didPublish": false,
       "modelsToPublish": []
     }
   ],
-  "batchesProcessed": 500
+  "cpuTimeUsed": 3128,
+  "gpuTimeUsed": 700,
+  "batchesProcessed": 1131006180
 }
