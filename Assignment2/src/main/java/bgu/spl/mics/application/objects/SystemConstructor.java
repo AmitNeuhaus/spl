@@ -125,7 +125,7 @@ public class SystemConstructor {
         systemThreads.add(timeService);
     }
 
-    public void terminateSystem(String outputPath){
+    public void terminateSystem(){
         for (Thread t : systemThreads){
             t.interrupt();
         }
