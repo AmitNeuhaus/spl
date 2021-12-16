@@ -17,8 +17,9 @@ import java.util.concurrent.Executors;
  */
 public class CRMSRunner {
     public static void main(String[] args) {
-        String fileName = "/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/testInput.json";
-        SystemConstructor sysCon = new SystemConstructor(fileName);
+
+        String dir = System.getProperty("user.dir");
+        SystemConstructor sysCon = new SystemConstructor(dir +"/testInput.json");
         sysCon.buildSystem();
         sysCon.runSystem();
 
