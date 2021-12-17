@@ -32,6 +32,34 @@ public class StudentService extends MicroService {
 
     @Override
     protected void initialize() {
+
+        subscribeBroadcast(StartSendModels.class, startSendModels -> {
+            if (student.getModels().size() > 0) {
+                System.out.println( getName() +"Started Sending Models");
+                currentModel = student.getModels().removeFirst();
+                future = sendEvent(new TrainModelEvent(currentModel));
+            }
+        });
+
+        subscribeBroadcast(FinishedModelTraining.class, finishedModelTraining -> {
+            if (finishedModelTraining.getStudent() == student) {
+                future = sendEvent(new TestModelEvent(finishedModelTraining.getModel()));
+            }
+        });
+
+        subscribeBroadcast(FinishedModelTesting.class, finishedModelTesting -> {
+            if (finishedModelTesting.getStudent() == student) {
+                Model.results result = (Model.results) future.get();
+                if (result == Model.results.Good) {
+                    sendEvent(new PublishResultsEvent(currentModel, student));
+                    student.addPublication();
+                }
+                future = null;
+                student.addTrainedModel(currentModel);
+                System.out.println(currentModel.toString());
+            }
+        });
+
         subscribeBroadcast(PublishConferenceBroadcast.class, publishBroadcast -> {
             System.out.println("received a conference broadcast with model: "+publishBroadcast.getPublishedModel().getName());
             if (!(publishBroadcast.getPublishedModel().getStudent() ==student)){
@@ -40,28 +68,10 @@ public class StudentService extends MicroService {
             }
         });
 
-        subscribeBroadcast(FreeGpuBroadcast.class, freeGpuBroadcast -> {
-
-                if((freeGpuBroadcast.getStudent() == student && future == null && student.getModels().size()>0) || freeGpuBroadcast.getStudent() == null){
-                    System.out.println("Student service received start broadcast");
-                    currentModel = student.getModels().removeFirst();
-                    future =  sendEvent(new TrainModelEvent(currentModel));
-                    //sent for training
-                    future.get();
-                    future = sendEvent(new TestModelEvent(currentModel));
-                    //sent for testing
-                    Model.results result = (Model.results)future.get();
-                    if (result == Model.results.Good){
-                        sendEvent(new PublishResultsEvent(currentModel,student));
-                        student.addPublication();
-                    }
-                    future = null;
-                    student.addTrainedModel(currentModel);
-                    System.out.println(currentModel.toString());
-                }
 
 
-        });
+
+
 
     }
 }

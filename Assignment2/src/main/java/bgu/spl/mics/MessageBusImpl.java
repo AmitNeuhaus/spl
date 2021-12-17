@@ -28,7 +28,7 @@ public class MessageBusImpl implements MessageBus {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
 		//TODO add events and arrays to messageToMicroserviceMap.
-		Class<? extends Message>[] messages = new Class[]{TestModelEvent.class, TrainModelEvent.class, TickBroadcast.class,PublishResultsEvent.class, PublishConferenceBroadcast.class, FreeGpuBroadcast.class};
+		Class<? extends Message>[] messages = new Class[]{TestModelEvent.class, TrainModelEvent.class, TickBroadcast.class,PublishResultsEvent.class, PublishConferenceBroadcast.class, FinishedModelTraining.class, FinishedModelTesting.class, StartSendModels.class};
 		for (Class<? extends Message> type : messages){
 			MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray<>();
 			messagesToMicroserviceMap.put(type,msArray);

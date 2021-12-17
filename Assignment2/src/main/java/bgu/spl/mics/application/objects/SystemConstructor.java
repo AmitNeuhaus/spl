@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,13 +24,13 @@ public class SystemConstructor {
     Student[] students;
     ConferenceInformation[] conferences;
     LinkedList<Thread> systemThreads;
-    ExecutorService pool ;
+//    ExecutorService pool ;
 
     public SystemConstructor(String fileName){
         fileParser = new FileParser(fileName);
         systemServices = new LinkedList<>();
         systemThreads = new LinkedList<>();
-        pool = Executors.newFixedThreadPool(6);
+//        pool = Executors.newCachedThreadPool();
         students = new Student[]{};
         conferences = new ConferenceInformation[]{};
     }
@@ -63,7 +64,7 @@ public class SystemConstructor {
         for(Student student : students){
             StudentService studentService = new StudentService(student);
             systemServices.add(studentService);
-            Thread thread = new Thread(studentService);
+            Thread thread = new Thread(studentService, "Student Service Thread + " + student.getName());
             systemThreads.add(thread);
         }
 
@@ -72,20 +73,20 @@ public class SystemConstructor {
         for (ConferenceInformation confInfo : conferences){
             ConferenceService confService = new ConferenceService(confInfo);
             systemServices.add(confService);
-            Thread thread = new Thread(confService);
+            Thread thread = new Thread(confService, "Conference Service Thread + " + confInfo.getName());
             systemThreads.add(thread);
         }
 
         //Build system GPUServices
         GPU.Type[] gpuTypes = fileParser.getGPU();
+        GPUTimeService gpuTimeService = new GPUTimeService();
         for (GPU.Type gpuType : gpuTypes){
-            GPUTimeService gpuTimeService = new GPUTimeService();
             GPU gpu = new GPU(gpuType,gpuTimeService);
             GPUService gpuService = new GPUService(gpu);
             systemServices.add(gpuService);
             systemServices.add(gpuTimeService);
-            Thread thread1 = new Thread(gpuTimeService);
-            Thread thread2 = new Thread(gpuService);
+            Thread thread1 = new Thread(gpuTimeService, "GPU Time  Service Thread");
+            Thread thread2 = new Thread(gpuService, "GPU Service Thread");
             systemThreads.add(thread1);
             systemThreads.add(thread2);
         }
@@ -94,14 +95,14 @@ public class SystemConstructor {
         int[] cpuCores = fileParser.getCPU();
         int[] cpuWeghits = calculateCPUWeights(cpuCores);
         int i = 0;
+        CPUService cpuService = new CPUService();
         for(int cores : cpuCores){
-            CPUService cpuService = new CPUService();
             CPU cpu = new CPU(cores,cpuService,cpuWeghits[i]);
             CPUManagerService cpuManager = new CPUManagerService(cpu);
             systemServices.add(cpuService);
             systemServices.add(cpuManager);
-            Thread thread1 = new Thread(cpuService);
-            Thread thread2 = new Thread(cpuManager);
+            Thread thread1 = new Thread(cpuService, "CPU Service Thread");
+            Thread thread2 = new Thread(cpuManager, "CPU Manager Thread");
             systemThreads.add(thread1);
             systemThreads.add(thread2);
             i++;
@@ -112,7 +113,7 @@ public class SystemConstructor {
         int duration = fileParser.getDuration();
         TimeService timeservice = new TimeService(duration,tickTime,this);
         systemServices.add(timeservice);
-        Thread thread = new Thread(timeservice);
+        Thread thread = new Thread(timeservice, "Time Service Thread");
         systemThreads.addFirst(thread);
     }
 
@@ -137,7 +138,7 @@ public class SystemConstructor {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-        HashMap map = new HashMap();
+        LinkedHashMap map = new LinkedHashMap();
         map.put("Students",students);
         map.put("Conferences",conferences);
         map.put("cpuTimeUsed",Cluster.getInstance().getCpuTimedUsed());
@@ -145,7 +146,7 @@ public class SystemConstructor {
         map.put("batchesProcessed",Cluster.getInstance().getBatchesProcessed());
 
         try {
-            Writer writer = new FileWriter("/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/testOutput.json");
+            Writer writer = new FileWriter(FilePath.outputFileName);
             gson.toJson(map,writer);
             writer.flush();
             writer.close();
@@ -153,9 +154,13 @@ public class SystemConstructor {
             e.printStackTrace();
         }
 
-
-
+        for (Thread t : systemThreads){
+            if(t.isAlive()){
+                System.out.println(t.getName() + " im alive");
+            };
+        }
     }
+
 
 
 

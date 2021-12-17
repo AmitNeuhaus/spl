@@ -2,7 +2,7 @@ package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.FreeGpuBroadcast;
+import bgu.spl.mics.application.messages.StartSendModels;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.SystemConstructor;
 
@@ -57,7 +57,7 @@ public class TimeService extends MicroService{
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				sendBroadcast(new FreeGpuBroadcast());
+				sendBroadcast(new StartSendModels());
 				System.out.println("Time service sent start broadcast");
 			}
 			currentTick++;

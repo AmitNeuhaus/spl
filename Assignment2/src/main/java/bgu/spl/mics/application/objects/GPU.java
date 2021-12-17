@@ -68,11 +68,18 @@ public class GPU implements GPUInterface{
     }
 
     @Override
-    public void splitToBatches() {
+    public void splitToBatches() throws InterruptedException{
+        System.out.println("[Started] spliting model: " + model.getName());
+
         while(numberOfBatches>currentBatchNum){
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
             disk.add(new DataBatch(model.getData(),currentBatchNum*1000,this));
             currentBatchNum++;
         }
+        System.out.println("[Finished] spliting model: " + model.getName());
+
     }
 
     @Override

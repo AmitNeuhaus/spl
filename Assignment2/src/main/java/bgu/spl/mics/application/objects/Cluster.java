@@ -101,21 +101,35 @@ public class Cluster {
     }
 
 
-    public  void incrementCpuTimedUsed(int processTime){
-        int expected = cpuTimedUsed.intValue();
-        cpuTimedUsed.compareAndSet(expected,expected+processTime);
+    public  void incrementCpuTimedUsed(int processTime) throws InterruptedException{
+        int expected;
+        do {
+           expected = cpuTimedUsed.intValue();
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
+        } while  (!cpuTimedUsed.compareAndSet(expected, expected + processTime));
     }
 
-    public void incrementGpuTimedUsed(int processTime){
-        int expected = gpuTimedUsed.intValue();
-        gpuTimedUsed.compareAndSet(expected,expected+processTime);
+    public void incrementGpuTimedUsed(int processTime) throws InterruptedException{
+        int expected;
+        do{
+            expected = gpuTimedUsed.intValue();
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
+        }while(!gpuTimedUsed.compareAndSet(expected,expected+processTime));
     }
 
-    public void  incrementBatchesProcessed(){
-        int expected = batchesProcessed.intValue();
-        batchesProcessed.compareAndSet(expected,expected+1);
+    public void  incrementBatchesProcessed() throws InterruptedException{
+        int expected;
+        do {
+            expected = batchesProcessed.intValue();
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
+        }while(!batchesProcessed.compareAndSet(expected,expected+1));
     }
-
 
     public int getCpuTimedUsed(){return cpuTimedUsed.intValue();}
 

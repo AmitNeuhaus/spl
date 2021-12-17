@@ -17,11 +17,10 @@ import java.util.concurrent.Executors;
  */
 public class CRMSRunner {
     public static void main(String[] args) {
-        String fileName = "/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/testInput.json";
-        SystemConstructor sysCon = new SystemConstructor(fileName);
+
+        SystemConstructor sysCon = new SystemConstructor(FilePath.inputFileNamePath);
         sysCon.buildSystem();
         sysCon.runSystem();
-
     }
 //        MessageBusImpl msb = MessageBusImpl.getInstance();
 //        GPUTimeService gpuTimeService = new GPUTimeService();
