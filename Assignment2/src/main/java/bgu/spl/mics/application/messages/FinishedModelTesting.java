@@ -1,20 +1,21 @@
 package bgu.spl.mics.application.messages;
 
 import bgu.spl.mics.Broadcast;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.application.objects.Student;
 
 
-public class FreeGpuBroadcast implements Broadcast {
+public class FinishedModelTesting implements Broadcast {
 
     Student student;
+    Model model;
 
-    public FreeGpuBroadcast(Model model) {
+    public FinishedModelTesting(Model model) {
         this.student = model.getStudent();
+        this.model = model;
     }
 
-    public FreeGpuBroadcast() {
+    public FinishedModelTesting() {
     }
 
 
@@ -24,5 +25,7 @@ public class FreeGpuBroadcast implements Broadcast {
     }
 
 
-
+    public Model getModel() {
+        return model;
+    }
 }
