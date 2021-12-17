@@ -19,7 +19,7 @@ public interface GPUInterface {
     /**
      * Split model's data into DataBatches of 1000 samples , and stores it in the disk.
      */
-    void splitToBatches();
+    void splitToBatches() throws InterruptedException;
 
 
     /**

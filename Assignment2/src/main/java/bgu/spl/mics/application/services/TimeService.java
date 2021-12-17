@@ -61,7 +61,7 @@ public class TimeService extends MicroService{
 				System.out.println("Time service sent start broadcast");
 			}
 			currentTick++;
-			System.out.println(currentTick);
+//			System.out.println(currentTick);
 			if (currentTick == terminateTick) {
 				System.out.println("Terminating Time service ");
 				timer.cancel();

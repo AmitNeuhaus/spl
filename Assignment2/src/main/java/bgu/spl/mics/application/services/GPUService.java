@@ -38,6 +38,9 @@ public class GPUService extends MicroService {
                 //TODO split to batches send and train policy
                 gpu.splitToBatches();
                 while(model.getData().getProcessed() < model.getDataSize()){
+                    if(Thread.currentThread().isInterrupted()){
+                        throw new InterruptedException();
+                    }
                     if (gpu.getNumOfBatchesToSend() > 0 && gpu.getDiskSize() > 0){
                         gpu.sendData();
                     }

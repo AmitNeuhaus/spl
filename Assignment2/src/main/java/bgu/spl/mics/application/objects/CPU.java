@@ -56,7 +56,7 @@ public class CPU implements CPUInterface {
     }
 
     @Override
-    public void sendProcessedDB(DataBatch db) {
+    public void sendProcessedDB(DataBatch db) throws InterruptedException {
         if (cluster!=null && db.isProcessed()){
             cluster.insertProcessedData(db);
             cluster.incrementBatchesProcessed();

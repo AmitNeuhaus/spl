@@ -16,6 +16,110 @@
           },
           "status": "PreTrained",
           "result": "None"
+        },
+        {
+          "name": "LessEfficientNet",
+          "data": {
+            "type": "Images",
+            "processed": 0,
+            "size": 20000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "DensestNet",
+          "data": {
+            "type": "Images",
+            "processed": 0,
+            "size": 200000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        }
+      ],
+      "trainedModels": []
+    },
+    {
+      "name": "Zazu",
+      "department": "EE",
+      "status": "PhD",
+      "publications": 0,
+      "papersRead": 0,
+      "models": [],
+      "trainedModels": []
+    },
+    {
+      "name": "Pumba",
+      "department": "Computer Science",
+      "status": "PhD",
+      "publications": 0,
+      "papersRead": 0,
+      "models": [
+        {
+          "name": "GPT4",
+          "data": {
+            "processed": 0,
+            "size": 1000000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "GPT5",
+          "data": {
+            "processed": 0,
+            "size": 200000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "GPT10",
+          "data": {
+            "processed": 0,
+            "size": 50000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        }
+      ],
+      "trainedModels": []
+    },
+    {
+      "name": "Timon",
+      "department": "SE",
+      "status": "MSc",
+      "publications": 0,
+      "papersRead": 0,
+      "models": [
+        {
+          "name": "GNN",
+          "data": {
+            "type": "Tabular",
+            "processed": 0,
+            "size": 1000000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "MoreStyleGAN",
+          "data": {
+            "processed": 0,
+            "size": 100000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "ConditionalGAN",
+          "data": {
+            "processed": 0,
+            "size": 500000
+          },
+          "status": "PreTrained",
+          "result": "None"
         }
       ],
       "trainedModels": []
@@ -26,7 +130,38 @@
       "status": "PhD",
       "publications": 0,
       "papersRead": 0,
-      "models": [],
+      "models": [
+        {
+          "name": "VIT2",
+          "data": {
+            "type": "Images",
+            "processed": 0,
+            "size": 1000000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "MuchMoreEfficientNet",
+          "data": {
+            "type": "Images",
+            "processed": 0,
+            "size": 20000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        },
+        {
+          "name": "DenserNet",
+          "data": {
+            "type": "Images",
+            "processed": 0,
+            "size": 100000
+          },
+          "status": "PreTrained",
+          "result": "None"
+        }
+      ],
       "trainedModels": []
     }
   ],
@@ -34,17 +169,35 @@
     {
       "name": "ICML",
       "date": 20000,
-      "didPublish": false,
+      "didPublish": true,
+      "modelsToPublish": []
+    },
+    {
+      "name": "NeurIPS",
+      "date": 25000,
+      "didPublish": true,
       "modelsToPublish": []
     },
     {
       "name": "CVPR",
       "date": 30000,
-      "didPublish": false,
+      "didPublish": true,
+      "modelsToPublish": []
+    },
+    {
+      "name": "ECCV",
+      "date": 40000,
+      "didPublish": true,
+      "modelsToPublish": []
+    },
+    {
+      "name": "AISTATS",
+      "date": 50000,
+      "didPublish": true,
       "modelsToPublish": []
     }
   ],
-  "cpuTimeUsed": 8,
-  "gpuTimeUsed": 3,
-  "batchesProcessed": 484801160
+  "cpuTimeUsed": 63,
+  "gpuTimeUsed": 5,
+  "batchesProcessed": 1644553010
 }

@@ -101,24 +101,33 @@ public class Cluster {
     }
 
 
-    public  void incrementCpuTimedUsed(int processTime){
+    public  void incrementCpuTimedUsed(int processTime) throws InterruptedException{
         int expected;
         do {
            expected = cpuTimedUsed.intValue();
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
         } while  (!cpuTimedUsed.compareAndSet(expected, expected + processTime));
     }
 
-    public void incrementGpuTimedUsed(int processTime){
+    public void incrementGpuTimedUsed(int processTime) throws InterruptedException{
         int expected;
         do{
             expected = gpuTimedUsed.intValue();
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
         }while(!gpuTimedUsed.compareAndSet(expected,expected+processTime));
     }
 
-    public void  incrementBatchesProcessed(){
+    public void  incrementBatchesProcessed() throws InterruptedException{
         int expected;
         do {
             expected = batchesProcessed.intValue();
+            if(Thread.currentThread().isInterrupted()){
+                throw new InterruptedException();
+            }
         }while(batchesProcessed.compareAndSet(expected,expected+1));
     }
 
