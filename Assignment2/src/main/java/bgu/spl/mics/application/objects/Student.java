@@ -19,7 +19,7 @@ public class Student {
     private Degree status;
     private int publications;
     private int papersRead;
-    private LinkedList<Model> models;
+    private transient LinkedList<Model> models;
     private LinkedList<Model> trainedModels;
 
     public Student(String name,String department, Degree status){

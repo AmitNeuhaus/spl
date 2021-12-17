@@ -24,13 +24,13 @@ public class SystemConstructor {
     Student[] students;
     ConferenceInformation[] conferences;
     LinkedList<Thread> systemThreads;
-    ExecutorService pool ;
+//    ExecutorService pool ;
 
     public SystemConstructor(String fileName){
         fileParser = new FileParser(fileName);
         systemServices = new LinkedList<>();
         systemThreads = new LinkedList<>();
-        pool = Executors.newCachedThreadPool();
+//        pool = Executors.newCachedThreadPool();
         students = new Student[]{};
         conferences = new ConferenceInformation[]{};
     }

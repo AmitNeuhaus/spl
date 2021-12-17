@@ -128,9 +128,8 @@ public class Cluster {
             if(Thread.currentThread().isInterrupted()){
                 throw new InterruptedException();
             }
-        }while(batchesProcessed.compareAndSet(expected,expected+1));
+        }while(!batchesProcessed.compareAndSet(expected,expected+1));
     }
-
 
     public int getCpuTimedUsed(){return cpuTimedUsed.intValue();}
 
