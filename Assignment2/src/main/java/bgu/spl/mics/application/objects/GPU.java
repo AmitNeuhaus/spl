@@ -26,6 +26,7 @@ public class GPU implements GPUInterface{
     private int numOfBatchesToSend;
     private int numberOfBatches;
     private int currentBatchNum;
+    public int gpuID;
 
     // Memory:
     int vramCapacity;
@@ -33,7 +34,7 @@ public class GPU implements GPUInterface{
     LinkedBlockingQueue<DataBatch> trainedDisk;
     LinkedBlockingQueue<DataBatch> vRam;
 
-    public GPU(Type type,GPUTimeService gpuTimeService){
+    public GPU(Type type,GPUTimeService gpuTimeService, int id){
         this.type = type;
         this.gpuTimeService = gpuTimeService;
         this.vramCapacity = getVramCapacity();
@@ -43,6 +44,7 @@ public class GPU implements GPUInterface{
         trainedDisk = new LinkedBlockingQueue<>();
         vRam = new LinkedBlockingQueue<>(vramCapacity);
         numOfBatchesToSend = vramCapacity;
+        this.gpuID = id;
     }
 
     public GPU(GPUTimeService gpuTimeService){
@@ -69,17 +71,17 @@ public class GPU implements GPUInterface{
 
     @Override
     public void splitToBatches() throws InterruptedException{
-        System.out.println("[Started] spliting model: " + model.getName());
 
-        while(numberOfBatches>currentBatchNum){
-            if(Thread.currentThread().isInterrupted()){
-                throw new InterruptedException();
+        if(numberOfBatches>currentBatchNum){
+            int delta = Math.min(10, numberOfBatches - currentBatchNum);
+            for (int i=0; i< delta; i++) {
+                if(Thread.currentThread().isInterrupted()){
+                    throw new InterruptedException();
+                }
+                disk.add(new DataBatch(model.getData(), currentBatchNum * 1000, this));
+                currentBatchNum++;
             }
-            disk.add(new DataBatch(model.getData(),currentBatchNum*1000,this));
-            currentBatchNum++;
         }
-        System.out.println("[Finished] spliting model: " + model.getName());
-
     }
 
     @Override

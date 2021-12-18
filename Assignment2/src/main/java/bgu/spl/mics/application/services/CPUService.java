@@ -25,14 +25,9 @@ public class CPUService extends MicroService {
 
     public synchronized void remindMeIn(int processTime) throws InterruptedException {
         int start = currentTime;
-        System.out.println("Started processing at: "+ start);
-
             while (currentTime - start < processTime) {
                 wait();
             }
-            System.out.println("Finished processing at: "+ currentTime);
-
-
     }
 
     public int getTime(){

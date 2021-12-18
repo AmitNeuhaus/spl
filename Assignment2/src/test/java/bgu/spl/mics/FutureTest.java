@@ -16,7 +16,6 @@ class FutureTest {
     void setUp(){
         future = new Future<Integer>();
     }
-
     @Test
     void get() {}
 
@@ -54,7 +53,7 @@ class FutureTest {
 
             public Integer result;
             public void run(){
-               result = future.get(2000,TimeUnit.MILLISECONDS);
+                result = future.get(2000,TimeUnit.MILLISECONDS);
             }
         }
         Getter g = new Getter();
@@ -63,6 +62,8 @@ class FutureTest {
         t1.start();
         t2.start();
 
+        t1.join();
+        t2.join();
 //        scenario 1 task takes less than timeout
         System.out.println("before");
         System.out.println("ok");

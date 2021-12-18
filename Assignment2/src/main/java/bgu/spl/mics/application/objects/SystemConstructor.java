@@ -80,8 +80,9 @@ public class SystemConstructor {
         //Build system GPUServices
         GPU.Type[] gpuTypes = fileParser.getGPU();
         GPUTimeService gpuTimeService = new GPUTimeService();
+        int i =0;
         for (GPU.Type gpuType : gpuTypes){
-            GPU gpu = new GPU(gpuType,gpuTimeService);
+            GPU gpu = new GPU(gpuType,gpuTimeService, i);
             GPUService gpuService = new GPUService(gpu);
             systemServices.add(gpuService);
             systemServices.add(gpuTimeService);
@@ -89,12 +90,13 @@ public class SystemConstructor {
             Thread thread2 = new Thread(gpuService, "GPU Service Thread");
             systemThreads.add(thread1);
             systemThreads.add(thread2);
+            i++;
         }
 
         //Build system CPUServices
         int[] cpuCores = fileParser.getCPU();
         int[] cpuWeghits = calculateCPUWeights(cpuCores);
-        int i = 0;
+        i = 0;
         CPUService cpuService = new CPUService();
         for(int cores : cpuCores){
             CPU cpu = new CPU(cores,cpuService,cpuWeghits[i]);
@@ -146,7 +148,7 @@ public class SystemConstructor {
         map.put("batchesProcessed",Cluster.getInstance().getBatchesProcessed());
 
         try {
-            Writer writer = new FileWriter(FilePath.outputFileName);
+            Writer writer = new FileWriter(FilePath.outputFileNamePath);
             gson.toJson(map,writer);
             writer.flush();
             writer.close();

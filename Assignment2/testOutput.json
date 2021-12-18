@@ -5,17 +5,34 @@
       "department": "Computer Science",
       "status": "MSc",
       "publications": 1,
-      "papersRead": 1,
+      "papersRead": 2,
       "trainedModels": [
         {
           "name": "YOLO10",
           "data": {
-            "type": "Images",
             "processed": 200000,
             "size": 200000
           },
           "status": "Tested",
           "result": "Good"
+        },
+        {
+          "name": "ResNet9000",
+          "data": {
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Bad"
+        },
+        {
+          "name": "LessEfficientNet",
+          "data": {
+            "processed": 20000,
+            "size": 20000
+          },
+          "status": "Trained",
+          "result": "None"
         }
       ]
     },
@@ -24,15 +41,15 @@
       "department": "EE",
       "status": "PhD",
       "publications": 0,
-      "papersRead": 2,
+      "papersRead": 3,
       "trainedModels": []
     },
     {
       "name": "Pumba",
       "department": "Computer Science",
       "status": "PhD",
-      "publications": 1,
-      "papersRead": 1,
+      "publications": 0,
+      "papersRead": 3,
       "trainedModels": [
         {
           "name": "Bert",
@@ -40,8 +57,8 @@
             "processed": 1000000,
             "size": 1000000
           },
-          "status": "Tested",
-          "result": "Good"
+          "status": "Trained",
+          "result": "None"
         }
       ]
     },
@@ -49,11 +66,21 @@
       "name": "Timon",
       "department": "SE",
       "status": "MSc",
-      "publications": 0,
+      "publications": 1,
       "papersRead": 2,
       "trainedModels": [
         {
           "name": "Percepetron",
+          "data": {
+            "type": "Tabular",
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "GNN",
           "data": {
             "type": "Tabular",
             "processed": 1000000,
@@ -68,9 +95,19 @@
       "name": "Nala",
       "department": "Computer Science",
       "status": "PhD",
-      "publications": 0,
+      "publications": 1,
       "papersRead": 2,
-      "trainedModels": []
+      "trainedModels": [
+        {
+          "name": "YOLO9000",
+          "data": {
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
     }
   ],
   "Conferences": [
@@ -88,7 +125,6 @@
         {
           "name": "YOLO10",
           "data": {
-            "type": "Images",
             "processed": 200000,
             "size": 200000
           },
@@ -101,7 +137,18 @@
       "name": "CVPR",
       "date": 30000,
       "didPublish": true,
-      "modelsToPublish": []
+      "modelsToPublish": [
+        {
+          "name": "Percepetron",
+          "data": {
+            "type": "Tabular",
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
     },
     {
       "name": "ECCV",
@@ -109,10 +156,10 @@
       "didPublish": true,
       "modelsToPublish": [
         {
-          "name": "Bert",
+          "name": "YOLO9000",
           "data": {
-            "processed": 1000000,
-            "size": 1000000
+            "processed": 100000,
+            "size": 100000
           },
           "status": "Tested",
           "result": "Good"
@@ -126,7 +173,7 @@
       "modelsToPublish": []
     }
   ],
-  "cpuTimeUsed": 298485,
-  "gpuTimeUsed": 49697,
-  "batchesProcessed": 49000
+  "cpuTimeUsed": 88826,
+  "gpuTimeUsed": 61020,
+  "batchesProcessed": 56526
 }

@@ -35,14 +35,17 @@ public class StudentService extends MicroService {
 
         subscribeBroadcast(StartSendModels.class, startSendModels -> {
             if (student.getModels().size() > 0) {
-                System.out.println( getName() +"Started Sending Models");
                 currentModel = student.getModels().removeFirst();
+                System.out.println( student.getName() + " [Started - First Time] Sent new model for training : " + currentModel.getName());
                 future = sendEvent(new TrainModelEvent(currentModel));
             }
         });
 
         subscribeBroadcast(FinishedModelTraining.class, finishedModelTraining -> {
+            System.out.println(finishedModelTraining.getModel().getName() +" " +finishedModelTraining.getModel().getStudent().getName() + " " + student.getName());
             if (finishedModelTraining.getStudent() == student) {
+                student.addTrainedModel(finishedModelTraining.getModel());
+                System.out.println(student.getName() + " sent test model event about model: " + finishedModelTraining.getModel().getName());
                 future = sendEvent(new TestModelEvent(finishedModelTraining.getModel()));
             }
         });
@@ -54,9 +57,13 @@ public class StudentService extends MicroService {
                     sendEvent(new PublishResultsEvent(currentModel, student));
                     student.addPublication();
                 }
-                future = null;
-                student.addTrainedModel(currentModel);
-                System.out.println(currentModel.toString());
+                System.out.println("Saving Model " + currentModel.getName() +" to trained models of student " + student.getName());
+                System.out.println(student.getName() + " Finished training model: " + currentModel.getName());
+                if (student.getModels().size() > 0) {
+                    currentModel = student.getModels().removeFirst();
+                    System.out.println( student.getName() + " Sent new model for training : " + currentModel.getName());
+                    future = sendEvent(new TrainModelEvent(currentModel));
+                }
             }
         });
 

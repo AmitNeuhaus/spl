@@ -1,0 +1,254 @@
+{
+  "Students": [
+    {
+      "name": "Simba",
+      "department": "Computer Science",
+      "status": "MSc",
+      "publications": 2,
+      "papersRead": 6,
+      "trainedModels": [
+        {
+          "name": "YOLO10",
+          "data": {
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "ResNet9000",
+          "data": {
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    },
+    {
+      "name": "Zazu",
+      "department": "EE",
+      "status": "PhD",
+      "publications": 0,
+      "papersRead": 8,
+      "trainedModels": []
+    },
+    {
+      "name": "Pumba",
+      "department": "Computer Science",
+      "status": "PhD",
+      "publications": 0,
+      "papersRead": 8,
+      "trainedModels": [
+        {
+          "name": "Bert",
+          "data": {
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Trained",
+          "result": "None"
+        }
+      ]
+    },
+    {
+      "name": "Timon",
+      "department": "SE",
+      "status": "MSc",
+      "publications": 2,
+      "papersRead": 6,
+      "trainedModels": [
+        {
+          "name": "Percepetron",
+          "data": {
+            "type": "Tabular",
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "GNN",
+          "data": {
+            "type": "Tabular",
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "MoreStyleGAN",
+          "data": {
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Trained",
+          "result": "None"
+        }
+      ]
+    },
+    {
+      "name": "Nala",
+      "department": "Computer Science",
+      "status": "PhD",
+      "publications": 4,
+      "papersRead": 4,
+      "trainedModels": [
+        {
+          "name": "YOLO9000",
+          "data": {
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "VIT2",
+          "data": {
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "MuchMoreEfficientNet",
+          "data": {
+            "processed": 20000,
+            "size": 20000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "DenserNet",
+          "data": {
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    }
+  ],
+  "Conferences": [
+    {
+      "name": "ICML",
+      "date": 20000,
+      "didPublish": true,
+      "modelsToPublish": [
+        {
+          "name": "Percepetron",
+          "data": {
+            "type": "Tabular",
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "DenserNet",
+          "data": {
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    },
+    {
+      "name": "NeurIPS",
+      "date": 25000,
+      "didPublish": true,
+      "modelsToPublish": [
+        {
+          "name": "YOLO9000",
+          "data": {
+            "processed": 100000,
+            "size": 100000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "MuchMoreEfficientNet",
+          "data": {
+            "processed": 20000,
+            "size": 20000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    },
+    {
+      "name": "CVPR",
+      "date": 30000,
+      "didPublish": true,
+      "modelsToPublish": [
+        {
+          "name": "GNN",
+          "data": {
+            "type": "Tabular",
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    },
+    {
+      "name": "ECCV",
+      "date": 40000,
+      "didPublish": true,
+      "modelsToPublish": [
+        {
+          "name": "ResNet9000",
+          "data": {
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    },
+    {
+      "name": "AISTATS",
+      "date": 50000,
+      "didPublish": true,
+      "modelsToPublish": [
+        {
+          "name": "YOLO10",
+          "data": {
+            "processed": 200000,
+            "size": 200000
+          },
+          "status": "Tested",
+          "result": "Good"
+        },
+        {
+          "name": "VIT2",
+          "data": {
+            "processed": 1000000,
+            "size": 1000000
+          },
+          "status": "Tested",
+          "result": "Good"
+        }
+      ]
+    }
+  ],
+  "cpuTimeUsed": 91159,
+  "gpuTimeUsed": 62967,
+  "batchesProcessed": 58011
+}
