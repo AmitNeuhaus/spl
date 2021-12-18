@@ -16,14 +16,9 @@ public class GPUTimeService extends MicroService {
 
     public synchronized void remindMeIn(int processTime) throws InterruptedException {
         int start = currentTime;
-        System.out.println("Started training at: "+ start);
-
             while (currentTime - start < processTime) {
                 wait();
             }
-            System.out.println("Finished training at: "+ currentTime);
-
-
     }
 
 

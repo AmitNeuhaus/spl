@@ -50,7 +50,7 @@ public class CPU implements CPUInterface {
     public synchronized void insertDB(DataBatch db) {
         if(!db.isProcessed()) {
             data.add(db);
-            System.out.println("inserted data to cpu: "+ db +"sender: " + db.getGpuSender());
+//            System.out.println("inserted data to cpu: "+ db +"sender: " + db.getGpuSender());
             notifyAll();
         }
     }
