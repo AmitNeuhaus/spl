@@ -49,7 +49,7 @@ public class MessageBusImpl implements MessageBus {
 		if(isMicroServiceRegistered(m)){
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
-			System.out.println("subscribed: "+ m.getName()+" to event");
+//			System.out.println("subscribed: "+ m.getName()+" to event");
 		}else{
 			throw new IllegalArgumentException("ERROR: micro service: " + m.getName()+" is not registered");
 		}
@@ -68,7 +68,7 @@ public class MessageBusImpl implements MessageBus {
 		if (isMicroServiceRegistered(m)){
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
 			messagesToMicroserviceMap.get(type).getArray().add(queue);
-			System.out.println("subscribed: "+ m.getName()+" to broadcast ");
+//			System.out.println("subscribed: "+ m.getName()+" to broadcast ");
 		}
 		else{
 			throw new IllegalArgumentException("ERROR: micro service: " + m.getName()+" is not registered");
