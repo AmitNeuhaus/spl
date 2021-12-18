@@ -31,7 +31,7 @@ public class GPUService extends MicroService {
     protected void initialize() {
         //Train Event:
         subscribeEvent(TrainModelEvent.class, trainEvent -> {
-            System.out.println("[GPU ID: " + gpu.gpuID + " ]" + "Started Training model: " + trainEvent.getModel().getName());
+//            System.out.println("[GPU ID: " + gpu.gpuID + " ]" + "Started Training model: " + trainEvent.getModel().getName());
             Model model = trainEvent.getModel();
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 gpu.insertModel(model);
@@ -52,7 +52,7 @@ public class GPUService extends MicroService {
                 }
                 model.setStatus(Model.statusEnum.Trained);
 //                complete(trainEvent,model);
-                System.out.println("Finished Training :" + model.getName()+" GPU ID: " + gpu.gpuID );
+//                System.out.println("Finished Training :" + model.getName()+" GPU ID: " + gpu.gpuID );
                 sendBroadcast(new FinishedModelTraining(model));
                 gpu.clearGpu();
             }
@@ -63,7 +63,7 @@ public class GPUService extends MicroService {
         subscribeEvent(TestModelEvent.class, testEvent -> {
             Model model = testEvent.getModel();
             if (model.getStatus() == Model.statusEnum.Trained && model.getResult() == Model.results.None){
-                System.out.println("started testing model");
+//                System.out.println("started testing model");
                 gpu.insertModel(model);
                 Model.results result = gpu.testModel();
                 model.setStatus(Model.statusEnum.Tested);
@@ -71,7 +71,7 @@ public class GPUService extends MicroService {
                 complete(testEvent,result);
                 gpu.clearGpu();
                 sendBroadcast(new FinishedModelTesting(model));
-                System.out.println("finished testing model result is: " + result);
+//                System.out.println("finished testing model result is: " + result);
             }
         });
     }
