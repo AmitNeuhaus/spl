@@ -30,11 +30,11 @@ class CPUTest {
     }
 
     @Test
-    void sendProcessedDB() {
+    void sendProcessedDB() throws InterruptedException {
         int dataSize = cpu.getDataSize();
         DataBatch db = new DataBatch();
         db.setProcessed(true);
-//        cpu.sendProcessedDB(db);
+        cpu.sendProcessedDB(db);
         assertEquals(cpu.getDataSize(), dataSize - 1);
 
         dataSize = cpu.getDataSize();

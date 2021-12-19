@@ -1,46 +1,46 @@
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/GPUService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/MessageBusImpl.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Data.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/ConferenceInformation.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/Broadcast.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/FileParser.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/StartSendModels.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/CPUInterface.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/FinishedModelTesting.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/Message.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/StudentService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/services/ExampleEventHandlerService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/Callback.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/FinishedModelTraining.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/Event.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/Future.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/MicroServiceArray.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/CPU.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/PublishResultsEvent.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/FilePath.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/MessageBus.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/CPUManagerService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/messages/ExampleBroadcast.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/SystemConstructor.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/TestModelEvent.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/GPU.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/DataBatchInterface.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Cluster.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/TimeService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/services/ExampleMessageSenderService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/MicroService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/services/ExampleBroadcastListenerService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/TrainModelEvent.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/ExampleManager.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/ConferenceService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/GPUTimeService.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Student.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/messages/ExampleEvent.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Model.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/GPUInterface.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/PublishConferenceBroadcast.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/TickBroadcast.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/DataBatch.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/ServiceCreator.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/CRMSRunner.java
-/home/tomcooll/Desktop/Personal/Computer Science/Semester c/SPL/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/CPUService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/StartSendModels.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/CPUInterface.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/FilePath.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/MicroServiceArray.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Model.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/Event.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Data.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/CRMSRunner.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/GPUTimeService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/services/ExampleBroadcastListenerService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/DataBatch.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/ConferenceService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/Callback.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/SystemConstructor.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/TestModelEvent.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/messages/ExampleEvent.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/Broadcast.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/MessageBusImpl.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/FinishedModelTesting.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/ExampleManager.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/GPU.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/CPUManagerService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/Future.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/MessageBus.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/services/ExampleMessageSenderService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/DataBatchInterface.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/services/ExampleEventHandlerService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/TrainModelEvent.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/GPUInterface.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/StudentService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/PublishConferenceBroadcast.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/MicroService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/ServiceCreator.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/GPUService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/Message.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/ConferenceInformation.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Cluster.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/PublishResultsEvent.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/FinishedModelTraining.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/messages/TickBroadcast.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/FileParser.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/example/messages/ExampleBroadcast.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/CPU.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/objects/Student.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/TimeService.java
+/Users/amitneuhaus/ComputerScience/spl-course/Assignment2/src/main/java/bgu/spl/mics/application/services/CPUService.java

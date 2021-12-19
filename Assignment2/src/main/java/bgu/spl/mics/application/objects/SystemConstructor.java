@@ -148,7 +148,7 @@ public class SystemConstructor {
         map.put("batchesProcessed",Cluster.getInstance().getBatchesProcessed());
 
         try {
-            Writer writer = new FileWriter(FilePath.outputFileName);
+            Writer writer = new FileWriter(FilePath.outputFileNamePath);
             gson.toJson(map,writer);
             writer.flush();
             writer.close();

@@ -17,7 +17,9 @@ import java.util.concurrent.Executors;
  */
 public class CRMSRunner {
     public static void main(String[] args) {
-
+        String  inputFileName = args[0];
+        String  outputFileName = args[1];
+        FilePath.setPathes(inputFileName,outputFileName);
         SystemConstructor sysCon = new SystemConstructor(FilePath.inputFileNamePath);
         sysCon.buildSystem();
         sysCon.runSystem();

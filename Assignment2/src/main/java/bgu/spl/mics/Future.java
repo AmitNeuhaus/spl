@@ -78,12 +78,15 @@ public class Future<T> {
 	 * 		 else return null;
      */
 	public T get(long timeout, TimeUnit unit) {
-		while(unit.convert(System.nanoTime() - timeCounter, TimeUnit.NANOSECONDS) <= timeout){
-			if(isDone()){
+		long convertedTimeout = TimeUnit.MILLISECONDS.convert(timeout,unit);
+		try{
+			Thread.sleep(convertedTimeout);
+		}catch(InterruptedException ignored){
+			if (isDone()){
 				return result;
 			}
 		}
-		return null;
+		return result;
 	}
 
 

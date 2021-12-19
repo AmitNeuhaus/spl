@@ -36,16 +36,16 @@ public class StudentService extends MicroService {
         subscribeBroadcast(StartSendModels.class, startSendModels -> {
             if (student.getModels().size() > 0) {
                 currentModel = student.getModels().removeFirst();
-                System.out.println( student.getName() + " [Started - First Time] Sent new model for training : " + currentModel.getName());
+//                System.out.println( student.getName() + " [Started - First Time] Sent new model for training : " + currentModel.getName());
                 future = sendEvent(new TrainModelEvent(currentModel));
             }
         });
 
         subscribeBroadcast(FinishedModelTraining.class, finishedModelTraining -> {
-            System.out.println(finishedModelTraining.getModel().getName() +" " +finishedModelTraining.getModel().getStudent().getName() + " " + student.getName());
+//            System.out.println(finishedModelTraining.getModel().getName() +" " +finishedModelTraining.getModel().getStudent().getName() + " " + student.getName());
             if (finishedModelTraining.getStudent() == student) {
                 student.addTrainedModel(finishedModelTraining.getModel());
-                System.out.println(student.getName() + " sent test model event about model: " + finishedModelTraining.getModel().getName());
+//                System.out.println(student.getName() + " sent test model event about model: " + finishedModelTraining.getModel().getName());
                 future = sendEvent(new TestModelEvent(finishedModelTraining.getModel()));
             }
         });
@@ -57,21 +57,21 @@ public class StudentService extends MicroService {
                     sendEvent(new PublishResultsEvent(currentModel, student));
                     student.addPublication();
                 }
-                System.out.println("Saving Model " + currentModel.getName() +" to trained models of student " + student.getName());
-                System.out.println(student.getName() + " Finished training model: " + currentModel.getName());
+//                System.out.println("Saving Model " + currentModel.getName() +" to trained models of student " + student.getName());
+//                System.out.println(student.getName() + " Finished training model: " + currentModel.getName());
                 if (student.getModels().size() > 0) {
                     currentModel = student.getModels().removeFirst();
-                    System.out.println( student.getName() + " Sent new model for training : " + currentModel.getName());
+//                    System.out.println( student.getName() + " Sent new model for training : " + currentModel.getName());
                     future = sendEvent(new TrainModelEvent(currentModel));
                 }
             }
         });
 
         subscribeBroadcast(PublishConferenceBroadcast.class, publishBroadcast -> {
-            System.out.println("received a conference broadcast with model: "+publishBroadcast.getPublishedModel().getName());
+//            System.out.println("received a conference broadcast with model: "+publishBroadcast.getPublishedModel().getName());
             if (!(publishBroadcast.getPublishedModel().getStudent() ==student)){
                 student.addPapersRead();
-                System.out.println(student.getPapersRead());
+//                System.out.println(student.getPapersRead());
             }
         });
 
