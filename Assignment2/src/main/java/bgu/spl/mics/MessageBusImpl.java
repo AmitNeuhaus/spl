@@ -27,7 +27,6 @@ public class MessageBusImpl implements MessageBus {
 	private MessageBusImpl() {
 		microserviceToQueueMap = new ConcurrentHashMap<MicroService,LinkedBlockingQueue<Message>>();
 		messagesToMicroserviceMap = new ConcurrentHashMap<Class<? extends Message>, MicroServiceArray<LinkedBlockingQueue<Message>>>();
-		//TODO add events and arrays to messageToMicroserviceMap.
 		Class<? extends Message>[] messages = new Class[]{TestModelEvent.class, TrainModelEvent.class, TickBroadcast.class,PublishResultsEvent.class, PublishConferenceBroadcast.class, FinishedModelTraining.class, FinishedModelTesting.class, StartSendModels.class};
 		for (Class<? extends Message> type : messages){
 			MicroServiceArray<LinkedBlockingQueue<Message>> msArray = new MicroServiceArray<>();
@@ -48,8 +47,9 @@ public class MessageBusImpl implements MessageBus {
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		if(isMicroServiceRegistered(m)){
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
-			messagesToMicroserviceMap.get(type).getArray().add(queue);
-//			System.out.println("subscribed: "+ m.getName()+" to event");
+			if (!messagesToMicroserviceMap.get(type).getArray().contains(queue)){
+				messagesToMicroserviceMap.get(type).getArray().add(queue);
+			}
 		}else{
 			throw new IllegalArgumentException("ERROR: micro service: " + m.getName()+" is not registered");
 		}
@@ -67,8 +67,9 @@ public class MessageBusImpl implements MessageBus {
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		if (isMicroServiceRegistered(m)){
 			LinkedBlockingQueue<Message> queue = microserviceToQueueMap.get(m);
-			messagesToMicroserviceMap.get(type).getArray().add(queue);
-//			System.out.println("subscribed: "+ m.getName()+" to broadcast ");
+			if (!messagesToMicroserviceMap.get(type).getArray().contains(queue)){
+				messagesToMicroserviceMap.get(type).getArray().add(queue);
+			}
 		}
 		else{
 			throw new IllegalArgumentException("ERROR: micro service: " + m.getName()+" is not registered");
@@ -118,7 +119,7 @@ public class MessageBusImpl implements MessageBus {
 	 * @param <T>
 	 * @return
 	 */
-	//Todo add future test - not sure how it used.
+
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e)  {
 		Class<? extends Message> type = e.getClass();
@@ -166,6 +167,7 @@ public class MessageBusImpl implements MessageBus {
 			for (MicroServiceArray<LinkedBlockingQueue<Message>> microserviceArray : messagesToMicroserviceMap.values()){
 				microserviceArray.getArray().remove(queue);
 			}
+			microserviceToQueueMap.remove(m);
 		}
 	}
 
@@ -244,6 +246,14 @@ public class MessageBusImpl implements MessageBus {
 
 	public static MessageBusImpl getInstance(){
 		return MessageBusHolder.instance;
+	}
+
+	public <T>void clearEventListeners(Class<? extends Event<T>> type){
+		messagesToMicroserviceMap.get(type).getArray().clear();
+	}
+
+	public <E> void clearBroadcastListeners(Class<? extends Broadcast> type) {
+		 messagesToMicroserviceMap.get(type).getArray().clear();
 	}
 
 

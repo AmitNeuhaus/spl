@@ -62,7 +62,7 @@ public class GPU implements GPUInterface{
 
     @Override
     public void insertModel(Model model) {
-        if (disk.size() == 0 && model.getStatus() != Model.statusEnum.Training){
+        if (disk.size() == 0 && model.getStatus() != Model.statusEnum.Training && model.getStatus() != Model.statusEnum.Tested){
             this.model = model;
             this.numberOfBatches = model.getDataSize()/1000;
             this.currentBatchNum = 0;

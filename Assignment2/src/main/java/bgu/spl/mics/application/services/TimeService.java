@@ -65,14 +65,16 @@ public class TimeService extends MicroService{
 			if (currentTick == terminateTick) {
 				System.out.println("Terminating Time service ");
 				timer.cancel();
-				system.terminateSystem();
+				if (system != null){
+					system.terminateSystem();
+				}
 				terminate();
 			}
 			sendBroadcast(new TickBroadcast(currentTick));
 		}
 	}
 
-	//TODO add terminateAll function and constructor field.
+
 
 	@Override
 	protected void initialize() {

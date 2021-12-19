@@ -48,7 +48,6 @@ public class Cluster {
 	}
 
 	public void registerGPUToCluster(GPU gpu){
-        //TODO: check if needed.
         gpuHash.put(gpu,gpu);
     }
 
@@ -80,7 +79,6 @@ public class Cluster {
 
     public void insertProcessedData(DataBatch db) {
         GPU sender = db.getGpuSender();
-        // TODO: might be unecessary if holding GPU instance in databatch;
         GPU gpuInstance = gpuHash.get(sender);
         gpuInstance.insertDbToVram(db);
     }

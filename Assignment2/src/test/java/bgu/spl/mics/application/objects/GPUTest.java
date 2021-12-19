@@ -1,76 +1,77 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.MessageBus;
-import bgu.spl.mics.MessageBusImpl;
+
+import bgu.spl.mics.application.services.CPUService;
 import bgu.spl.mics.application.services.GPUService;
 import bgu.spl.mics.application.services.GPUTimeService;
 import bgu.spl.mics.application.services.TimeService;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import static org.junit.Assert.*;
 
 class GPUTest {
 
     private GPU gpu;
+    private CPU cpu;
+    GPUTimeService gpuTimeService;
 
 
     @BeforeEach
     void setUp(){
-        new TimeService(15,1000);
-        GPUTimeService gpuTimeService = new GPUTimeService();
+        gpuTimeService = new GPUTimeService();
         gpu = new GPU(gpuTimeService);
-        GPUService gpuService = new GPUService(gpu);
+        cpu = new CPU(32,new CPUService(),5);
+
     }
 
     @Test
     void insertModel() {
         Model model = new Model();
-        int dataSize = model.getDataSize();
-        assertNotEquals(model.getStatus(), Model.statusEnum.Training);
-        assertNotEquals(model.getStatus(), Model.statusEnum.Tested);
 
-        assertEquals(gpu.getDiskSize(), 0);
+        assertEquals(model.getStatus(), Model.statusEnum.PreTrained);
+
+
         // inserting PreTrained model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.PreTrained);
         gpu.insertModel(model);
         assertEquals(gpu.model, model);
         assertEquals(gpu.model.getStatus(), model.getStatus());
-        assertEquals(gpu.getDiskSize(), dataSize/1000);
 
         // inserting PreTrained model -> Expected: Change Gpu model
         model.setStatus(Model.statusEnum.Trained);
         gpu.insertModel(model);
         assertEquals(gpu.model, model);
         assertEquals(gpu.model.getStatus(), model.getStatus());
-        assertEquals(gpu.getDiskSize(), dataSize/1000);
 
         // inserting Tested model ->  Expected: throw Error
+        Model oldModel = gpu.model;
+        model = new Model();
         model.setStatus(Model.statusEnum.Tested);
-        assertThrows("Should throw exception , model cant be tested when inserted", Exception.class,()->gpu.insertModel(model));
+        gpu.insertModel(model);
+        assertEquals(gpu.model,oldModel);
+
+
 
         // inserting training model -> Expected: throw Error
         model.setStatus(Model.statusEnum.Training);
-        assertThrows("Should throw exception , model cant be training when inserted", Exception.class,()->gpu.insertModel(model));
+        gpu.insertModel(model);
+        assertEquals(gpu.model,oldModel);
     }
 
 
     @Test
-    void sendData() {
-        // if disk is empty -> throw error
-       assertThrows("Should throw error if disk is empty - no data to send to process", Exception.class, ()-> gpu.sendData());
-
+    void sendData() throws InterruptedException {
 
        // created a gpu with data
         Model model = new Model();
-        int dataSize = model.getDataSize();
         gpu.insertModel(model);
+        gpu.splitToBatches();
+        int diskSize = gpu.getDiskSize();
         DataBatch db = gpu.nextDataBatchDisk();
         assertEquals(db.isProcessed(), false);
         gpu.sendData();
-        assertEquals(gpu.getDiskSize() , dataSize - 1);
-        assertNotEquals(gpu.nextDataBatchDisk(), db);
+        assertEquals(gpu.getDiskSize() , diskSize - 1);
+        assertNotEquals(gpu.nextDataBatchDisk().getStartIndex(), db.getStartIndex());
     }
 
     @Test
@@ -96,8 +97,16 @@ class GPUTest {
 
     @Test
     void Train() throws InterruptedException {
+        TimeService timeService = new TimeService(8,1000);
+        Thread t1 = new Thread(timeService);
+        Thread t2 = new Thread(gpuTimeService);
+        t1.start();
+        t2.start();
+        Thread.sleep(1000);
         // inserting processed db to vram;
         DataBatch db = new DataBatch();
+        Model model = new Model();
+        gpu.insertModel(model);
         db.setProcessed(true);
         gpu.insertDbToVram(db);
         int vramSize = gpu.getVramSize();
@@ -121,14 +130,20 @@ class GPUTest {
         // disk - model databatches
         // vram manualy inserted
         // trainedDisk caling Test once
-        DataBatch db = new DataBatch();
-        db.setProcessed(true);
+        DataBatch db1 = new DataBatch();
+        db1.setProcessed(true);
         Model model = new Model();
         gpu.insertModel(model);
-        gpu.insertDbToVram(db);
-        gpu.insertDbToVram(db);
-        gpu.Train();
+        gpu.splitToBatches();
+        gpu.insertDbToVram(db1);
+        gpu.insertDbToVram(db1);
+        DataBatch db2 = new DataBatch();
+        db2.setTrained(true);
+        gpu.insertTrainedDbToDisk(db2);
 
+        assertNotEquals(gpu.getTrainedDiskSize(),0);
+        assertNotEquals(gpu.getDiskSize(),0);
+        assertNotEquals(gpu.getVramSize(),0);
         //clearing GPU disks
         gpu.clearGpu();
 
