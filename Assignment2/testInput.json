@@ -1,0 +1,47 @@
+{
+    "Students":
+    [
+        {
+            "name": "Simba",
+            "department": "Computer Science",            
+            "status": "MSc",
+            "models":
+            [
+                {
+                    "name": "YOLO10",
+                    "type": "images",
+                    "size": 200000
+                },
+                {
+                    "name": "ResNet9000",
+                    "type": "images",
+                    "size": 200000
+                }
+            ]
+
+        },
+        {
+            "name": "Nala",
+            "department": "Computer Science",            
+            "status": "PhD",
+            "models":
+            [
+                {
+                    "name": "YOLO9000",
+                    "type": "images",
+                    "size": 100000
+                }
+            ]
+
+        }
+    ],
+    "GPUS": ["RTX3090","RTX2080"],
+    "CPUS": [32,32,32,16,16,16,16],
+    "Conferences":
+    [
+        {"name": "ICML", "date": 20000},
+        {"name": "CVPR", "date": 30000}
+    ],
+    "TickTime": 1000,
+    "Duration": 10
+}

@@ -14,4 +14,9 @@ public class ExampleBroadcast implements Broadcast {
         return senderId;
     }
 
+
+    public Object getData() {
+        return null;
+    }
+
 }
