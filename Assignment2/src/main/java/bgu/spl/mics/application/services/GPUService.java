@@ -36,7 +36,6 @@ public class GPUService extends MicroService {
             if (model.getStatus() == Model.statusEnum.PreTrained){
                 gpu.insertModel(model);
                 model.setStatus(Model.statusEnum.Training);;
-                //TODO split to batches send and train policy
                 while(model.getData().getProcessed() < model.getDataSize()){
                     if(Thread.currentThread().isInterrupted()){
                         throw new InterruptedException();

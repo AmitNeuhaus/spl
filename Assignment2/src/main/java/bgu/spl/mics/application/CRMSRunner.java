@@ -1,14 +1,10 @@
 package bgu.spl.mics.application;
 
-import bgu.spl.mics.MessageBusImpl;
-import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.TickBroadcast;
-import bgu.spl.mics.application.messages.TrainModelEvent;
-import bgu.spl.mics.application.objects.*;
-import bgu.spl.mics.application.services.*;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import bgu.spl.mics.application.objects.*;
+
+
+
 
 
 /** This is the Main class of Compute Resources Management System application. You should parse the input file,

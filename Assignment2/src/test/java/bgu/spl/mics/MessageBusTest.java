@@ -5,8 +5,13 @@ import java.util.*;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import static org.junit.Assert.*;
+
+import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -16,11 +21,11 @@ class MessageBusTest {
 
     private MessageBusImpl messageBus;
     private MicroService microService;
-    private ExampleEvent event;
-    private ExampleBroadcast broadcast;
+    private TrainModelEvent event;
+    private TickBroadcast broadcast;
 
 
-    //TODO change tests order register is first
+
 
     @BeforeEach
     void setUp(){
@@ -28,12 +33,26 @@ class MessageBusTest {
         microService = new MicroService("testMicroservice" ) {
             @Override
             protected void initialize() {
-                System.out.println("initialized "+getName());
+                subscribeEvent(TrainModelEvent.class,train -> {
+                    System.out.println("Received new event");
+                });
+
+                subscribeBroadcast(TickBroadcast.class, tick ->{
+                    System.out.println("Received broadcast");
+                });
             }
+
         };
-        event = new ExampleEvent("event");
-        broadcast = new ExampleBroadcast("broadcast");
+        event = new TrainModelEvent(new Model());
+        broadcast = new TickBroadcast(1);
     }
+    @AfterEach
+    void cleanUp(){
+        messageBus.unregister(microService);
+        messageBus.clearBroadcastListeners(broadcast.getClass());
+        messageBus.clearEventListeners(event.getClass());
+    }
+
 
     @Test
     void register() {
@@ -76,13 +95,13 @@ class MessageBusTest {
     void subscribeEvent() {
         //subscribe an un registered microservice-> should raise exception
         int numOfSubs = messageBus.getNumOfEventListeners(event.getClass());
-        messageBus.subscribeEvent(event.getClass(),microService);
+        assertThrows("Should throw exception(microservice was never registered)",IllegalArgumentException.class,()->messageBus.subscribeEvent(TrainModelEvent.class,microService));
         assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs);
         //assert the microservice was subscribed
         messageBus.register(microService);
         numOfSubs  = messageBus.getNumOfEventListeners(event.getClass());
         assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),false);
-        messageBus.subscribeEvent(event.getClass(),microService);
+        messageBus.subscribeEvent(TrainModelEvent.class,microService);
         assertEquals(messageBus.isListeningToEvent(event.getClass(),microService),true);
         assertEquals(messageBus.getNumOfEventListeners(event.getClass()),numOfSubs +1);
 
@@ -98,13 +117,13 @@ class MessageBusTest {
     void subscribeBroadcast() {
         //subscribe an un registered microservice-> should raise exception
         int numOfSubs = messageBus.getNumOfBroadcastListeners(broadcast.getClass());
-        messageBus.subscribeBroadcast(broadcast.getClass(),microService);
+        assertThrows("Should throw exception(microservice was never registered)",IllegalArgumentException.class,()->messageBus.subscribeBroadcast(TickBroadcast.class,microService));
         assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass()),numOfSubs);
         //assert the microservice was subscribed
         messageBus.register(microService);
         numOfSubs  = messageBus.getNumOfBroadcastListeners(broadcast.getClass());
         assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass(),microService),false);
-        messageBus.subscribeBroadcast(broadcast.getClass(),microService);
+        messageBus.subscribeBroadcast(TickBroadcast.class,microService);
         assertEquals(messageBus.isListeningToBroadcast(broadcast.getClass(),microService),true);
         assertEquals(messageBus.getNumOfBroadcastListeners(broadcast.getClass()),numOfSubs +1);
 
@@ -120,7 +139,7 @@ class MessageBusTest {
         messageBus.register(microService);
         messageBus.subscribeEvent(event.getClass(),microService);
         messageBus.sendEvent(event);
-        String result = "Completed";
+        Model result = event.getModel();
         messageBus.complete(event,result);
         assertEquals(event.getFuture().get(),result);
         assertEquals(event.getFuture().isDone(),true);
@@ -128,6 +147,8 @@ class MessageBusTest {
 
     @Test
     void sendBroadcast() throws InterruptedException {
+        messageBus.register(microService);
+        microService.initialize();
         Iterable<Queue<Object>> broadcastListeners = messageBus.getBroadcastListeners(broadcast.getClass()) ;
         for (Queue<Object> listener : broadcastListeners){
             assertEquals(listener.contains(broadcast),false);
@@ -140,6 +161,8 @@ class MessageBusTest {
 
     @Test
     void sendEvent() throws InterruptedException {
+        messageBus.register(microService);
+        microService.initialize();
         Iterable<LinkedBlockingQueue<Object>> eventListeners = messageBus.getEventListeners(event.getClass());
         Iterator<LinkedBlockingQueue<Object>> iterator= eventListeners.iterator();
         Queue<Object> firstListener = iterator.hasNext() ? iterator.next(): null;
@@ -150,7 +173,7 @@ class MessageBusTest {
             messageBus.sendEvent(event);
             assertEquals(firstListener.contains(event),true);
             iterator = messageBus.getEventListeners(event.getClass()).iterator();
-            assertTrue(iterator.next() != firstListener);
+            assertTrue(iterator.next() != firstListener ||messageBus.getNumOfEventListeners(event.getClass()) == 1 );
         }
     }
 
@@ -159,7 +182,6 @@ class MessageBusTest {
 
     @Test
     void awaitMessage() throws InterruptedException {
-        assertThrows("Should throw exception(microservice was never registered)",IllegalStateException.class,()->messageBus.awaitMessage(microService));
         messageBus.register(microService);
         messageBus.subscribeEvent(event.getClass(),microService);
         messageBus.sendEvent(event);
