@@ -28,17 +28,13 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         try (Socket sock = this.sock) { //just for automatic closing
             int read;
 
-            in = new BufferedInputStream(sock.getInputStream());
-            out = new BufferedOutputStream(sock.getOutputStream());
+            this.in = new BufferedInputStream(sock.getInputStream());
+            this.out = new BufferedOutputStream(sock.getOutputStream());
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    T response = protocol.process(nextMessage);
-                    if (response != null) {
-                        out.write(encdec.encode(response));
-                        out.flush();
-                    }
+                    protocol.process(nextMessage);
                 }
             }
 
@@ -55,6 +51,12 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     }
 
     public void send(T msg){
-        System.out.println("NOT IMPLEMENTED YET");
+        try {
+            this.out.write(encdec.encode(msg));
+            this.out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Couldn't send message to client");
+        }
     }
 }
