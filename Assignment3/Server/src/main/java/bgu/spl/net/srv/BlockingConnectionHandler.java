@@ -28,8 +28,8 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         try (Socket sock = this.sock) { //just for automatic closing
             int read;
 
-            this.in = new BufferedInputStream(sock.getInputStream());
-            this.out = new BufferedOutputStream(sock.getOutputStream());
+            in = new BufferedInputStream(sock.getInputStream());
+            out = new BufferedOutputStream(sock.getOutputStream());
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
@@ -50,13 +50,12 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         sock.close();
     }
 
-    public void send(T msg){
-        try {
-            this.out.write(encdec.encode(msg));
-            this.out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Couldn't send message to client");
-        }
+    public void send(T msg) throws IOException {
+        //Todo: Maybe need to synchronize // work with a queue so other clients can insert messages to the queue
+        // and only the current handler will pop msgs from the queue and write to the buffer.
+        byte[] encodedMsg = encdec.encode(msg);
+        out.write(encodedMsg,0,encodedMsg.length);
+        out.flush();
+        System.out.println("Couldn't send message to client");
     }
 }
