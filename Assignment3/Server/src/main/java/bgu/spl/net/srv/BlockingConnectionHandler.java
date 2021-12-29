@@ -6,6 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import bgu.spl.net.srv.bidi.ConnectionHandler;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
 
@@ -33,11 +34,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
                 T nextMessage = encdec.decodeNextByte((byte) read);
                 if (nextMessage != null) {
-                    T response = protocol.process(nextMessage);
-                    if (response != null) {
-                        out.write(encdec.encode(response));
-                        out.flush();
-                    }
+                    protocol.process(nextMessage);
                 }
             }
 
@@ -51,5 +48,14 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     public void close() throws IOException {
         connected = false;
         sock.close();
+    }
+
+    public void send(T msg) throws IOException {
+        //Todo: Maybe need to synchronize // work with a queue so other clients can insert messages to the queue
+        // and only the current handler will pop msgs from the queue and write to the buffer.
+        byte[] encodedMsg = encdec.encode(msg);
+        out.write(encodedMsg,0,encodedMsg.length);
+        out.flush();
+        System.out.println("Couldn't send message to client");
     }
 }

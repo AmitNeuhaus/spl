@@ -2,6 +2,7 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessagingProtocol;
+import bgu.spl.net.srv.bidi.ConnectionHandler;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -9,6 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
 
 public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
 
@@ -114,6 +116,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
 
     private static void releaseBuffer(ByteBuffer buff) {
         BUFFER_POOL.add(buff);
+    }
+
+    public void send(T msg){
+        System.out.println("NOT IMPLEMENTED YET");
     }
 
 }
