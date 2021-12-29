@@ -47,15 +47,18 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
 
     }
 
-    public boolean register(int conId, ConnectionHandler<T> handler, String username, String password, String birthDay){
-        if(canRegisterNewUser(username)){
-            UserWrapper<T> userWrapper = new UserWrapper<>(handler, new UserInfo(username,password,birthDay));
-            usernameToConId.put(username,conId);
-            conIdToUserWrapper.put(conId,userWrapper);
+    public void addConnection(int conId, ConnectionHandler<T> handler){
+        UserWrapper<T> userWrapper = new UserWrapper<>(handler, new UserInfo());
+        conIdToUserWrapper.put(conId,userWrapper);
+    }
+
+    public boolean register(int conId,String name,String password, String birthDay){
+        if (canRegisterNewUser(name)){
+            conIdToUserWrapper.get(conId).getUserInfo().setInfo(name,password,birthDay);
+            usernameToConId.put(name,conId);
             return true;
         }
         return false;
-
     }
 
     private boolean canRegisterNewUser(String username){
