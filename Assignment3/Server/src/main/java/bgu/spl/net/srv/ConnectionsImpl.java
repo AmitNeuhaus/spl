@@ -32,7 +32,11 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
     public void broadcast(T msg) {
         conIdToUserWrapper.forEach((conId,wrapper) -> {
             ConnectionHandler<T> handler = wrapper.getHandler();
-            handler.send(msg);
+            try {
+                handler.send(msg);
+            }catch(IOException e){
+                System.out.println("IO Exception occured");
+            }
         });
     }
 
