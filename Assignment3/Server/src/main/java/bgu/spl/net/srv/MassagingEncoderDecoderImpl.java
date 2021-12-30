@@ -6,8 +6,7 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+
 
 
 public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String> {
@@ -29,14 +28,13 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     }
 
     public String decodeMessage(byte[] msg){
-        String opcode = String.valueOf(msg[0]);
         String output = null;
         int i = 0;
         while(output == null){
             output = decodeNextByte(msg[i]);
             i++;
         }
-        return opcode+output.substring(1);
+        return output;
     }
 
     public byte[] getFullMessage(byte nextByte){
@@ -55,8 +53,7 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     public byte[] encode(String message) {
         ArrayList<String> parsedMsg = new ArrayList<>(Arrays.asList(message.split(" ")));
         short opcode = getOpcode(parsedMsg.get(0));
-        byte[] opcodeBytes = shortToBytes(opcode);
-        pushByte(opcodeBytes[1]);
+        pushByte((byte) opcode);
         pushByte((byte)0);
         for(int i =1; i< parsedMsg.size();i++){
             byte[] nextString = (parsedMsg.get(i)).getBytes();
@@ -82,13 +79,12 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
 
     private String popString(){
 
-        String result = new String(bytes,0,len, StandardCharsets.UTF_8);
+        String result = new String(bytes,2,len, StandardCharsets.UTF_8);
         len = 0;
-        return result;
+        return String.valueOf(bytes[0])+" " +result;
     }
 
     private short getOpcode(String input){
-
         switch (input){
             case"REGISTER":
                 return 1;
