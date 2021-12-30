@@ -1,5 +1,7 @@
 package bgu.spl.net.impl.echo;
 
+import bgu.spl.net.srv.MassagingEncoderDecoderImpl;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -21,18 +23,31 @@ public class EchoClient {
 //        }
 
         //BufferedReader and BufferedWriter automatically using UTF-8 encoding
-        try (Socket sock = new Socket("127.0.0.1", 5000);
+        try (
+                Socket sock = new Socket("127.0.0.1", 5000);
                 BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 BufferedWriter out = new BufferedWriter(new OutputStreamWriter(sock.getOutputStream()))) {
 
+            MassagingEncoderDecoderImpl  encDec = new MassagingEncoderDecoderImpl();
             System.out.println("sending message to server");
-            out.write("Amit");
-            out.newLine();
+            out.write("REGISTER tom 1235 20-10-1995;");
             out.flush();
 
             System.out.println("awaiting response");
-            String line = in.readLine();
-            System.out.println("message from server: " + line);
+            Thread.sleep(2000);
+            System.out.println("awake");
+            byte[] msg = null;
+            int read =-1;
+            while(msg==null){
+                if ((read=in.read())>=0){
+                    msg = encDec.getFullMessage((byte)read);
+                }
+
+            }
+            String decoded = encDec.decodeMessage(msg);
+            System.out.println("message from server: "+ decoded);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }

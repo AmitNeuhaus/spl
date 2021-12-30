@@ -2,8 +2,13 @@ package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
 
+
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 
 public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String> {
 
@@ -15,14 +20,57 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     public String decodeNextByte(byte nextByte) {
         if (nextByte == (byte)';'){
             return popString();
+        }if (nextByte == (byte)0){
+            pushByte((byte)' ');
+
         }
         pushByte(nextByte);
         return null;
     }
 
+    public String decodeMessage(byte[] msg){
+        String opcode = String.valueOf(msg[0]);
+        String output = null;
+        int i = 0;
+        while(output == null){
+            output = decodeNextByte(msg[i]);
+            i++;
+        }
+        return opcode+output.substring(1);
+    }
+
+    public byte[] getFullMessage(byte nextByte){
+        if (nextByte == (byte)';'){
+            pushByte(nextByte);
+            len = 0;
+            return Arrays.copyOf(bytes,bytes.length);
+        }
+        pushByte(nextByte);
+        return null;
+    }
+
+
+
     @Override
     public byte[] encode(String message) {
-        return new byte[0];
+        ArrayList<String> parsedMsg = new ArrayList<>(Arrays.asList(message.split(" ")));
+        short opcode = getOpcode(parsedMsg.get(0));
+        byte[] opcodeBytes = shortToBytes(opcode);
+        pushByte(opcodeBytes[1]);
+        pushByte((byte)0);
+        for(int i =1; i< parsedMsg.size();i++){
+            byte[] nextString = (parsedMsg.get(i)).getBytes();
+            for (byte nextByte : nextString){
+                pushByte(nextByte);
+            }
+            if (i<parsedMsg.size()-1){
+                pushByte((byte)0);
+            }
+        }
+        pushByte((byte)';');
+        byte[] result = Arrays.copyOf(bytes, bytes.length);
+        len = 0;
+        return result;
     }
 
     private void pushByte(byte nextByte){
@@ -33,8 +81,49 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     }
 
     private String popString(){
+
         String result = new String(bytes,0,len, StandardCharsets.UTF_8);
         len = 0;
         return result;
+    }
+
+    private short getOpcode(String input){
+
+        switch (input){
+            case"REGISTER":
+                return 1;
+            case "LOGIN":
+                return 2;
+            case "LOGOUT":
+                return 3;
+            case "FOLLOW":
+                return 4;
+            case "POST":
+                return 5;
+            case "PM":
+                return 6;
+            case "LOGSTAT":
+                return 7;
+            case "STAT":
+                return 8;
+            case "NOTIFICATION":
+                return 9;
+            case "ACK":
+                return 10;
+            case "ERROR":
+                return 11;
+            case "BLOCK":
+                return 12;
+            default:
+                return 13;
+        }
+
+    }
+    private byte[] shortToBytes(short num)
+    {
+        byte[] bytesArr = new byte[2];
+        bytesArr[0] = (byte)((num >> 8) & 0xFF);
+        bytesArr[1] = (byte)(num & 0xFF);
+        return bytesArr;
     }
 }

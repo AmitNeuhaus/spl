@@ -43,6 +43,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                     }
                 }
                 if(!writeQueue.isEmpty()){
+                    System.out.println("should write response");
                     T msg = writeQueue.poll();
                     byte[] encodedMsg = encdec.encode(msg);
                     out.write(encodedMsg,0,encodedMsg.length);
