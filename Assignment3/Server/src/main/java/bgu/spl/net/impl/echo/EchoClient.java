@@ -33,16 +33,16 @@ public class EchoClient {
             System.out.println("awaiting response");
             Thread.sleep(2000);
             System.out.println("awake");
-            byte[] msg = null;
+            String msg = null;
             int read =-1;
             while(msg==null){
                 if ((read=in.read())>=0){
-                    msg = encDec.getFullMessage((byte)read);
+                    msg = encDec.decodeNextByte((byte)read);
                 }
 
             }
-            String decoded = encDec.decodeMessage(msg);
-            System.out.println("message from server: "+ decoded);
+
+            System.out.println("message from server: "+ msg);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

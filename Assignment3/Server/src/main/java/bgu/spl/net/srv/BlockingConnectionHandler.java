@@ -39,6 +39,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                 if (read >= 0){
                     T nextMessage = encdec.decodeNextByte((byte) read);
                     if (nextMessage != null) {
+                        System.out.println("message as received from client-" + nextMessage);
                         protocol.process(nextMessage);
                     }
                 }

@@ -13,13 +13,19 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
 
     private byte[] bytes = new byte[1<<10];
     private int len = 0;
+    private byte[] opcode = new byte[2];
+    private int opcodeIndex = 0;
 
 
     @Override
     public String decodeNextByte(byte nextByte) {
-        if (nextByte == (byte)';'){
+        if (opcodeIndex <= 1){
+            opcode[opcodeIndex] = nextByte;
+            opcodeIndex++;
+        }
+        else if (nextByte == (byte)';'){
             return popString();
-        }if (nextByte == (byte)0){
+        }else if (nextByte == (byte)0){
             pushByte((byte)' ');
 
         }
@@ -53,8 +59,9 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     public byte[] encode(String message) {
         ArrayList<String> parsedMsg = new ArrayList<>(Arrays.asList(message.split(" ")));
         short opcode = getOpcode(parsedMsg.get(0));
-        pushByte((byte) opcode);
-        pushByte((byte)0);
+        byte[] opcodeBytes = shortToBytes(opcode);
+        pushByte(opcodeBytes[0]);
+        pushByte(opcodeBytes[1]);
         for(int i =1; i< parsedMsg.size();i++){
             byte[] nextString = (parsedMsg.get(i)).getBytes();
             for (byte nextByte : nextString){
@@ -65,9 +72,8 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
             }
         }
         pushByte((byte)';');
-        byte[] result = Arrays.copyOf(bytes, bytes.length);
         len = 0;
-        return result;
+        return Arrays.copyOf(bytes,bytes.length);
     }
 
     private void pushByte(byte nextByte){
@@ -78,10 +84,11 @@ public class MassagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     }
 
     private String popString(){
-
         String result = new String(bytes,2,len, StandardCharsets.UTF_8);
+        String opcodeString = String.valueOf(opcode[1]);
         len = 0;
-        return String.valueOf(bytes[0])+" " +result;
+        opcodeIndex =0;
+        return opcodeString + " " + result;
     }
 
     private short getOpcode(String input){
