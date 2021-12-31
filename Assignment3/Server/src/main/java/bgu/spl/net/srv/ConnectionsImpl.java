@@ -9,22 +9,23 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
     //Fields:
 
     ConcurrentHashMap<String, Integer> usernameToConId;
-    ConcurrentHashMap<Integer, UserWrapper> conIdToUserWrapper;
+    ConcurrentHashMap<Integer, UserWrapper<T>> conIdToUserWrapper;
+
+
+    public ConnectionsImpl(){
+        usernameToConId = new ConcurrentHashMap<>();
+        conIdToUserWrapper = new ConcurrentHashMap<>();
+    }
 
     @Override
     public boolean send(int connectionId, T msg) {
-        try{
-            if (canSend(connectionId)){
-                conIdToUserWrapper.get(connectionId).getHandler().send(msg);
-                return true;
-            }
-            return false;
-
-        }catch (IOException e){
-            System.out.println("Couldnt send msg to: " + conIdToUserWrapper.get(connectionId).getUserInfo().getName());
-            return false;
-
+        if (canSend(connectionId)){
+            conIdToUserWrapper.get(connectionId).getHandler().send(msg);
+            return true;
         }
+        return false;
+
+
 
     }
 
@@ -32,11 +33,8 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
     public void broadcast(T msg) {
         conIdToUserWrapper.forEach((conId,wrapper) -> {
             ConnectionHandler<T> handler = wrapper.getHandler();
-            try {
-                handler.send(msg);
-            }catch(IOException e){
-                System.out.println("IO Exception occured");
-            }
+            handler.send(msg);
+
         });
     }
 
