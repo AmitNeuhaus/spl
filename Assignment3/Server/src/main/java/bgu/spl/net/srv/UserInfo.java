@@ -6,12 +6,17 @@ public class UserInfo {
     String birthDay;
 
 
-    public UserInfo(String name, String password, String birthDay){
-        this.name = name;
-        this.password = password;
-        this.birthDay =  birthDay;
+    public UserInfo(){
+        this.name = "UnregisteredClient";
+        this.password = "UnregisteredClient";
+        this.birthDay =  "UnregisteredClient";
     }
 
+    public void setInfo(String name, String password, String birthDay){
+        this.name = name;
+        this.password = password;
+        this.birthDay = birthDay;
+    }
     public String getName() {
         return name;
     }
