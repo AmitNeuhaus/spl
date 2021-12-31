@@ -16,7 +16,7 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private int connectionCounter = 0;
-    private Connections<T> connections;
+    private ConnectionsImpl<T> connections;
     private ServerSocket sock;
 
     public BaseServer(
@@ -47,8 +47,12 @@ public abstract class BaseServer<T> implements Server<T> {
                         clientSock,
                         encdecFactory.get(),
                         protocol);
+                int conId = connectionCounter++;
+                connections.addConnection(conId,handler);
+                //TODO need to remove register its here only for testing
+                connections.register(conId,"amit","1234","04-04-1995");
+                protocol.start( conId, connections);
 
-                protocol.start(connectionCounter++ , connections);
                 execute(handler);
             }
         } catch (IOException ex) {
