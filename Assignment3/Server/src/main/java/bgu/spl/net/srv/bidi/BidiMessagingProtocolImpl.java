@@ -2,6 +2,7 @@ package bgu.spl.net.srv.bidi;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.ConnectionsImpl;
+import bgu.spl.net.srv.UserInfo;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -77,12 +78,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
 //    ACTIONS-------
     public String register(String username,String password, String birthday){
-        boolean didRegister = connections.register(myConnectionId,username,password,birthday);
-        if(didRegister){
+        if (canRegisterNewUser()) {
+            connections.register(myConnectionId, username, password, birthday);
             return "ACK";
-        }else{
-            return "ERROR";
         }
+        return "ERROR";
     }
 
     public String logIn(String username,String password){
@@ -117,6 +117,36 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     }
 
 
+    // Queries
+
+    private boolean canRegisterNewUser(String userName){
+        UserInfo user = connections.getUserInfo(userName);
+        return !(user == null);
+    }
+
+    private boolean canSend(int conId){
+        return true;
+    }
+
+    private boolean canLogIn(String username, String password) {
+        UserInfo user = connections.getUserInfo(username);
+        boolean userExists = user != null;
+        boolean matchingPassowrd = user.getPassword().equals(password);
+        return (userExists && matchingPassowrd && !user.isLoggedIn());
+    }
+
+    private boolean canLogOut(int connectionId) {
+        UserInfo user = connections.getUserInfo(connectionId);
+        boolean userExists = user != null;
+        return (userExists && user.isLoggedIn());
+    }
+
+    private boolean canFollow(String userName) {
+        UserInfo user = connections.getUserInfo(myConnectionId);
+        UserInfo follower = connections.getUserInfo(userName);
+        boolean followerExists = follower != null;
+        return (followerExists && user.isLoggedIn() && !user.isFollower(userName));
+    }
 
 //    HELPERS -------
 

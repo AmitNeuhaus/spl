@@ -104,28 +104,4 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         return null;
     }
 
-    // Queries
-
-    private boolean canRegisterNewUser(String username){
-        return !usernameToConId.containsKey(username);
-    }
-
-    private boolean canSend(int conId){
-        return true;
-    }
-
-    private boolean canLogIn(int connectionId, String username, String password) {
-        return (usernameToConId.containsKey(username) &&
-                conIdToUserWrapper.get(connectionId).getUserInfo().getPassword().equals(password));
-    }
-
-    private boolean canLogOut(int connectionId) {
-        UserInfo userInfo = conIdToUserWrapper.get(connectionId).getUserInfo();
-        return (userInfo != null && userInfo.isLoggedIn());
-    }
-
-    private boolean canFollow(String userName) {
-        UserInfo userInfo = conIdToUserWrapper.get(userName).getUserInfo();
-        return (userInfo != null && userInfo.isLoggedIn());
-    }
 }
