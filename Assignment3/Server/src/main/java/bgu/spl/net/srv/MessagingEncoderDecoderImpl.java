@@ -26,10 +26,10 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
         else if (nextByte == (byte)';'){
             return popString();
         }else if (nextByte == (byte)0){
-            pushByte((byte)' ');
-
+            nextByte = ((byte)' ');
         }
         pushByte(nextByte);
+
         return null;
     }
 
@@ -84,7 +84,7 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     }
 
     private String popString(){
-        String result = new String(bytes,2,len, StandardCharsets.UTF_8);
+        String result = new String(bytes,2,len-2, StandardCharsets.UTF_8);
         String opcodeString = String.valueOf(opcode[1]);
         len = 0;
         opcodeIndex =0;

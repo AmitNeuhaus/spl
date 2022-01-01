@@ -1,6 +1,7 @@
 package bgu.spl.net.impl.echo;
 
-import bgu.spl.net.srv.MassagingEncoderDecoderImpl;
+
+import bgu.spl.net.srv.MessagingEncoderDecoderImpl;
 
 import java.io.*;
 import java.net.Socket;
@@ -24,7 +25,7 @@ public class EchoClient {
                 BufferedReader in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
                 BufferedOutputStream out = new BufferedOutputStream(sock.getOutputStream())) {
 
-            MassagingEncoderDecoderImpl  encDec = new MassagingEncoderDecoderImpl();
+            MessagingEncoderDecoderImpl encDec = new MessagingEncoderDecoderImpl();
             System.out.println("sending message to server");
             byte[] encoded = encDec.encode("REGISTER tom 135 20-10-1995");
             out.write(encoded,0,encoded.length);

@@ -49,10 +49,7 @@ public abstract class BaseServer<T> implements Server<T> {
                         protocol);
                 int conId = connectionCounter++;
                 connections.addConnection(conId,handler);
-                //TODO need to remove register its here only for testing
-                connections.register(conId,"amit","1234","04-04-1995");
                 protocol.start( conId, connections);
-
                 execute(handler);
             }
         } catch (IOException ex) {

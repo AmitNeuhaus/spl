@@ -28,14 +28,15 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
         switch (opCode){
 
             case "1":
-                String userName = msg.get(0);
-                String password = msg.get(1);
-                String birthday = msg.get(2);
-                String response = register(userName,password,birthday);
-                connections.send(myConnectionId, response);
-
+                String register_response = register(msg.get(1),msg.get(2),msg.get(3));
+                connections.send(myConnectionId, register_response);
+                break;
+            case "2":
+                String login_response = logIn(msg.get(1),msg.get(2));
+                connections.send(myConnectionId, login_response);
             case "3":
-                System.out.println("NOT IMPLEMENTED YET 3");
+                String logout_response = logOut();
+                connections.send(myConnectionId, logout_response);
             case "4":
                 System.out.println("NOT IMPLEMENTED YET 4");
             case "5":
@@ -81,6 +82,26 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
             return "ERROR";
         }
     }
+
+    public String logIn(String username,String password){
+        boolean didLogIn = connections.logIn(myConnectionId,username,password);
+        if(didLogIn){
+            return "ACK";
+        }else{
+            return "ERROR";
+        }
+    }
+    public String logOut(){
+        boolean didLogOut = connections.logOut(myConnectionId);
+        if(didLogOut){
+            return "ACK";
+        }else{
+            return "ERROR";
+        }
+    }
+
+
+
 //    HELPERS -------
 
     private String[] splitMessage(String msg){

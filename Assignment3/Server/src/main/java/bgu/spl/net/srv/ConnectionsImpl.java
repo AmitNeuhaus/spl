@@ -17,6 +17,8 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         conIdToUserWrapper = new ConcurrentHashMap<>();
     }
 
+
+    // ACTIONS --------------
     @Override
     public boolean send(int connectionId, T msg) {
         if (canSend(connectionId)){
@@ -24,9 +26,6 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
             return true;
         }
         return false;
-
-
-
     }
 
     @Override
@@ -59,16 +58,27 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         return false;
     }
 
-    private boolean canRegisterNewUser(String username){
-        return usernameToConId.containsKey(username);
+    public boolean logIn(int conId, String username, String password){
+        if (canLogIn(conId, username, password)){
+            conIdToUserWrapper.get(conId).getUserInfo().setLoggedIn(true);
+            return true;
+        }
+        return false;
     }
+
+    public boolean logOut(int conId){
+        if (canLogOut(conId)){
+            conIdToUserWrapper.get(conId).getUserInfo().setLoggedIn(false);
+            return true;
+        }
+        return false;
+    }
+
+
+    // GETTERS ---------------
 
     private String getUsername(int conId){
         return conIdToUserWrapper.get(conId).getUserInfo().getName();
-    }
-
-    private boolean canSend(int conId){
-        return true;
     }
 
     public Integer getConnectionId(String username){
@@ -76,5 +86,25 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
             return usernameToConId.get(username);
         }
         return null;
+    }
+
+    // Queries
+
+    private boolean canRegisterNewUser(String username){
+        return !usernameToConId.containsKey(username);
+    }
+
+    private boolean canSend(int conId){
+        return true;
+    }
+
+    private boolean canLogIn(int connectionId, String username, String password) {
+        return (usernameToConId.containsKey(username) &&
+                conIdToUserWrapper.get(connectionId).getUserInfo().getPassword().equals(password));
+    }
+
+    private boolean canLogOut(int connectionId) {
+        UserInfo userInfo = conIdToUserWrapper.get(connectionId).getUserInfo();
+        return (userInfo != null && userInfo.isLoggedIn());
     }
 }
