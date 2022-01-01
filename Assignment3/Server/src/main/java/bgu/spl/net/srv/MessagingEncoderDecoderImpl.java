@@ -6,15 +6,16 @@ import bgu.spl.net.api.MessageEncoderDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import java.util.HashMap;
 
 
 public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String> {
 
     private byte[] bytes = new byte[1<<10];
     private int len = 0;
-    private byte[] opcode = new byte[2];
+    private final byte[] opcode = new byte[2];
     private int opcodeIndex = 0;
+    private final HashMap<String,String> badWords = new HashMap<>();
 
 
     @Override
@@ -57,12 +58,12 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
 
     @Override
     public byte[] encode(String message) {
-        ArrayList<String> parsedMsg = new ArrayList<>(Arrays.asList(message.split(" ")));
+        ArrayList<String> parsedMsg = censorMsg(message);
         short opcode = getOpcode(parsedMsg.get(0));
         byte[] opcodeBytes = shortToBytes(opcode);
         pushByte(opcodeBytes[0]);
         pushByte(opcodeBytes[1]);
-        for(int i =1; i< parsedMsg.size();i++){
+        for(int i =1; i< parsedMsg.size();i++){new ArrayList<>(Arrays.asList(message.split(" ")));
             byte[] nextString = (parsedMsg.get(i)).getBytes();
             for (byte nextByte : nextString){
                 pushByte(nextByte);
@@ -129,4 +130,27 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
         bytesArr[1] = (byte)(num & 0xFF);
         return bytesArr;
     }
+
+
+    private ArrayList<String> censorMsg(String msg){
+        ArrayList<String> unCensorMessage = new ArrayList<String>(Arrays.asList(msg.split(" ")));
+        for (int i = 0 ; i< unCensorMessage.size(); i++){
+            String currentWord = unCensorMessage.get(i);
+            if(badWords.containsKey(currentWord.replaceAll("[^a-zA-Z]","").toLowerCase())){
+                unCensorMessage.set(i,asterisks(currentWord));
+            }
+        }
+        return unCensorMessage;
+    }
+
+    private String asterisks(String word){
+        StringBuilder outPut = new StringBuilder();
+        for (int i = 0;i<word.length();i++){
+            outPut.append("*");
+        }
+        return outPut.toString();
+    }
+
+
+
 }

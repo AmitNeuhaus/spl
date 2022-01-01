@@ -2,6 +2,7 @@ package bgu.spl.net.srv.bidi;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.ConnectionsImpl;
+import bgu.spl.net.srv.UserInfo;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -28,18 +29,18 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
         switch (opCode){
 
             case "1":
-                String register_response = register(msg.get(1),msg.get(2),msg.get(3));
-                connections.send(myConnectionId, register_response);
+//                String register_response = register(msg.get(1),msg.get(2),msg.get(3));
+//                connections.send(myConnectionId, register_response);
                 break;
             case "2":
-                String login_response = logIn(msg.get(1),msg.get(2));
-                connections.send(myConnectionId, login_response);
+//                String login_response = logIn(msg.get(1),msg.get(2));
+//                connections.send(myConnectionId, login_response);
             case "3":
-                String logout_response = logOut();
-                connections.send(myConnectionId, logout_response);
+//                String logout_response = logOut();
+//                connections.send(myConnectionId, logout_response);
             case "4":
 
-                String follow_response = follow(msg.get(1), msg.get(2));
+//                String follow_response = follow(msg.get(1), msg.get(2));
 
             case "5":
                 System.out.println("NOT IMPLEMENTED YET 5");
@@ -76,44 +77,44 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
 
 //    ACTIONS-------
-    public String register(String username,String password, String birthday){
-        if (canRegisterNewUser()) {
-            connections.register(myConnectionId, username, password, birthday);
-            return "ACK";
-        }
-        return "ERROR";
-    }
+//    public String register(String username,String password, String birthday){
+//        if (canRegisterNewUser()) {
+//            connections.register(myConnectionId, username, password, birthday);
+//            return "ACK";
+//        }
+//        return "ERROR";
+//    }
 
-    public String logIn(String username,String password){
-        boolean didLogIn = connections.logIn(myConnectionId,username,password);
-        if(didLogIn){
-            return "ACK";
-        }else{
-            return "ERROR";
-        }
-    }
-    public String logOut(){
-        boolean didLogOut = connections.logOut(myConnectionId);
-        if(didLogOut){
-            return "ACK";
-        }else{
-            return "ERROR";
-        }
-    }
+//    public String logIn(String username,String password){
+//        boolean didLogIn = connections.logIn(myConnectionId,username,password);
+//        if(didLogIn){
+//            return "ACK";
+//        }else{
+//            return "ERROR";
+//        }
+//    }
+//    public String logOut(){
+//        boolean didLogOut = connections.logOut(myConnectionId);
+//        if(didLogOut){
+//            return "ACK";
+//        }else{
+//            return "ERROR";
+//        }
+//    }
 
-    public String follow(boolean action, String userName){
-        boolean didFollowAction;
-        if (action)
-            didFollowAction = connections.follow(userName);
-        else
-            didFollowAction = connections.unfollow(userName);
-
-        if(didFollowAction){
-            return "ACK";
-        }else{
-            return "ERROR";
-        }
-    }
+//    public String follow(boolean action, String userName){
+//        boolean didFollowAction;
+//        if (action)
+//            didFollowAction = connections.follow(userName);
+//        else
+//            didFollowAction = connections.unfollow(userName);
+//
+//        if(didFollowAction){
+//            return "ACK";
+//        }else{
+//            return "ERROR";
+//        }
+//    }
 
 
     // Queries
