@@ -2,7 +2,6 @@ package bgu.spl.net.srv.bidi;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.ConnectionsImpl;
-import bgu.spl.net.srv.UserInfo;
 
 import java.sql.Connection;
 import java.util.ArrayList;
