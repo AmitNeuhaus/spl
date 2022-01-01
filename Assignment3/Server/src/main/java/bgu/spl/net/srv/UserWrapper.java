@@ -5,18 +5,22 @@ import bgu.spl.net.srv.bidi.ConnectionHandler;
 
 public class UserWrapper<T> {
     private ConnectionHandler<T> handler;
-    private final UserInfo userInfo;
+    private String username;
 
-    public UserWrapper(ConnectionHandler handler, UserInfo userInfo){
+    public UserWrapper(ConnectionHandler<T> handler){
         this.handler = handler;
-        this.userInfo = userInfo;
+        this.username = null;
     }
 
-    public ConnectionHandler getHandler(){
+    public ConnectionHandler<T> getHandler(){
         return handler;
     }
 
-    public UserInfo getUserInfo(){
-        return userInfo;
+    public String getUserName(){
+        return username;
+    }
+
+    public void setUserName(String userName){
+        this.username = userName;
     }
 }

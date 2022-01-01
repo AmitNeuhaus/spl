@@ -75,29 +75,17 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
 //    ACTIONS-------
     public String register(String username,String password, String birthday){
-        boolean didRegister = connections.register(myConnectionId,username,password,birthday);
-        if(didRegister){
-            return "ACK";
-        }else{
-            return "ERROR";
-        }
+        connections.register(myConnectionId,username,password,birthday);
+        return "not implemented register";
     }
 
     public String logIn(String username,String password){
-        boolean didLogIn = connections.logIn(myConnectionId,username,password);
-        if(didLogIn){
-            return "ACK";
-        }else{
-            return "ERROR";
-        }
+        connections.logIn(myConnectionId,username,password);
+        return "not implemented login";
     }
     public String logOut(){
-        boolean didLogOut = connections.logOut(myConnectionId);
-        if(didLogOut){
-            return "ACK";
-        }else{
-            return "ERROR";
-        }
+        connections.logOut(myConnectionId);
+        return "not implemented logout";
     }
 
 
@@ -107,6 +95,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     private String[] splitMessage(String msg){
         return msg.split(" ");
     }
+
+
+//    VALIDATIONS ---
+
+
 
 
 }
