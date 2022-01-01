@@ -74,6 +74,22 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         return false;
     }
 
+    public boolean follow(String userName){
+        if (canFollow(userName)){
+            conIdToUserWrapper.get(conId).getUserInfo().setLoggedIn(false);
+            return true;
+        }
+        return false;
+    }
+
+    public boolean follow(String userName){
+        if (canUnfollow(userName)){
+            conIdToUserWrapper.get(conId).getUserInfo().setLoggedIn(false);
+            return true;
+        }
+        return false;
+    }
+
 
     // GETTERS ---------------
 
@@ -105,6 +121,11 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
 
     private boolean canLogOut(int connectionId) {
         UserInfo userInfo = conIdToUserWrapper.get(connectionId).getUserInfo();
+        return (userInfo != null && userInfo.isLoggedIn());
+    }
+
+    private boolean canFollow(String userName) {
+        UserInfo userInfo = conIdToUserWrapper.get(userName).getUserInfo();
         return (userInfo != null && userInfo.isLoggedIn());
     }
 }

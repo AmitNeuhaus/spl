@@ -38,7 +38,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
                 String logout_response = logOut();
                 connections.send(myConnectionId, logout_response);
             case "4":
-                System.out.println("NOT IMPLEMENTED YET 4");
+
+                String follow_response = follow(msg.get(1), msg.get(2));
+
             case "5":
                 System.out.println("NOT IMPLEMENTED YET 5");
             case "6":
@@ -94,6 +96,20 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     public String logOut(){
         boolean didLogOut = connections.logOut(myConnectionId);
         if(didLogOut){
+            return "ACK";
+        }else{
+            return "ERROR";
+        }
+    }
+
+    public String follow(boolean action, String userName){
+        boolean didFollowAction;
+        if (action)
+            didFollowAction = connections.follow(userName);
+        else
+            didFollowAction = connections.unfollow(userName);
+
+        if(didFollowAction){
             return "ACK";
         }else{
             return "ERROR";

@@ -1,20 +1,20 @@
 package bgu.spl.net.srv;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class UserInfo {
     String name;
     String password;
     String birthDay;
     boolean loggedIn;
-    ConcurrentLinkedQueue<Integer> followers;
+    CopyOnWriteArrayList<Integer> followers = new CopyOnWriteArrayList<>();
 
 
 
     public UserInfo(){
-        this.name = "UnregisteredClient";
-        this.password = "UnregisteredClient";
-        this.birthDay =  "UnregisteredClient";
+        this.name = "";
+        this.password = "";
+        this.birthDay =  "";
         this.loggedIn = false;
     }
 
@@ -35,7 +35,7 @@ public class UserInfo {
         return birthDay;
     }
 
-    public ConcurrentLinkedQueue<Integer> getFollowers(){
+    public CopyOnWriteArrayList<Integer> getFollowers(){
         return  followers;
     }
 
