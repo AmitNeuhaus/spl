@@ -98,7 +98,7 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
 
 
 
-    //get user information
+
 
 
     // Queries
