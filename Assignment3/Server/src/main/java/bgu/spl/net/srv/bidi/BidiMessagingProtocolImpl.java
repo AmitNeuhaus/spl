@@ -150,7 +150,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     }
 
     private boolean canUnfollow(String userName) {
-
+        return true;
     }
 
 //    HELPERS -------

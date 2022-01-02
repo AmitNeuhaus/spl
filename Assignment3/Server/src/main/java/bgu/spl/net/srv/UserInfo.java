@@ -1,12 +1,15 @@
 package bgu.spl.net.srv;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class UserInfo {
     String name;
     String password;
-    String birthDay;
+    LocalDate birthDay;
     boolean loggedIn;
     int posts;
     ConcurrentLinkedQueue<String> followers;
@@ -18,7 +21,7 @@ public class UserInfo {
     public UserInfo(String name, String password, String birthDay){
         this.name = name;
         this.password = password;
-        this.birthDay =  birthDay;
+        convertBirthday(birthDay);
         this.loggedIn = false;
         this.posts = 0;
         followers = new ConcurrentLinkedQueue<>();
@@ -29,7 +32,15 @@ public class UserInfo {
     public void setInfo(String name, String password, String birthDay){
         this.name = name;
         this.password = password;
-        this.birthDay = birthDay;
+        convertBirthday(birthDay);
+    }
+
+    private void convertBirthday(String birthday){
+        ArrayList<String> birthdayList = new ArrayList(Arrays.asList(birthday.split("-")));
+        int year = Integer.parseInt(birthdayList.get(2));
+        int month = Integer.parseInt(birthdayList.get(1));
+        int day = Integer.parseInt(birthdayList.get(0));
+        birthDay = LocalDate.of(year,month,day);
     }
 
     //GETTERS -------------
@@ -42,8 +53,8 @@ public class UserInfo {
         return password;
     }
 
-    public String getBirthDay() {
-        return birthDay;
+    public Integer getAge() {
+        return Period.between(birthDay,LocalDate.now()).getYears();
     }
 
     public ConcurrentLinkedQueue<String> getFollowers(){
