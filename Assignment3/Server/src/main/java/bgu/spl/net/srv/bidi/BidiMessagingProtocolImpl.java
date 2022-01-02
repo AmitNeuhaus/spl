@@ -2,6 +2,8 @@ package bgu.spl.net.srv.bidi;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.ConnectionsImpl;
+import bgu.spl.net.srv.UserInfo;
+
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -25,21 +27,20 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
         Collections.addAll(msg, splitMessage(message));
         String opCode = msg.get(0);
 
+        String response;
         switch (opCode){
-
             case "1":
-                String register_response = register(msg.get(1),msg.get(2),msg.get(3));
-                connections.send(myConnectionId, register_response);
+                response = register(msg.get(1),msg.get(2),msg.get(3));
+                connections.send(myConnectionId, response);
                 break;
             case "2":
-                String login_response = logIn(msg.get(1),msg.get(2));
-                connections.send(myConnectionId, login_response);
+                response = logIn(msg.get(1),msg.get(2));
+                connections.send(myConnectionId, response);
             case "3":
-                String logout_response = logOut();
-                connections.send(myConnectionId, logout_response);
+                response = logOut();
+                connections.send(myConnectionId, response);
             case "4":
-
-                String follow_response = follow(msg.get(1), msg.get(2));
+                String follow_response = logOut();
 
             case "5":
                 System.out.println("NOT IMPLEMENTED YET 5");
@@ -77,40 +78,41 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
 //    ACTIONS-------
     public String register(String username,String password, String birthday){
-        if (canRegisterNewUser()) {
-            connections.register(myConnectionId, username, password, birthday);
+        if (canRegisterNewUser(username)) {
+            connections.register(username, password, birthday);
             return "ACK";
         }
         return "ERROR";
     }
 
     public String logIn(String username,String password){
-        boolean didLogIn = connections.logIn(myConnectionId,username,password);
-        if(didLogIn){
+        if(canLogIn(username,password)) {
+            connections.logIn(myConnectionId, username);
             return "ACK";
-        }else{
-            return "ERROR";
         }
+        return "ERROR";
+
     }
     public String logOut(){
-        boolean didLogOut = connections.logOut(myConnectionId);
-        if(didLogOut){
-            return "ACK";
-        }else{
-            return "ERROR";
+        if(canLogOut(myConnectionId)){
+            connections.logOut(myConnectionId);
         }
+        return "ERROR";
     }
 
     public String follow(boolean action, String userName){
-        boolean didFollowAction;
-        if (action)
-            didFollowAction = connections.follow(userName);
-        else
-            didFollowAction = connections.unfollow(userName);
-
-        if(didFollowAction){
-            return "ACK";
+        UserInfo user = connections.getUserInfo(myConnectionId);
+        if (action) {
+            if(canFollow(userName)){
+                user.follow(userName);
+                return "ACK";
+            }
+            return "ERROR";
         }else{
+            if (canUnfollow(userName)) {
+                user.unFollow(userName);
+                return "ACK";
+            }
             return "ERROR";
         }
     }
@@ -145,6 +147,10 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
         UserInfo follower = connections.getUserInfo(userName);
         boolean followerExists = follower != null;
         return (followerExists && user.isLoggedIn() && !user.isFollower(userName));
+    }
+
+    private boolean canUnfollow(String userName) {
+
     }
 
 //    HELPERS -------

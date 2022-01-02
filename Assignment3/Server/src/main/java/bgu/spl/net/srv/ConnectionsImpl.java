@@ -48,13 +48,13 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         conIdToUserWrapper.put(conId,new UserWrapper(handler));
     }
 
-    public void register(int conId,String name,String password, String birthDay){
+    public void register(String name,String password, String birthDay){
         UserInfo newUser = new UserInfo(name,password,birthDay);
         users.put(name,newUser);
 
     }
 
-    public void logIn(int conId, String username, String password){
+    public void logIn(int conId, String username){
         UserInfo userInfo =  users.get(username);
         usernameToConId.put(username,conId);
         UserWrapper<T> wrapper = conIdToUserWrapper.get(conId);
