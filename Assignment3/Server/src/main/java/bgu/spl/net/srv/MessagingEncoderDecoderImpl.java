@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.jar.JarOutputStream;
 
 
 public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String> {
@@ -136,8 +137,11 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
         ArrayList<String> unCensorMessage = new ArrayList<String>(Arrays.asList(msg.split(" ")));
         for (int i = 0 ; i< unCensorMessage.size(); i++){
             String currentWord = unCensorMessage.get(i);
-            if(badWords.containsKey(currentWord.replaceAll("[^a-zA-Z]","").toLowerCase())){
-                unCensorMessage.set(i,asterisks(currentWord));
+            String trimedWord = currentWord.replaceAll("[^a-zA-Z]","").toLowerCase();
+            for (String badWord : badWords.keySet()){
+                if(trimedWord.contains(badWord)){
+                    unCensorMessage.set(i,asterisks(currentWord));
+                }
             }
         }
         return unCensorMessage;
@@ -150,6 +154,8 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
         }
         return outPut.toString();
     }
+
+
 
 
 
