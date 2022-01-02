@@ -9,7 +9,8 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
     //Fields:
 
     ConcurrentHashMap<String, Integer> usernameToConId;
-    ConcurrentHashMap<Integer, UserWrapper<T>> conIdToUserWrapper;
+    ConcurrentHashMap<Integer, UserWrapper> conIdToUserWrapper;
+    ConcurrentHashMap<String,UserInfo> users;
 
 
     public ConnectionsImpl(){
@@ -17,6 +18,8 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         conIdToUserWrapper = new ConcurrentHashMap<>();
     }
 
+
+    // ACTIONS --------------
     @Override
     public boolean send(int connectionId, T msg) {
         if (canSend(connectionId)){
@@ -24,9 +27,6 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
             return true;
         }
         return false;
-
-
-
     }
 
     @Override
@@ -34,7 +34,6 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         conIdToUserWrapper.forEach((conId,wrapper) -> {
             ConnectionHandler<T> handler = wrapper.getHandler();
             handler.send(msg);
-
         });
     }
 
@@ -46,29 +45,40 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
     }
 
     public void addConnection(int conId, ConnectionHandler<T> handler){
-        UserWrapper<T> userWrapper = new UserWrapper<>(handler, new UserInfo());
-        conIdToUserWrapper.put(conId,userWrapper);
+        conIdToUserWrapper.put(conId,new UserWrapper(handler));
     }
 
-    public boolean register(int conId,String name,String password, String birthDay){
-        if (canRegisterNewUser(name)){
-            conIdToUserWrapper.get(conId).getUserInfo().setInfo(name,password,birthDay);
-            usernameToConId.put(name,conId);
-            return true;
-        }
-        return false;
+    public void register(String name,String password, String birthDay){
+        UserInfo newUser = new UserInfo(name,password,birthDay);
+        users.put(name,newUser);
+
     }
 
-    private boolean canRegisterNewUser(String username){
-        return usernameToConId.containsKey(username);
+    public void logIn(int conId, String username){
+        UserInfo userInfo =  users.get(username);
+        usernameToConId.put(username,conId);
+        UserWrapper<T> wrapper = conIdToUserWrapper.get(conId);
+        userInfo.setLoggedIn(true);
+        wrapper.setUserName(userInfo.name);
+
     }
 
-    private String getUsername(int conId){
-        return conIdToUserWrapper.get(conId).getUserInfo().getName();
+    public void logOut(int conId){
+        UserWrapper wrapper = conIdToUserWrapper.get(conId);
+        String userName = wrapper.getUserName();
+        UserInfo user = users.get(userName);
+        conIdToUserWrapper.remove(conId);
+        usernameToConId.remove(user.name);
+        user.setLoggedIn(false);
+
+
     }
 
-    private boolean canSend(int conId){
-        return true;
+
+    // GETTERS ---------------
+
+    public String getUsername(int conId){
+        return conIdToUserWrapper.get(conId).getUserName();
     }
 
     public Integer getConnectionId(String username){
@@ -77,4 +87,33 @@ public class ConnectionsImpl<T> implements bgu.spl.net.api.bidi.Connections<T> {
         }
         return null;
     }
+
+    public UserInfo getUserInfo(String username){
+        return users.get(username);
+    }
+
+    public UserInfo getUserInfo(int connId){
+        return users.get(conIdToUserWrapper.get(connId).getUserName());
+    }
+
+
+
+
+
+
+    // Queries
+
+
+
+    private boolean canSend(int conId){
+        return true;
+    }
+
+    public boolean isUserNameExist(String userName){
+        return users.containsKey(userName);
+    }
+
+
+
+
 }
