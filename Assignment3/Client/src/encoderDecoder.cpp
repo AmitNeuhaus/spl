@@ -12,7 +12,8 @@ std::string encoderDecoder::decode(short opcode,std::string input) {
     else if (opcode == 10){
         return "ERROR " + input;
     }else{
-        return "ACK " + input;
+
+        return "ACK " + input.substr(0,input.length()-1);
     }
 }
 std::string encoderDecoder::encode(std::string input) {
