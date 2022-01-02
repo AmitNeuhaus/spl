@@ -2,16 +2,18 @@ package bgu.spl.net.srv.bidi;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.ConnectionsImpl;
+import bgu.spl.net.srv.DataBase;
 import bgu.spl.net.srv.UserInfo;
 
 
-import java.sql.Connection;
+
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
+
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> {
 
+    private DataBase dataBase;
     private ConnectionsImpl<String> connections;
     private int myConnectionId;
 
@@ -79,7 +81,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 //    ACTIONS-------
     public String register(String username,String password, String birthday){
         if (canRegisterNewUser(username)) {
-            connections.register(username, password, birthday);
+            dataBase.register(username, password, birthday);
             return "ACK";
         }
         return "ERROR";
@@ -87,7 +89,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
     public String logIn(String username,String password){
         if(canLogIn(username,password)) {
-            connections.logIn(myConnectionId, username);
+            dataBase.logIn(myConnectionId, username);
             return "ACK";
         }
         return "ERROR";
@@ -95,13 +97,14 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     }
     public String logOut(){
         if(canLogOut(myConnectionId)){
-            connections.logOut(myConnectionId);
+            dataBase.logOut(myConnectionId);
+            connections.disconnect(myConnectionId);
         }
         return "ERROR";
     }
 
     public String follow(boolean action, String userName){
-        UserInfo user = connections.getUserInfo(myConnectionId);
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
         if (action) {
             if(canFollow(userName)){
                 user.follow(userName);
@@ -121,7 +124,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     // Queries
 
     private boolean canRegisterNewUser(String userName){
-        UserInfo user = connections.getUserInfo(userName);
+        UserInfo user = dataBase.getUserInfo(userName);
         return !(user == null);
     }
 
@@ -130,21 +133,24 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
     }
 
     private boolean canLogIn(String username, String password) {
-        UserInfo user = connections.getUserInfo(username);
+        UserInfo user = dataBase.getUserInfo(username);
         boolean userExists = user != null;
-        boolean matchingPassowrd = user.getPassword().equals(password);
-        return (userExists && matchingPassowrd && !user.isLoggedIn());
+        if (userExists){
+            boolean matchingPassowrd = user.getPassword().equals(password);
+            return (userExists && matchingPassowrd && !user.isLoggedIn());
+        }
+        return false;
     }
 
     private boolean canLogOut(int connectionId) {
-        UserInfo user = connections.getUserInfo(connectionId);
+        UserInfo user = dataBase.getUserInfo(connectionId);
         boolean userExists = user != null;
         return (userExists && user.isLoggedIn());
     }
 
     private boolean canFollow(String userName) {
-        UserInfo user = connections.getUserInfo(myConnectionId);
-        UserInfo follower = connections.getUserInfo(userName);
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        UserInfo follower = dataBase.getUserInfo(userName);
         boolean followerExists = follower != null;
         return (followerExists && user.isLoggedIn() && !user.isFollower(userName));
     }

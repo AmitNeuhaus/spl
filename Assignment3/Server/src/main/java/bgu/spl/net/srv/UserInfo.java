@@ -11,6 +11,7 @@ public class UserInfo {
     String password;
     LocalDate birthDay;
     boolean loggedIn;
+    int currentConId;
     int posts;
     ConcurrentLinkedQueue<String> followers;
     ConcurrentLinkedQueue<String> following;
@@ -69,6 +70,10 @@ public class UserInfo {
         return loggedIn;
     }
 
+    public int getCurrentConId(){
+        return currentConId;
+    }
+
     public int getNumberOfFollowers(){
         return followers.size();
     }
@@ -90,6 +95,9 @@ public class UserInfo {
         followers.add(name);
     }
 
+    public void setConID(int conId){
+        currentConId = conId;
+    }
     public void removeFollower(String name){
         followers.remove(name);
     }
