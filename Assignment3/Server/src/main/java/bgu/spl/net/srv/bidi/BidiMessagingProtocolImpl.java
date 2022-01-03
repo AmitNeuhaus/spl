@@ -1,14 +1,15 @@
 package bgu.spl.net.srv.bidi;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
-import bgu.spl.net.srv.ConnectionsImpl;
-import bgu.spl.net.srv.DataBase;
-import bgu.spl.net.srv.UserInfo;
-
+import bgu.spl.net.srv.*;
 
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> {
@@ -42,16 +43,24 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
                 response = logOut();
                 connections.send(myConnectionId, response);
             case "4":
-                String follow_response = logOut();
-
+                boolean followOrUnfollow = msg.get(1)=="0"? true: false;
+                response = follow(followOrUnfollow, msg.get(2));
+                connections.send(myConnectionId, response);
             case "5":
-                System.out.println("NOT IMPLEMENTED YET 5");
+                String[] parsedMessage= message.split(" ", 2);
+                response = post(parsedMessage[1]);
+                connections.send(myConnectionId, response);
             case "6":
-                System.out.println("NOT IMPLEMENTED YET 6");
+                String pmContent= "NOT implemnted parsing yet";
+                String followerName ="NOT implemnted parsing yet";
+                String timestamp= "NOT implemnted parsing yet";
+                pm(followerName, pmContent, timestamp);
             case "7":
-                System.out.println("NOT IMPLEMENTED YET 7");
+                logStat();
+
             case "8":
-                System.out.println("NOT IMPLEMENTED YET 8");
+                String usersList ="UsersList not provided yet";
+                stat(usersList);
             case "9":
                 System.out.println("NOT IMPLEMENTED YET 9");
             case "10":
@@ -59,8 +68,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
             case "11":
                 System.out.println("NOT IMPLEMENTED YET 11");
             case "12":
-                System.out.println("NOT IMPLEMENTED YET 12");
-
+                String userNameToBlock="Not implmented blokcing user parsing yet";
+                response = block(userNameToBlock);
+                connections.send(myConnectionId, response);
             default:
                 System.out.println("Couldn't recognize op code");
 
@@ -120,6 +130,88 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
         }
     }
 
+    public String post(String content){
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        if(canPost(user)) {
+            Post post = new Post(content);
+            user.addPost(post);
+            List<String> matchingUsers = post.searchUsersInContent();
+            // Add Post to tagged users
+            for (String usertag : matchingUsers) {
+                String username = usertag.substring(1);
+                UserInfo taggedUser = dataBase.getUserInfo(username);
+                taggedUser.addToReadingList(post);
+            }
+
+            //Add Post to followers
+            ConcurrentLinkedQueue<String> followers = user.getFollowers();
+            for (String follower : followers) {
+                UserInfo taggedUser = dataBase.getUserInfo(follower);
+                taggedUser.addToReadingList(post);
+            }
+            return "ACK";
+        }
+        return "ERROR";
+
+    }
+
+
+    public String pm(String followerName, String content, String timestamp){
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        UserInfo follower = dataBase.getUserInfo(followerName);
+
+        if(canPm(user, follower)) {
+            PM pm = new PM(content, timestamp);
+            user.addPm(pm);
+            follower.addToReadingList((Message) pm);
+            return "ACK";
+        }
+        return "ERROR";
+    }
+
+
+    public String logStat(){
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        if(user != null && user.isLoggedIn()) {
+            ConcurrentHashMap<Integer, String> activeUsers = dataBase.getActiveUsers();
+            for(Integer i: activeUsers.keySet()) {
+                String userName = activeUsers.getOrDefault(i, null);
+                if (userName != null){
+                    UserInfo activeUserInfo = dataBase.getUserInfo(userName);
+                    connections.send(myConnectionId,"ACK " + activeUserInfo.getStat());
+                }
+            }
+        }
+        return "ERROR";
+    }
+
+
+    public String stat(String usersList){
+        String[] interestedUserNames = usersList.split("\\|");
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        if(user != null && user.isLoggedIn()) {
+            for(String userName: interestedUserNames) {
+                if (userName != null){
+                    UserInfo activeUserInfo = dataBase.getUserInfo(userName);
+                     connections.send(myConnectionId,"ACK " + activeUserInfo.getStat());
+                }
+            }
+        }
+        return "ERROR";
+    }
+
+
+
+    public String block(String username){
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        UserInfo blockUser = dataBase.getUserInfo(username);
+        if (blockUser != null) {
+            user.unFollow(blockUser.getName());
+            blockUser.unFollow(user.getName());
+            return "ACK";
+        }
+        return "Error";
+    }
 
     // Queries
 
@@ -157,6 +249,14 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
     private boolean canUnfollow(String userName) {
         return true;
+    }
+
+    public boolean canPost(UserInfo user){
+        return user.isLoggedIn();
+    }
+
+    public boolean canPm(UserInfo user, UserInfo follower){
+        return user.isLoggedIn() && follower != null &&user.isFollower(follower.getName());
     }
 
 //    HELPERS -------

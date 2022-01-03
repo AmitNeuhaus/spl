@@ -51,6 +51,13 @@ public class DataBase {
         return users.get(activeUsers.get(connId));
     }
 
+    public ConcurrentHashMap<Integer, String> getActiveUsers(){
+        return activeUsers;
+    }
+    public ConcurrentHashMap<String, UserInfo> getUsers(){
+        return users;
+    }
+
     //QUERIES-------
 
     public boolean isRegister(String username){

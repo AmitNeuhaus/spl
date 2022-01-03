@@ -16,6 +16,10 @@ public class UserInfo {
     ConcurrentLinkedQueue<String> followers;
     ConcurrentLinkedQueue<String> following;
     ConcurrentLinkedQueue<String> blocked;
+    ConcurrentLinkedQueue<Post> myPosts;
+    ConcurrentLinkedQueue<PM> myPms;
+    ConcurrentLinkedQueue<Message> ReadingList;
+
 
 
 
@@ -62,6 +66,14 @@ public class UserInfo {
         return  followers;
     }
 
+    public ConcurrentLinkedQueue<Post> getPosts(){
+        return  myPosts;
+    }
+    public ConcurrentLinkedQueue<PM> getPms(){
+        return myPms;
+    }
+
+
     public ConcurrentLinkedQueue<String> getFollowing(){return following;}
 
     public ConcurrentLinkedQueue<String> detBlocked(){return blocked;}
@@ -83,6 +95,9 @@ public class UserInfo {
     public int getNumberOfFollowing(){return following.size();}
     public int getNumberOfPosts(){return posts;}
 
+    public String getStat(){
+        return String.format("%s %d %d %d %d", getName(), getAge() ,getPosts().size(),getFollowers().size(),getFollowing().size());
+    }
     //SETTERS ---------
 
     public synchronized void  setLoggedIn(boolean t){
@@ -117,6 +132,19 @@ public class UserInfo {
     public void removeBlocked(String name){
         blocked.remove(name);
     }
+
+    public void addToReadingList(Message msg){
+        ReadingList.add(msg);
+    }
+
+    public void addPost(Post post){
+        myPosts.add(post);
+    }
+
+    public void addPm(PM pm){
+        myPms.add(pm);
+    }
+
 
     //QUERIES -------
 

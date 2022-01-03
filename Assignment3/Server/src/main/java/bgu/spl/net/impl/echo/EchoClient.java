@@ -27,7 +27,7 @@ public class EchoClient {
 
             MessagingEncoderDecoderImpl encDec = new MessagingEncoderDecoderImpl();
             System.out.println("sending message to server");
-            byte[] encoded = encDec.encode("REGISTER tom 135 20-10-1995");
+            byte[] encoded = encDec.encode("POST ani @tom ve @dvir went to letayel ehad nafal ve @maor hitpozzez oi looooo @avram ma omerrrr");
             out.write(encoded,0,encoded.length);
             out.flush();
 
