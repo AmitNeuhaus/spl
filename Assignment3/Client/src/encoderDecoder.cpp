@@ -52,10 +52,10 @@ void encoderDecoder::encodeAndSend(std::string& input,ConnectionHandler& connect
             input.erase(0, nextDel + 1);
             char follow[1];
             if (nextSubstr == "1") {
-                follow[0] = 1;
+                follow[0] = '1';
 
             } else {
-                follow[0] = 0;
+                follow[0] = '0';
             }
             connection.sendBytes(follow, 1);
             connection.sendLine(input);
@@ -152,9 +152,15 @@ std::string encoderDecoder::getDateTime() {
 
 
 
-//int main(int argc,char *argv[]) {
-//
-//
-//    return 0;
-//}
+int main(int argc,char *argv[]) {
+    ConnectionHandler connectionHandler("10.100.102.13", 5000);
+    encoderDecoder* encdec = new encoderDecoder();
+    std::string input;
+    std::cin >> input;
+    while(input != "stop"){
+        encdec->encodeAndSend(input,connectionHandler);
+    }
+    delete encdec;
+    return 0;
+}
 
