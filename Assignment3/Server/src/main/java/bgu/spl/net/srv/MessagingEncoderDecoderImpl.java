@@ -10,68 +10,72 @@ import java.util.HashMap;
 import java.util.jar.JarOutputStream;
 
 
-public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String> {
+public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayList<String>> {
 
     private byte[] bytes = new byte[1<<10];
     private int len = 0;
     private final byte[] opcode = new byte[2];
     private int opcodeIndex = 0;
     private final HashMap<String,String> badWords = new HashMap<>();
-
+    private final ArrayList<String> parsedMessage = new ArrayList<>();
 
     @Override
-    public String decodeNextByte(byte nextByte) {
+    public ArrayList<String> decodeNextByte(byte nextByte) {
         if (opcodeIndex <= 1){
             opcode[opcodeIndex] = nextByte;
+            if (opcodeIndex == 1){
+                short opcodeShort = bytesToShort(opcode);
+                parsedMessage.add(String.valueOf(opcodeShort));
+            }
             opcodeIndex++;
         }
         else if (nextByte == (byte)';'){
-            return popString();
+            ArrayList<String> result = new ArrayList<>(parsedMessage);
+            parsedMessage.clear();
+            opcodeIndex =0;
+            return result;
         }else if (nextByte == (byte)0){
-            nextByte = ((byte)' ');
-        }
-        pushByte(nextByte);
-
-        return null;
-    }
-
-    public String decodeMessage(byte[] msg){
-        String output = null;
-        int i = 0;
-        while(output == null){
-            output = decodeNextByte(msg[i]);
-            i++;
-        }
-        return output;
-    }
-
-    public byte[] getFullMessage(byte nextByte){
-        if (nextByte == (byte)';'){
+            parsedMessage.add(popString());
+        }else{
             pushByte(nextByte);
-            len = 0;
-            return Arrays.copyOf(bytes,bytes.length);
         }
-        pushByte(nextByte);
         return null;
     }
+
+//    public String decodeMessage(byte[] msg){
+//        String output = null;
+//        int i = 0;
+//        while(output == null){
+//            output = decodeNextByte(msg[i]);
+//            i++;
+//        }
+//        return output;
+//    }
+//
+//    public byte[] getFullMessage(byte nextByte){
+//        if (nextByte == (byte)';'){
+//            pushByte(nextByte);
+//            len = 0;
+//            return Arrays.copyOf(bytes,bytes.length);
+//        }
+//        pushByte(nextByte);
+//        return null;
+//    }
 
 
 
     @Override
-    public byte[] encode(String message) {
-        ArrayList<String> parsedMsg = censorMsg(message);
+    public byte[] encode(ArrayList<String> parsedMsg) {
         short opcode = getOpcode(parsedMsg.get(0));
         byte[] opcodeBytes = shortToBytes(opcode);
         pushByte(opcodeBytes[0]);
         pushByte(opcodeBytes[1]);
-        for(int i =1; i< parsedMsg.size();i++){new ArrayList<>(Arrays.asList(message.split(" ")));
+        for(int i =1; i< parsedMsg.size();i++){
             byte[] nextString = (parsedMsg.get(i)).getBytes();
             for (byte nextByte : nextString){
                 pushByte(nextByte);
             }
-            if (i<parsedMsg.size()-1){
-                pushByte((byte)0);
-            }
+            pushByte((byte)0);
         }
         pushByte((byte)';');
         len = 0;
@@ -86,11 +90,9 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     }
 
     private String popString(){
-        String result = new String(bytes,2,len-2, StandardCharsets.UTF_8);
-        String opcodeString = String.valueOf(opcode[1]);
+        String result = new String(bytes,0,len, StandardCharsets.UTF_8);
         len = 0;
-        opcodeIndex =0;
-        return opcodeString + " " + result;
+        return result;
     }
 
     private short getOpcode(String input){
@@ -130,6 +132,12 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
         bytesArr[0] = (byte)((num >> 8) & 0xFF);
         bytesArr[1] = (byte)(num & 0xFF);
         return bytesArr;
+    }
+    private short bytesToShort(byte[] byteArr)
+    {
+        short result = (short)((byteArr[0] & 0xff) << 8);
+        result += (short)(byteArr[1] & 0xff);
+        return result;
     }
 
 
