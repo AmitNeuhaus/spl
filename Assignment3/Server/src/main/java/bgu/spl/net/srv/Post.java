@@ -21,4 +21,8 @@ public class Post implements Message {
         }
         return allMatches;
     }
+
+    public String getContent(){
+        return content;
+    }
 }
