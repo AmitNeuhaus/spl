@@ -4,6 +4,7 @@ import bgu.spl.net.api.bidi.Connections;
 import bgu.spl.net.srv.*;
 
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,55 +13,41 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 
-public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> {
+public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayList<String>> {
 
     private DataBase dataBase;
-    private ConnectionsImpl<String> connections;
+    private ConnectionsImpl<ArrayList<String>> connections;
     private int myConnectionId;
 
     @Override
-    public void start(int connectionId, Connections<String> connections) {
-        this.connections = (ConnectionsImpl<String>) connections;
+    public void start(int connectionId, Connections<ArrayList<String>> connections) {
+        this.connections = (ConnectionsImpl<ArrayList<String>>) connections;
         this.myConnectionId = connectionId;
     }
 
     @Override
-    public void process(String message) {
-        ArrayList<String> msg = new ArrayList<>();
-        Collections.addAll(msg, splitMessage(message));
-        String opCode = msg.get(0);
-
-        String response;
+    public void process(ArrayList<String> message) {
+        String opCode = message.get(0);
         switch (opCode){
             case "1":
-                response = register(msg.get(1),msg.get(2),msg.get(3));
-                connections.send(myConnectionId, response);
+                register(message.get(1),message.get(2),message.get(3), opCode);
                 break;
             case "2":
-                response = logIn(msg.get(1),msg.get(2));
-                connections.send(myConnectionId, response);
+                logIn(message.get(1),message.get(2), opCode);
             case "3":
-                response = logOut();
-                connections.send(myConnectionId, response);
+                logOut(opCode);
             case "4":
-                boolean followOrUnfollow = msg.get(1)=="0"? true: false;
-                response = follow(followOrUnfollow, msg.get(2));
-                connections.send(myConnectionId, response);
+                boolean followOrUnfollow = message.get(1)=="0"? true: false;
+                follow(followOrUnfollow, message.get(2),opCode);
             case "5":
-                String[] parsedMessage= message.split(" ", 2);
-                response = post(parsedMessage[1]);
-                connections.send(myConnectionId, response);
+                post(message.get(1),opCode);
             case "6":
-                String pmContent= "NOT implemnted parsing yet";
-                String followerName ="NOT implemnted parsing yet";
-                String timestamp= "NOT implemnted parsing yet";
-                pm(followerName, pmContent, timestamp);
+                pm(message.get(1), message.get(2), message.get(3),opCode);
             case "7":
-                logStat();
-
+                logStat(opCode);
             case "8":
-                String usersList ="UsersList not provided yet";
-                stat(usersList);
+                String usersList = message.get(1);
+                stat(usersList, opCode);
             case "9":
                 System.out.println("NOT IMPLEMENTED YET 9");
             case "10":
@@ -68,18 +55,13 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
             case "11":
                 System.out.println("NOT IMPLEMENTED YET 11");
             case "12":
-                String userNameToBlock="Not implmented blokcing user parsing yet";
-                response = block(userNameToBlock);
-                connections.send(myConnectionId, response);
+                String userNameToBlock = message.get(1);
+                block(userNameToBlock,opCode);
             default:
                 System.out.println("Couldn't recognize op code");
 
 
         }
-
-
-
-        connections.send(myConnectionId, message);
     }
 
     @Override
@@ -89,48 +71,51 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
 
 //    ACTIONS-------
-    public String register(String username,String password, String birthday){
+    public void register(String username,String password, String birthday, String opCode){
         if (canRegisterNewUser(username)) {
             dataBase.register(username, password, birthday);
-            return "ACK";
+            sendAck(opCode);
         }
-        return "ERROR";
+        sendError(opCode);
     }
 
-    public String logIn(String username,String password){
+    public void logIn(String username,String password, String opCode){
         if(canLogIn(username,password)) {
             dataBase.logIn(myConnectionId, username);
-            return "ACK";
+            sendAck(opCode);
+            for (ArrayList<String> message : dataBase.getUserInfo(username).getUnreadMessages()){
+                connections.send(myConnectionId, message);
+            }
         }
-        return "ERROR";
+        sendError(opCode);
 
     }
-    public String logOut(){
+    public void logOut(String opCode){
         if(canLogOut(myConnectionId)){
             dataBase.logOut(myConnectionId);
             connections.disconnect(myConnectionId);
         }
-        return "ERROR";
+        sendError(opCode);
     }
 
-    public String follow(boolean action, String userName){
+    public void follow(boolean action, String userName, String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         if (action) {
             if(canFollow(userName)){
                 user.follow(userName);
-                return "ACK";
+                sendAck(opCode);
             }
-            return "ERROR";
+            sendError(opCode);
         }else{
             if (canUnfollow(userName)) {
                 user.unFollow(userName);
-                return "ACK";
+                sendAck(opCode);
             }
-            return "ERROR";
+            sendError(opCode);
         }
     }
 
-    public String post(String content){
+    public void post(String content, String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         if(canPost(user)) {
             Post post = new Post(content);
@@ -140,37 +125,39 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
             for (String usertag : matchingUsers) {
                 String username = usertag.substring(1);
                 UserInfo taggedUser = dataBase.getUserInfo(username);
-                taggedUser.addToReadingList(post);
+                if(taggedUser != null) {
+                    sendNotificationToUser(user,post.getContent());
+                }
             }
 
             //Add Post to followers
             ConcurrentLinkedQueue<String> followers = user.getFollowers();
             for (String follower : followers) {
                 UserInfo taggedUser = dataBase.getUserInfo(follower);
-                taggedUser.addToReadingList(post);
+                sendNotificationToUser(user,post.getContent());
             }
-            return "ACK";
+            sendAck(opCode);
         }
-        return "ERROR";
+        sendError(opCode);
 
     }
 
 
-    public String pm(String followerName, String content, String timestamp){
+    public void pm(String followerName, String content, String timestamp, String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         UserInfo follower = dataBase.getUserInfo(followerName);
 
         if(canPm(user, follower)) {
             PM pm = new PM(content, timestamp);
             user.addPm(pm);
-            follower.addToReadingList((Message) pm);
-            return "ACK";
+            sendNotificationToUser(user,pm.getContent());
+            sendAck(opCode);
         }
-        return "ERROR";
+        sendError(opCode);
     }
 
 
-    public String logStat(){
+    public void logStat(String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         if(user != null && user.isLoggedIn()) {
             ConcurrentHashMap<Integer, String> activeUsers = dataBase.getActiveUsers();
@@ -178,39 +165,39 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
                 String userName = activeUsers.getOrDefault(i, null);
                 if (userName != null){
                     UserInfo activeUserInfo = dataBase.getUserInfo(userName);
-                    connections.send(myConnectionId,"ACK " + activeUserInfo.getStat());
+                    sendAck(activeUserInfo.getStat());
                 }
             }
         }
-        return "ERROR";
+        sendError(opCode);
     }
 
 
-    public String stat(String usersList){
+    public void stat(String usersList, String opCode){
         String[] interestedUserNames = usersList.split("\\|");
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         if(user != null && user.isLoggedIn()) {
             for(String userName: interestedUserNames) {
                 if (userName != null){
                     UserInfo activeUserInfo = dataBase.getUserInfo(userName);
-                     connections.send(myConnectionId,"ACK " + activeUserInfo.getStat());
+                     sendAck(opCode);
                 }
             }
         }
-        return "ERROR";
+        sendError(opCode);
     }
 
 
 
-    public String block(String username){
+    public void block(String username,String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         UserInfo blockUser = dataBase.getUserInfo(username);
         if (blockUser != null) {
             user.unFollow(blockUser.getName());
             blockUser.unFollow(user.getName());
-            return "ACK";
+            sendAck(opCode);
         }
-        return "Error";
+        sendError(opCode);
     }
 
     // Queries
@@ -220,9 +207,6 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
         return !(user == null);
     }
 
-    private boolean canSend(int conId){
-        return true;
-    }
 
     private boolean canLogIn(String username, String password) {
         UserInfo user = dataBase.getUserInfo(username);
@@ -261,9 +245,36 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<String> 
 
 //    HELPERS -------
 
-    private String[] splitMessage(String msg){
-        return msg.split(" ");
+    private void sendAck(String optional,String opCode){
+        ArrayList<String> ack = new ArrayList<String>();
+        ack.add("ACK");
+        ack.add(opCode);
+        ack.add(optional);
+        connections.send(myConnectionId, ack);
+    }
+    private void sendAck(String opCode){
+        ArrayList<String> ack = new ArrayList<String>();
+        ack.add("ACK");
+        ack.add(opCode);
+        connections.send(myConnectionId, ack);
     }
 
+    private void sendError(String opCode){
+        ArrayList<String> error = new ArrayList<String>();
+        error.add("ERROR");
+        error.add(opCode);
+        connections.send(myConnectionId, error);
+    }
 
+    private void sendNotificationToUser(UserInfo user, String content){
+        ArrayList<String> notification = new ArrayList<>();
+        notification.add("NOTIFICATION");
+        notification.add(content);
+        if (user.isLoggedIn()){
+            int connectionId = dataBase.getConnectionId(user.getName());
+            connections.send(connectionId, notification);
+        }else{
+            user.addUnreadMessages(notification);
+        }
+    }
 }

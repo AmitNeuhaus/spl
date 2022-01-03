@@ -18,9 +18,7 @@ public class UserInfo {
     ConcurrentLinkedQueue<String> blocked;
     ConcurrentLinkedQueue<Post> myPosts;
     ConcurrentLinkedQueue<PM> myPms;
-    ConcurrentLinkedQueue<Message> ReadingList;
-
-
+    ConcurrentLinkedQueue<ArrayList<String>> UnreadMessages;
 
 
     public UserInfo(String name, String password, String birthDay){
@@ -98,6 +96,10 @@ public class UserInfo {
     public String getStat(){
         return String.format("%s %d %d %d %d", getName(), getAge() ,getPosts().size(),getFollowers().size(),getFollowing().size());
     }
+
+    public ConcurrentLinkedQueue<ArrayList<String>> getUnreadMessages(){
+        return UnreadMessages;
+    }
     //SETTERS ---------
 
     public synchronized void  setLoggedIn(boolean t){
@@ -133,8 +135,8 @@ public class UserInfo {
         blocked.remove(name);
     }
 
-    public void addToReadingList(Message msg){
-        ReadingList.add(msg);
+    public void addUnreadMessages(ArrayList<String> msg){
+        UnreadMessages.add(msg);
     }
 
     public void addPost(Post post){
