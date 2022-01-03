@@ -5,6 +5,8 @@ import bgu.spl.net.srv.MessagingEncoderDecoderImpl;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class EchoClient {
 
@@ -27,14 +29,14 @@ public class EchoClient {
 
             MessagingEncoderDecoderImpl encDec = new MessagingEncoderDecoderImpl();
             System.out.println("sending message to server");
-            byte[] encoded = encDec.encode("POST ani @tom ve @dvir went to letayel ehad nafal ve @maor hitpozzez oi looooo @avram ma omerrrr");
+            byte[] encoded = encDec.encode(new ArrayList<>(Arrays.asList("POST ani @tom ve @dvir went to letayel ehad nafal ve @maor hitpozzez oi looooo @avram ma omerrrr")));
             out.write(encoded,0,encoded.length);
             out.flush();
 
             System.out.println("awaiting response");
             Thread.sleep(2000);
             System.out.println("awake");
-            String msg = null;
+            ArrayList<String> msg = null;
             int read =-1;
             while(msg==null){
                 if ((read=in.read())>=0){
