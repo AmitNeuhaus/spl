@@ -33,6 +33,7 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
             ArrayList<String> result = new ArrayList<>(parsedMessage);
             parsedMessage.clear();
             opcodeIndex =0;
+            System.out.println("decoder returned: " + result);
             return result;
         }else if (nextByte == (byte)0){
             parsedMessage.add(popString());
