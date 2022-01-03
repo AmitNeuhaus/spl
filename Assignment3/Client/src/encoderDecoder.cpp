@@ -3,9 +3,10 @@
 //
 
 #include "../include/encoderDecoder.h"
-encoderDecoder::encoderDecoder() = default;
 
-std::string encoderDecoder::decode(short opcode,std::string input) {
+
+encoderDecoder::encoderDecoder() = default;
+std::string encoderDecoder::decode(short opcode,const std::string& input) {
     if (opcode == 9){
         return "NOTIFICATION " + input;
     }
@@ -16,21 +17,66 @@ std::string encoderDecoder::decode(short opcode,std::string input) {
         return "ACK " + input.substr(0,input.length()-1);
     }
 }
-std::string encoderDecoder::encode(std::string input) {
-    std::string output;
-    std::stringstream s_stream(input);
-    std::string substr;
-    bool isFirst = true;
-    while(s_stream.good()){
-        std::getline(s_stream,substr,' ');
-        if (isFirst){
-            output += substr;
-            isFirst = false;
-        }else{
-            output += " " + substr;
-        }
+void encoderDecoder::encodeAndSend(std::string& input,ConnectionHandler& connection) {
+    std::string command = input.substr(0,input.find(' '));
+    input.erase(0,input.find(' ')+1);
+    std::stringstream s_input(input);
+    short opcode = getOpcode(command);
+    short handleCase = getCase(opcode);
+    char opcodeBytes[2];
+    char delimiter[1] = {0};
+    char endLine[1] = {';'};
+    std::string nextSubstr;
+    shortToBytes(opcode,opcodeBytes);
+    switch(handleCase) {
+        int nextDel;
+        case 1:
+            connection.sendBytes(opcodeBytes, 2);
+            while (s_input.good()) {
+                std::getline(s_input, nextSubstr, ' ');
+                connection.sendLine(nextSubstr);
+                connection.sendBytes(delimiter, 1);
+            }
+            connection.sendBytes(endLine, 1);
+
+        case 2:
+            connection.sendBytes(opcodeBytes, 2);
+            connection.sendLine(input);
+            connection.sendBytes(delimiter, 1);
+            connection.sendBytes(endLine, 1);
+
+        case 3:
+            connection.sendBytes(opcodeBytes, 2);
+            nextDel = input.find(' ');
+            nextSubstr = input.substr(0, nextDel);
+            input.erase(0, nextDel + 1);
+            char follow[1];
+            if (nextSubstr == "1") {
+                follow[0] = 1;
+
+            } else {
+                follow[0] = 0;
+            }
+            connection.sendBytes(follow, 1);
+            connection.sendLine(input);
+            connection.sendBytes(delimiter, 1);
+            connection.sendBytes(endLine, 1);
+
+        case 4:
+            connection.sendBytes(opcodeBytes, 2);
+            nextDel = input.find(' ');
+            std::string username = input.substr(0, nextDel);
+            input.erase(0, nextDel + 1);
+            connection.sendLine(username);
+            connection.sendBytes(delimiter, 1);
+            connection.sendLine(input);
+            connection.sendBytes(delimiter, 1);
+            std::string dateAndTime = getDateTime();
+            connection.sendLine(dateAndTime);
+            connection.sendBytes(delimiter, 1);
+            connection.sendBytes(endLine, 1);
+
     }
-    return output+';';
 
 }
 short encoderDecoder::getOpcode(std::string command) {
@@ -74,17 +120,41 @@ short encoderDecoder::bytesToShort(char *bytesArr) {
     return result;
 }
 
+short encoderDecoder::getCase(short opcode) {
+    if (opcode == 5 || opcode == 8){
+        return 2;
+    }else if(opcode == 4 ){
+        return 3;
+    }else if(opcode == 6){
+        return 4;
+    }
+    return 1;
+}
+
+std::string encoderDecoder::getDateTime() {
+    time_t rawTime;
+    struct tm* timeinfo;
+    char buffer[16];
+
+    time(&rawTime);
+    timeinfo = localtime(&rawTime);
+    strftime(buffer,16,"%d-%m-%Y %H:%M",timeinfo);
+    return buffer;
+}
+
+
+
+
+
+
 
 
 
 
 
 //int main(int argc,char *argv[]) {
-//    std::cout << "started testing this shit" <<std::endl;
-//    encoderDecoder *encDec;
-//    encDec =new encoderDecoder();
-//     std::cout<<encDec->encode("REGISTER tom 12345 20-10-1995")<<std::endl;
-//    delete(encDec);
+//
+//
 //    return 0;
 //}
 
