@@ -35,7 +35,7 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
             opcodeIndex =0;
             System.out.println("decoder returned: " + result);
             return result;
-        }else if (nextByte == (byte)0){
+        }else if (nextByte == (byte)'\0'){
             parsedMessage.add(popString());
         }else{
             pushByte(nextByte);
@@ -76,7 +76,7 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
             for (byte nextByte : nextString){
                 pushByte(nextByte);
             }
-            pushByte((byte)0);
+            pushByte((byte)'\0');
         }
         pushByte((byte)';');
         len = 0;

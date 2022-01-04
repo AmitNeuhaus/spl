@@ -30,6 +30,7 @@ public class UserInfo {
         followers = new ConcurrentLinkedQueue<>();
         blocked = new ConcurrentLinkedQueue<>();
         following = new ConcurrentLinkedQueue<>();
+        UnreadMessages = new ConcurrentLinkedQueue<>();
     }
 
     public void setInfo(String name, String password, String birthDay){

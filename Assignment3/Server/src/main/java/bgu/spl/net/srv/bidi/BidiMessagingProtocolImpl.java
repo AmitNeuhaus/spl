@@ -35,20 +35,27 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 break;
             case "2":
                 logIn(message.get(1),message.get(2), opCode);
+                break;
             case "3":
                 logOut(opCode);
+                break;
             case "4":
                 boolean followOrUnfollow = message.get(1)=="0"? true: false;
                 follow(followOrUnfollow, message.get(2),opCode);
+                break;
             case "5":
                 post(message.get(1),opCode);
+                break;
             case "6":
                 pm(message.get(1), message.get(2), message.get(3),opCode);
+                break;
             case "7":
                 logStat(opCode);
+                break;
             case "8":
                 String usersList = message.get(1);
                 stat(usersList, opCode);
+                break;
             case "9":
                 System.out.println("NOT IMPLEMENTED YET 9");
             case "10":
@@ -58,10 +65,10 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             case "12":
                 String userNameToBlock = message.get(1);
                 block(userNameToBlock,opCode);
+                break;
             default:
                 System.out.println("Couldn't recognize op code");
-
-
+                break;
         }
     }
 
@@ -76,8 +83,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         if (canRegisterNewUser(username)) {
             dataBase.register(username, password, birthday);
             sendAck(opCode);
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
     }
 
     public void logIn(String username,String password, String opCode){
@@ -87,16 +95,18 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             for (ArrayList<String> message : dataBase.getUserInfo(username).getUnreadMessages()){
                 connections.send(myConnectionId, message);
             }
+        }else{
+            sendError(opCode);
         }
-        sendError(opCode);
 
     }
     public void logOut(String opCode){
         if(canLogOut(myConnectionId)){
             dataBase.logOut(myConnectionId);
             connections.disconnect(myConnectionId);
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
     }
 
     public void follow(boolean action, String userName, String opCode){
@@ -105,14 +115,16 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             if(canFollow(userName)){
                 user.follow(userName);
                 sendAck(opCode);
+            }else {
+                sendError(opCode);
             }
-            sendError(opCode);
         }else{
             if (canUnfollow(userName)) {
                 user.unFollow(userName);
                 sendAck(opCode);
+            }else {
+                sendError(opCode);
             }
-            sendError(opCode);
         }
     }
 
@@ -138,8 +150,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 sendNotificationToUser(user,post.getContent());
             }
             sendAck(opCode);
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
 
     }
 
@@ -153,8 +166,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             user.addPm(pm);
             sendNotificationToUser(user,pm.getContent());
             sendAck(opCode);
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
     }
 
 
@@ -169,8 +183,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                     sendAck(activeUserInfo.getStat());
                 }
             }
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
     }
 
 
@@ -184,8 +199,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                      sendAck(opCode);
                 }
             }
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
     }
 
 
@@ -197,15 +213,16 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             user.unFollow(blockUser.getName());
             blockUser.unFollow(user.getName());
             sendAck(opCode);
+        }else {
+            sendError(opCode);
         }
-        sendError(opCode);
     }
 
     // Queries
 
     private boolean canRegisterNewUser(String userName){
         UserInfo user = dataBase.getUserInfo(userName);
-        return !(user == null);
+        return (user == null);
     }
 
 
