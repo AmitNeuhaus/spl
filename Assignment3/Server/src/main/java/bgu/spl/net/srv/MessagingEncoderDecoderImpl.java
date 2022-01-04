@@ -3,6 +3,7 @@ package bgu.spl.net.srv;
 import bgu.spl.net.api.MessageEncoderDecoder;
 
 
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +17,6 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
     private int len = 0;
     private final byte[] opcode = new byte[2];
     private int opcodeIndex = 0;
-    private final HashMap<String,String> badWords = new HashMap<>();
     private final ArrayList<String> parsedMessage = new ArrayList<>();
 
     @Override
@@ -28,6 +28,10 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
                 parsedMessage.add(String.valueOf(opcodeShort));
             }
             opcodeIndex++;
+        }
+        else if (parsedMessage.get(0).equals("4") && parsedMessage.size() == 1){
+            pushByte(nextByte);
+            parsedMessage.add(popString());
         }
         else if (nextByte == (byte)';'){
             ArrayList<String> result = new ArrayList<>(parsedMessage);
@@ -71,16 +75,37 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
         byte[] opcodeBytes = shortToBytes(opcode);
         pushByte(opcodeBytes[0]);
         pushByte(opcodeBytes[1]);
-        for(int i =1; i< parsedMsg.size();i++){
-            byte[] nextString = (parsedMsg.get(i)).getBytes();
-            for (byte nextByte : nextString){
-                pushByte(nextByte);
-            }
-            pushByte((byte)'\0');
+        switch (opcode){
+
+            //ERROR
+            case 11:
+                encodeError(parsedMsg);
+                break;
+            //Notification
+            case 9:
+                encodeNotification(parsedMsg);
+                break;
+            //ACK
+            case 10:
+                String ackType = parsedMsg.get(1);
+                //Follow ACK
+                if(ackType.equals("4"))
+                    encodeFollowAck(parsedMsg);
+                //STAT & LOGSTAT ACK
+                else if (ackType.equals("7") || ackType.equals("8"))
+                    encodeStatAck(parsedMsg);
+                // REGULAR ACK
+                else
+                    encodeRegularAck(parsedMsg);
+                break;
+
         }
+        // Encode end of msg
         pushByte((byte)';');
+        //"Reset Byte Array"
+        byte[] res = Arrays.copyOf(bytes,len);
         len = 0;
-        return Arrays.copyOf(bytes,bytes.length);
+        return res;
     }
 
     private void pushByte(byte nextByte){
@@ -141,31 +166,65 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<ArrayL
         return result;
     }
 
-
-    private ArrayList<String> censorMsg(String msg){
-        ArrayList<String> unCensorMessage = new ArrayList<String>(Arrays.asList(msg.split(" ")));
-        for (int i = 0 ; i< unCensorMessage.size(); i++){
-            String currentWord = unCensorMessage.get(i);
-            String trimedWord = currentWord.replaceAll("[^a-zA-Z]","").toLowerCase();
-            for (String badWord : badWords.keySet()){
-                if(trimedWord.contains(badWord)){
-                    unCensorMessage.set(i,asterisks(currentWord));
-                }
-            }
-        }
-        return unCensorMessage;
+    private byte[] stringToShort(String s){
+        short command = Short.parseShort(s);
+        return shortToBytes(command);
     }
 
-    private String asterisks(String word){
-        StringBuilder outPut = new StringBuilder();
-        for (int i = 0;i<word.length();i++){
-            outPut.append("*");
+    private void sendBytes(byte[] bytes ){
+        for (byte b: bytes){
+            pushByte(b);
         }
-        return outPut.toString();
+    }
+    private void encodeString(String str){
+        byte[] stringBytes = str.getBytes();
+        sendBytes(stringBytes);
+        pushByte((byte)'\0');
+    }
+
+    private void encodeShort(String str){
+        byte[] shortBytes = stringToShort(str);
+        sendBytes(shortBytes);
     }
 
 
+    // Encoding msg types;
 
+    private void encodeRegularAck(ArrayList<String>parsedMsg){
+        String stringAckCommand = parsedMsg.get(1);
+        encodeShort(stringAckCommand);
+    }
 
+    private void encodeFollowAck(ArrayList<String> parsedMsg){
+        encodeRegularAck(parsedMsg);
+        String userName = parsedMsg.get(2);
+        encodeString(userName);
+    }
+
+    private void encodeStatAck(ArrayList<String> parsedMsg){
+        encodeRegularAck(parsedMsg);
+        String age = parsedMsg.get(2);
+        String numPosts = parsedMsg.get(3);
+        String numFollowers = parsedMsg.get(4);
+        String numFollowing = parsedMsg.get(4);
+        encodeShort(age);
+        encodeShort(numPosts);
+        encodeShort(numFollowers);
+        encodeShort(numFollowing);
+    }
+
+    private void encodeError(ArrayList<String> parsedMsg){
+        encodeRegularAck(parsedMsg);
+    }
+
+    private void encodeNotification(ArrayList<String> parsedMsg){
+        String notificationType = parsedMsg.get(1);
+        String postingUser = parsedMsg.get(2);
+        String content = parsedMsg.get(3);
+        pushByte(Integer.valueOf(notificationType).byteValue());
+        encodeString(postingUser);
+        encodeString(content);
+
+    }
 
 }

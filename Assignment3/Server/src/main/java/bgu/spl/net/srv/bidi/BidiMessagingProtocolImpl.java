@@ -40,7 +40,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 logOut(opCode);
                 break;
             case "4":
-                boolean followOrUnfollow = message.get(1)=="0"? true: false;
+                boolean followOrUnfollow = message.get(1).equals("0");
                 follow(followOrUnfollow, message.get(2),opCode);
                 break;
             case "5":
@@ -103,6 +103,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
     public void logOut(String opCode){
         if(canLogOut(myConnectionId)){
             dataBase.logOut(myConnectionId);
+            sendAck(opCode);
             connections.disconnect(myConnectionId);
         }else {
             sendError(opCode);
@@ -111,17 +112,23 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
 
     public void follow(boolean action, String userName, String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
+        UserInfo followedUser = dataBase.getUserInfo(userName);
+
+        ArrayList<String> userNameAsList = new ArrayList<>();
+        userNameAsList.add(userName);
         if (action) {
             if(canFollow(userName)){
                 user.follow(userName);
-                sendAck(opCode);
+                followedUser.addFollower(user.getName());
+                sendAck(userNameAsList,opCode);
             }else {
                 sendError(opCode);
             }
         }else{
             if (canUnfollow(userName)) {
                 user.unFollow(userName);
-                sendAck(opCode);
+                followedUser.removeFollower(user.getName());
+                sendAck(userNameAsList,opCode);
             }else {
                 sendError(opCode);
             }
@@ -146,8 +153,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             //Add Post to followers
             ConcurrentLinkedQueue<String> followers = user.getFollowers();
             for (String follower : followers) {
-                UserInfo taggedUser = dataBase.getUserInfo(follower);
-                sendNotificationToUser(user,post.getContent());
+                UserInfo followerUser = dataBase.getUserInfo(follower);
+                sendNotificationToUser(followerUser,post.getContent());
             }
             sendAck(opCode);
         }else {
@@ -180,7 +187,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 String userName = activeUsers.getOrDefault(i, null);
                 if (userName != null){
                     UserInfo activeUserInfo = dataBase.getUserInfo(userName);
-                    sendAck(activeUserInfo.getStat());
+                    sendAck(activeUserInfo.getStat(), opCode);
                 }
             }
         }else {
@@ -196,7 +203,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             for(String userName: interestedUserNames) {
                 if (userName != null){
                     UserInfo activeUserInfo = dataBase.getUserInfo(userName);
-                     sendAck(opCode);
+                     sendAck(activeUserInfo.getStat(),opCode);
                 }
             }
         }else {
@@ -211,7 +218,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         UserInfo blockUser = dataBase.getUserInfo(username);
         if (blockUser != null) {
             user.unFollow(blockUser.getName());
+            user.removeFollower(blockUser.getName());
             blockUser.unFollow(user.getName());
+            blockUser.removeFollower(user.getName());
             sendAck(opCode);
         }else {
             sendError(opCode);
@@ -263,11 +272,11 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
 
 //    HELPERS -------
 
-    private void sendAck(String optional,String opCode){
+    private void sendAck(ArrayList<String> optional,String opCode){
         ArrayList<String> ack = new ArrayList<String>();
         ack.add("ACK");
         ack.add(opCode);
-        ack.add(optional);
+        ack.addAll(optional);
         connections.send(myConnectionId, ack);
     }
     private void sendAck(String opCode){
@@ -288,6 +297,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         ArrayList<String> notification = new ArrayList<>();
         notification.add("NOTIFICATION");
         notification.add(content);
+
         if (user.isLoggedIn()){
             int connectionId = dataBase.getConnectionId(user.getName());
             connections.send(connectionId, notification);

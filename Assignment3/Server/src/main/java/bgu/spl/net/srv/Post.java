@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Post implements Message {
-        String content;
+public class Post extends Message{
+
+
 
     public Post(String content){
-        this.content = content;
+        super(content);
     }
 
     public List<String> searchUsersInContent() {

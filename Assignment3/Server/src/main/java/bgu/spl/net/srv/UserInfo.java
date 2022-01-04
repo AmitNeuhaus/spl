@@ -31,6 +31,8 @@ public class UserInfo {
         blocked = new ConcurrentLinkedQueue<>();
         following = new ConcurrentLinkedQueue<>();
         UnreadMessages = new ConcurrentLinkedQueue<>();
+        myPosts = new ConcurrentLinkedQueue<>();
+        myPms = new ConcurrentLinkedQueue<>();
     }
 
     public void setInfo(String name, String password, String birthDay){
@@ -94,8 +96,13 @@ public class UserInfo {
     public int getNumberOfFollowing(){return following.size();}
     public int getNumberOfPosts(){return posts;}
 
-    public String getStat(){
-        return String.format("%s %d %d %d %d", getName(), getAge() ,getPosts().size(),getFollowers().size(),getFollowing().size());
+    public ArrayList<String> getStat(){
+        ArrayList<String> userStat = new ArrayList<>();
+        userStat.add(getName());
+        userStat.add(String.valueOf(getPosts().size()));
+        userStat.add(String.valueOf(getFollowers().size()));
+        userStat.add(String.valueOf(getFollowing().size()));
+        return  userStat;
     }
 
     public ConcurrentLinkedQueue<ArrayList<String>> getUnreadMessages(){
