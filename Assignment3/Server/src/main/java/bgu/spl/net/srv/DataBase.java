@@ -6,8 +6,16 @@ public class DataBase {
     private final ConcurrentHashMap<String, UserInfo> users;
     private final ConcurrentHashMap<Integer, String> activeUsers;
 
+    private static class DataBaseHolder{
+        private static DataBase instance = new DataBase();
+    }
+
+    public static DataBase getInstance(){
+        return DataBaseHolder.instance;
+    }
+
     //Constructor:
-    public DataBase(){
+    private DataBase(){
         users = new ConcurrentHashMap<>();
         activeUsers = new ConcurrentHashMap<>();
     }

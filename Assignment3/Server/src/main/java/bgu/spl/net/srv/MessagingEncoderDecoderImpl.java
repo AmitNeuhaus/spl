@@ -29,9 +29,10 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
             return popString();
         }else if (nextByte == (byte)0){
             nextByte = ((byte)' ');
+            pushByte(nextByte);
+        }else{
+            pushByte(nextByte);
         }
-        pushByte(nextByte);
-
         return null;
     }
 
@@ -60,10 +61,11 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     @Override
     public byte[] encode(String message) {
         ArrayList<String> parsedMsg = censorMsg(message);
-        short opcode = getOpcode(parsedMsg.get(0));
-        byte[] opcodeBytes = shortToBytes(opcode);
-        pushByte(opcodeBytes[0]);
-        pushByte(opcodeBytes[1]);
+        short opcodeShort = getOpcode(parsedMsg.get(0));
+        byte[] opcodeBytes = shortToBytes(opcodeShort);
+        for (byte b : opcodeBytes){
+            pushByte(b);
+        }
         for(int i =1; i< parsedMsg.size();i++){new ArrayList<>(Arrays.asList(message.split(" ")));
             byte[] nextString = (parsedMsg.get(i)).getBytes();
             for (byte nextByte : nextString){
@@ -74,7 +76,9 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
             }
         }
         pushByte((byte)';');
+        System.out.println(len);
         len = 0;
+        System.out.println(parsedMsg);
         return Arrays.copyOf(bytes,bytes.length);
     }
 
@@ -86,8 +90,9 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
     }
 
     private String popString(){
-        String result = new String(bytes,2,len-2, StandardCharsets.UTF_8);
-        String opcodeString = String.valueOf(opcode[1]);
+        String result = new String(bytes,0,len, StandardCharsets.UTF_8);
+        String opcodeString = String.valueOf(bytesToShort(opcode));
+        System.out.println("opcode is: "+ opcodeString + " using their method");
         len = 0;
         opcodeIndex =0;
         return opcodeString + " " + result;
@@ -130,6 +135,13 @@ public class MessagingEncoderDecoderImpl implements MessageEncoderDecoder<String
         bytesArr[0] = (byte)((num >> 8) & 0xFF);
         bytesArr[1] = (byte)(num & 0xFF);
         return bytesArr;
+    }
+
+    public short bytesToShort(byte[] byteArr)
+    {
+        short result = (short)((byteArr[0] & 0xff) << 8);
+        result += (short)(byteArr[1] & 0xff);
+        return result;
     }
 
 
