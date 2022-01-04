@@ -1,0 +1,5 @@
+REGISTER amit 5678 04-04-1995
+LOGIN amit 5678 
+FOLLOW 0 tom
+POST Tom and Amit are testing this server
+LOGOUT

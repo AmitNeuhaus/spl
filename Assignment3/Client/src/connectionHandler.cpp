@@ -102,4 +102,12 @@ void ConnectionHandler::close() {
     }
 }
 
+bool ConnectionHandler::sendSubstr(string &substr) {
+    return  sendFrameAscii(substr, '\0');;
+}
+
+bool ConnectionHandler::getSubstr(string &substr) {
+    return getFrameAscii(substr, '\0');
+}
+
 

@@ -1,0 +1,7 @@
+REGISTER tom 1234 20-10-1995
+LOGIN tom 1234 1
+FOLLOW 0 amit
+PM tom my name is amit and im testing PM*
+LOGSTAT
+STAT tom|amit|dvir
+LOGOUT

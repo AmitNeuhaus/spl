@@ -2,21 +2,41 @@
 // Created by tomcooll on 02/01/2022.
 //
 
+#include <fstream>
 #include "../include/encoderDecoder.h"
 
 
 encoderDecoder::encoderDecoder() = default;
-std::string encoderDecoder::decode(short opcode,const std::string& input) {
-    if (opcode == 9){
-        return "NOTIFICATION " + input;
-    }
-    else if (opcode == 10){
-        return "ERROR " + input;
-    }else{
 
-        return "ACK " + input.substr(0,input.length()-1);
+
+std::string encoderDecoder::decode(ConnectionHandler &connection) {
+    std::string result = "Unknown Opcode";
+    int opcode = getNumber(2,connection);
+    if(opcode == 10){ //ACK
+        int commandOpcode = getNumber(2,connection);
+        if (commandOpcode == 4){ //Follow
+            result = getFollowAckString(connection);
+
+        }else if(commandOpcode == 8 ||  commandOpcode == 7) { //Stat/Logsatat
+            result = getStatAckString(commandOpcode,connection);
+        }else{ //default case
+            result = "ACK "+std::to_string(commandOpcode);
+        }
+
+
+    }else if(opcode == 11){ // ERROR
+        int commandOpcode = getNumber(2,connection);
+        result = &"ERROR "[commandOpcode] ;
+
+    }else if(opcode == 9) { //NOTIFICATION
+        result = getNotificationString(connection);
     }
+    char end[1];
+    connection.getBytes(end,1);
+    return result;
 }
+
+
 void encoderDecoder::encodeAndSend(std::string& input,ConnectionHandler& connection) {
     std::string command = input.substr(0,input.find(' '));
     input.erase(0,input.find(' ')+1);
@@ -24,26 +44,27 @@ void encoderDecoder::encodeAndSend(std::string& input,ConnectionHandler& connect
     short opcode = getOpcode(command);
     short handleCase = getCase(opcode);
     char opcodeBytes[2];
-    char delimiter[1] = {0};
     char endLine[1] = {';'};
     std::string nextSubstr;
     shortToBytes(opcode,opcodeBytes);
+    std::string username;
+    int nextDel;
+    std::string dateAndTime;
     switch(handleCase) {
-        int nextDel;
+
         case 1:
             connection.sendBytes(opcodeBytes, 2);
             while (s_input.good()) {
                 std::getline(s_input, nextSubstr, ' ');
-                connection.sendLine(nextSubstr);
-                connection.sendBytes(delimiter, 1);
+                connection.sendSubstr(nextSubstr);
             }
             connection.sendBytes(endLine, 1);
-
+            break;
         case 2:
             connection.sendBytes(opcodeBytes, 2);
-            connection.sendLine(input);
-            connection.sendBytes(delimiter, 1);
+            connection.sendSubstr(input);
             connection.sendBytes(endLine, 1);
+            break;
 
         case 3:
             connection.sendBytes(opcodeBytes, 2);
@@ -58,23 +79,27 @@ void encoderDecoder::encodeAndSend(std::string& input,ConnectionHandler& connect
                 follow[0] = '0';
             }
             connection.sendBytes(follow, 1);
-            connection.sendLine(input);
-            connection.sendBytes(delimiter, 1);
+            connection.sendSubstr(input);
             connection.sendBytes(endLine, 1);
+            break;
 
         case 4:
             connection.sendBytes(opcodeBytes, 2);
             nextDel = input.find(' ');
-            std::string username = input.substr(0, nextDel);
+            username = input.substr(0, nextDel);
             input.erase(0, nextDel + 1);
-            connection.sendLine(username);
-            connection.sendBytes(delimiter, 1);
-            connection.sendLine(input);
-            connection.sendBytes(delimiter, 1);
-            std::string dateAndTime = getDateTime();
-            connection.sendLine(dateAndTime);
-            connection.sendBytes(delimiter, 1);
+            connection.sendSubstr(username);
+            connection.sendSubstr(input);
+            dateAndTime = getDateTime();
+            connection.sendSubstr(dateAndTime);
             connection.sendBytes(endLine, 1);
+            break;
+
+        case 5:
+            connection.sendBytes(opcodeBytes, 2);
+            connection.sendBytes(endLine, 1);
+            break;
+
 
     }
 
@@ -121,12 +146,14 @@ short encoderDecoder::bytesToShort(char *bytesArr) {
 }
 
 short encoderDecoder::getCase(short opcode) {
-    if (opcode == 5 || opcode == 8){
+    if (opcode == 5 || opcode == 8){ //POST AND STAT
         return 2;
-    }else if(opcode == 4 ){
+    }else if(opcode == 4 ){ //FOLLOW
         return 3;
-    }else if(opcode == 6){
+    }else if(opcode == 6){ //PM
         return 4;
+    }else if(opcode == 3 || opcode == 7){ //LOGOUT AND STAT
+        return 5;
     }
     return 1;
 }
@@ -134,32 +161,84 @@ short encoderDecoder::getCase(short opcode) {
 std::string encoderDecoder::getDateTime() {
     time_t rawTime;
     struct tm* timeinfo;
-    char buffer[16];
+    char buffer[50];
 
     time(&rawTime);
     timeinfo = localtime(&rawTime);
-    strftime(buffer,16,"%d-%m-%Y %H:%M",timeinfo);
+    strftime(buffer,50,"%d-%m-%Y %H:%M",timeinfo);
     return buffer;
 }
 
-
-
-
-
-
-
-
-
-
-
-int main(int argc,char *argv[]) {
-    ConnectionHandler connectionHandler("10.100.102.13", 5000);
-    encoderDecoder* encdec = new encoderDecoder();
-    std::string input;
-    std::cin >> input;
-    while(input != "stop"){
-        encdec->encodeAndSend(input,connectionHandler);
+int encoderDecoder::getNumber(int numberOfBytes,ConnectionHandler &connection) {
+    int result;
+    char bytes[numberOfBytes];
+    if (numberOfBytes == 2){
+        connection.getBytes(bytes,numberOfBytes);
+        result = bytesToShort(bytes);
+        return result;
+    }else{
+        return connection.getBytes(bytes,numberOfBytes);
     }
+}
+
+std::string encoderDecoder::getNotificationString(ConnectionHandler &connection){
+    int notificationType = getNumber(1, connection);
+    std::string postingUser;
+    connection.getSubstr(postingUser);
+    std::string content;
+    connection.getSubstr(content);
+    return &"NOTIFICATION " [notificationType] +postingUser + " " + content;
+
+}
+
+std::string encoderDecoder::getStatAckString(int commandOpcode, ConnectionHandler &connection) {
+    int age = getNumber(2,connection);
+    int numOfPosts = getNumber(2,connection);
+    int numOfFollowers = getNumber(2,connection);
+    int numOfFollowing = getNumber(2,connection);
+    return "ACK " + std::to_string(commandOpcode) + " " + std::to_string(age) + " " + std::to_string(numOfPosts) + " " + std::to_string(numOfFollowers) + " "+std::to_string(numOfFollowing);
+}
+
+std::string encoderDecoder::getFollowAckString(ConnectionHandler &connection){
+    std::string userName;
+    connection.getSubstr(userName);
+    return "ACK "+ std::to_string(4) + " " + userName;
+}
+
+//TODO remove before submission
+int main(int argc,char *argv[]) {
+    ConnectionHandler connectionHandler("10.100.102.33", 5000);
+    if(!connectionHandler.connect()){
+        std::cout <<"fuck tou didnt connect"<< std::endl;
+    }
+    auto* encdec = new encoderDecoder();
+    std::string input;
+    bool stop =false;
+    while(!stop){
+        std::getline(std::cin, input);
+        if(input == "file"){
+            std::string filePath;
+            std::getline(std::cin,filePath);
+            std::ifstream file(filePath);
+            std::string line;
+            do{
+                std::getline(std::cin,input);
+                std::getline(file,line);
+                std::cout << line << std::endl;
+                encdec->encodeAndSend(line,connectionHandler);
+                std::string serverResponse=encdec->decode(connectionHandler);
+                std::cout <<serverResponse <<std::endl;
+            }while(input.empty());
+        }
+        encdec->encodeAndSend(input,connectionHandler);
+        std::string serverResponse=encdec->decode(connectionHandler);
+        std::cout <<serverResponse <<std::endl;
+        if(serverResponse == "ACK 3"){
+            stop = true;
+        }
+    }
+
+
     delete encdec;
     return 0;
 }

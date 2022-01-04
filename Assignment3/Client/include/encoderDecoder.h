@@ -15,17 +15,20 @@
 class encoderDecoder {
 
 public:
-    static std::string decode(short opcode,const std::string& input);
-    void encodeAndSend(std::string& input,ConnectionHandler &connection);
+    static std::string decode(ConnectionHandler &connection);
+    static void encodeAndSend(std::string& input,ConnectionHandler &connection);
     explicit encoderDecoder();
     static short getOpcode(std::string command);
     static void shortToBytes(short num, char* bytesArr);
     static short bytesToShort(char* bytesArr);
 
 private:
-    short getCase(short opcode);
-    std::string getDateTime();
-
+    static short getCase(short opcode);
+    static int getNumber(int numberOfBytes,ConnectionHandler &connection);
+    static std::string getDateTime();
+    static std::string getNotificationString(ConnectionHandler &connection);
+    static std::string getStatAckString(int commandOpcode, ConnectionHandler &connection);
+    static std::string getFollowAckString(ConnectionHandler &connection);
 };
 
 
