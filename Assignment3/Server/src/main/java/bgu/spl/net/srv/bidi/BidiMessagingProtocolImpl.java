@@ -23,6 +23,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
     public void start(int connectionId, Connections<ArrayList<String>> connections) {
         this.connections = (ConnectionsImpl<ArrayList<String>>) connections;
         this.myConnectionId = connectionId;
+        dataBase =  DataBase.getInstance();
     }
 
     @Override
