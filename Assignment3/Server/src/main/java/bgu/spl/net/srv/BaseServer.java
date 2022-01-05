@@ -6,8 +6,13 @@ import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.Connections;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.function.Supplier;
 
 public abstract class BaseServer<T> implements Server<T> {
@@ -17,7 +22,8 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private int connectionCounter = 0;
     private ConnectionsImpl<T> connections;
-    private ServerSocket sock;
+    private ServerSocketChannel sock;
+
 
     public BaseServer(
             int port,
@@ -29,28 +35,37 @@ public abstract class BaseServer<T> implements Server<T> {
         this.encdecFactory = encdecFactory;
 		this.sock = null;
 		this.connections = new ConnectionsImpl<>();
+
     }
 
     @Override
     public void serve() {
 
-        try (ServerSocket serverSock = new ServerSocket(port)) {
+        try (ServerSocketChannel serverSock = ServerSocketChannel.open();
+                Selector selector = Selector.open()) {
+            serverSock.configureBlocking(false);
+            serverSock.bind(new InetSocketAddress(port));
+            serverSock.register(selector, SelectionKey.OP_ACCEPT);
 			System.out.println("Server started");
-
             this.sock = serverSock; //just to be able to close
 
             while (!Thread.currentThread().isInterrupted()) {
+                selector.select();
+                for (SelectionKey key : selector.selectedKeys()){
+                    if (key.isAcceptable()){
+                        SocketChannel clientSock = serverSock.accept();
+                        BidiMessagingProtocol<T> protocol = protocolFactory.get();
+                        BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<T>(
+                                clientSock,
+                                encdecFactory.get(),
+                                protocol);
+                        int conId = connectionCounter++;
+                        connections.addConnection(conId,handler);
+                        protocol.start( conId, connections);
+                        execute(handler);
+                    }
+                }
 
-                Socket clientSock = serverSock.accept();
-                BidiMessagingProtocol<T> protocol = protocolFactory.get();
-                BlockingConnectionHandler<T> handler = new BlockingConnectionHandler<T>(
-                        clientSock,
-                        encdecFactory.get(),
-                        protocol);
-                int conId = connectionCounter++;
-                connections.addConnection(conId,handler);
-                protocol.start( conId, connections);
-                execute(handler);
             }
         } catch (IOException ex) {
         }
