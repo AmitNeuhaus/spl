@@ -229,6 +229,9 @@ int main(int argc,char *argv[]) {
     bool stop =false;
     while(!stop){
         std::getline(std::cin, input);
+        if(input == "stop"){
+            stop = true;
+        }
         if(input=="file"){
             std::string filePath;
             std::getline(std::cin,filePath);
@@ -239,15 +242,13 @@ int main(int argc,char *argv[]) {
                 std::getline(file,line);
                 std::cout << line << std::endl;
                 encdec->encodeAndSend(line,connectionHandler);
+                if(line == "stop"){
+                    stop =true;
+                    break;
+                }
             }while(input.empty());
-
         }
         encdec->encodeAndSend(input,connectionHandler);
-        std::string serverResponse=encdec->decode(connectionHandler);
-        std::cout <<serverResponse <<std::endl;
-        if(serverResponse == "ACK 3"){
-            stop = true;
-        }
     }
 
 
