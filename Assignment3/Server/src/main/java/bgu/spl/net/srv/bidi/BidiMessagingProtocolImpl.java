@@ -5,10 +5,7 @@ import bgu.spl.net.srv.*;
 
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -18,12 +15,15 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
     private DataBase dataBase;
     private ConnectionsImpl<ArrayList<String>> connections;
     private int myConnectionId;
+    private LinkedList<String> badWords = new LinkedList<>();
 
     @Override
     public void start(int connectionId, Connections<ArrayList<String>> connections) {
         this.connections = (ConnectionsImpl<ArrayList<String>>) connections;
         this.myConnectionId = connectionId;
         dataBase =  DataBase.getInstance();
+        badWords.add("fuck");
+        badWords.add("shit");
     }
 
     @Override
@@ -139,7 +139,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
     public void post(String content, String opCode){
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         if(canPost(user)) {
-            Post post = new Post(content);
+            Post post = new Post(content,badWords);
             user.addPost(post);
             List<String> matchingUsers = post.searchUsersInContent();
             // Add Post to tagged users
@@ -147,7 +147,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 String username = usertag.substring(1);
                 UserInfo taggedUser = dataBase.getUserInfo(username);
                 if(taggedUser != null) {
-                    sendNotificationToUser(user,post.getContent(),"1");
+                    sendNotificationToUser(taggedUser,post.getContent(),"1");
                 }
             }
 
@@ -170,9 +170,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         UserInfo follower = dataBase.getUserInfo(followerName);
 
         if(canPm(user, follower)) {
-            PM pm = new PM(content, timestamp);
+            PM pm = new PM(content, timestamp,badWords);
             user.addPm(pm);
-            sendNotificationToUser(user,pm.getContent(),"0");
+            sendNotificationToUser(follower,pm.getContent(),"0");
             sendAck(opCode);
         }else {
             sendError(opCode);
@@ -254,9 +254,9 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
 
     private boolean canFollow(String userName) {
         UserInfo user = dataBase.getUserInfo(myConnectionId);
-        UserInfo follower = dataBase.getUserInfo(userName);
-        boolean followerExists = follower != null;
-        return (followerExists && user.isLoggedIn() && !user.isFollower(userName));
+        UserInfo followed = dataBase.getUserInfo(userName);
+        boolean followerExists = followed != null;
+        return (followerExists && user.isLoggedIn() && !followed.isFollower(user.getName()));
     }
 
     private boolean canUnfollow(String userName) {
