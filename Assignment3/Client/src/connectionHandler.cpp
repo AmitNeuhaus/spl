@@ -107,7 +107,9 @@ bool ConnectionHandler::sendSubstr(string &substr) {
 }
 
 bool ConnectionHandler::getSubstr(string &substr) {
-    return getFrameAscii(substr, '\0');
+    bool ans =  getFrameAscii(substr, '\0');
+    substr.resize(substr.length()-1);
+    return ans;
 }
 
 

@@ -26,7 +26,7 @@ std::string encoderDecoder::decode(ConnectionHandler &connection) {
 
     }else if(opcode == 11){ // ERROR
         int commandOpcode = getNumber(2,connection);
-        result = &"ERROR "[commandOpcode] ;
+        result = "ERROR " + std::to_string(commandOpcode);
 
     }else if(opcode == 9) { //NOTIFICATION
         result = getNotificationString(connection);
@@ -187,7 +187,7 @@ std::string encoderDecoder::getNotificationString(ConnectionHandler &connection)
     connection.getSubstr(postingUser);
     std::string content;
     connection.getSubstr(content);
-    return &"NOTIFICATION " [notificationType] +postingUser + " " + content;
+    return "NOTIFICATION " +std::to_string(notificationType) +" "+ postingUser + " " + content;
 
 }
 
@@ -205,6 +205,18 @@ std::string encoderDecoder::getFollowAckString(ConnectionHandler &connection){
     return "ACK "+ std::to_string(4) + " " + userName;
 }
 
+void encoderDecoder::readSocket(ConnectionHandler &connection){
+    std::cout << "output thread is running"<<std::endl;
+    bool stop = false;
+    while(!stop){
+        std::string serverResponse = decode(connection);
+        std::cout << serverResponse << std::endl;
+        if(serverResponse == "ACK 3"){stop = true;}
+    }
+}
+
+
+
 //TODO remove before submission
 int main(int argc,char *argv[]) {
     ConnectionHandler connectionHandler("10.100.102.4", 5000);
@@ -213,10 +225,11 @@ int main(int argc,char *argv[]) {
     }
     auto* encdec = new encoderDecoder();
     std::string input;
+    std::thread t1(&encoderDecoder::readSocket,std::ref(connectionHandler));
     bool stop =false;
     while(!stop){
         std::getline(std::cin, input);
-        if(input == "file"){
+        if(input=="file"){
             std::string filePath;
             std::getline(std::cin,filePath);
             std::ifstream file(filePath);
@@ -226,9 +239,8 @@ int main(int argc,char *argv[]) {
                 std::getline(file,line);
                 std::cout << line << std::endl;
                 encdec->encodeAndSend(line,connectionHandler);
-                std::string serverResponse=encdec->decode(connectionHandler);
-                std::cout <<serverResponse <<std::endl;
             }while(input.empty());
+
         }
         encdec->encodeAndSend(input,connectionHandler);
         std::string serverResponse=encdec->decode(connectionHandler);

@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <ctime>
+#include <thread>
 #include "connectionHandler.h"
 
 
@@ -21,6 +22,8 @@ public:
     static short getOpcode(std::string command);
     static void shortToBytes(short num, char* bytesArr);
     static short bytesToShort(char* bytesArr);
+    static void readSocket(ConnectionHandler &connection);
+
 
 private:
     static short getCase(short opcode);
@@ -29,6 +32,8 @@ private:
     static std::string getNotificationString(ConnectionHandler &connection);
     static std::string getStatAckString(int commandOpcode, ConnectionHandler &connection);
     static std::string getFollowAckString(ConnectionHandler &connection);
+
+
 };
 
 
