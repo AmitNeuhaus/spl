@@ -33,6 +33,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     @Override
     public void run() {
         try (SocketChannel sock = this.sock) { //just for automatic closing
+            sock.configureBlocking(false);
             int read = -1;
             ByteBuffer readBuff = ByteBuffer.allocateDirect(1<<13);
             ByteBuffer writeBuffer= ByteBuffer.allocateDirect(1<<13);

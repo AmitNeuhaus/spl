@@ -146,7 +146,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 String username = usertag.substring(1);
                 UserInfo taggedUser = dataBase.getUserInfo(username);
                 if(taggedUser != null) {
-                    sendNotificationToUser(user,post.getContent());
+                    sendNotificationToUser(user,post.getContent(),"1");
                 }
             }
 
@@ -154,7 +154,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             ConcurrentLinkedQueue<String> followers = user.getFollowers();
             for (String follower : followers) {
                 UserInfo followerUser = dataBase.getUserInfo(follower);
-                sendNotificationToUser(followerUser,post.getContent());
+                sendNotificationToUser(followerUser,post.getContent(),"1");
             }
             sendAck(opCode);
         }else {
@@ -171,7 +171,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         if(canPm(user, follower)) {
             PM pm = new PM(content, timestamp);
             user.addPm(pm);
-            sendNotificationToUser(user,pm.getContent());
+            sendNotificationToUser(user,pm.getContent(),"0");
             sendAck(opCode);
         }else {
             sendError(opCode);
@@ -293,16 +293,18 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         connections.send(myConnectionId, error);
     }
 
-    private void sendNotificationToUser(UserInfo user, String content){
+    private void sendNotificationToUser(UserInfo receiver, String content,String notificationType){
         ArrayList<String> notification = new ArrayList<>();
+        String sender = dataBase.getUsername(myConnectionId);
         notification.add("NOTIFICATION");
+        notification.add(notificationType);
+        notification.add(sender);
         notification.add(content);
-
-        if (user.isLoggedIn()){
-            int connectionId = dataBase.getConnectionId(user.getName());
+        if (receiver.isLoggedIn()){
+            int connectionId = dataBase.getConnectionId(receiver.getName());
             connections.send(connectionId, notification);
         }else{
-            user.addUnreadMessages(notification);
+            receiver.addUnreadMessages(notification);
         }
     }
 }
