@@ -1,11 +1,14 @@
 package bgu.spl.net.srv;
 
 import bgu.spl.net.api.MessageEncoderDecoder;
-import bgu.spl.net.api.MessagingProtocol;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.srv.bidi.ConnectionHandler;
@@ -14,30 +17,51 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     private final BidiMessagingProtocol<T> protocol;
     private final MessageEncoderDecoder<T> encdec;
-    private final Socket sock;
-    private BufferedInputStream in;
-    private BufferedOutputStream out;
+    private final SocketChannel sock;
+//    private BufferedInputStream in;
+//    private BufferedOutputStream out;
     private volatile boolean connected = true;
+    private final Queue<T> writeQueue;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
+    public BlockingConnectionHandler(SocketChannel sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
+        this.writeQueue = new LinkedList<>();
     }
 
     @Override
     public void run() {
-        try (Socket sock = this.sock) { //just for automatic closing
-            int read;
+        try (SocketChannel sock = this.sock) { //just for automatic closing
+            int read = -1;
+            ByteBuffer readBuff = ByteBuffer.allocateDirect(1<<13);
+            ByteBuffer writeBuffer= ByteBuffer.allocateDirect(1<<13);
 
-            in = new BufferedInputStream(sock.getInputStream());
-            out = new BufferedOutputStream(sock.getOutputStream());
-
-            while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
-                T nextMessage = encdec.decodeNextByte((byte) read);
-                if (nextMessage != null) {
-                    protocol.process(nextMessage);
+            while (!protocol.shouldTerminate() && connected ){
+                if ((read = sock.read(readBuff))> 0){
+                    readBuff.flip();
+                    while(readBuff.hasRemaining()) {
+                        T nextMessage = encdec.decodeNextByte(readBuff.get());
+                        if (nextMessage != null) {
+                            System.out.println("message as received from client-" + nextMessage);
+                            protocol.process(nextMessage);
+                        }
+                    }
+                    readBuff.clear();
                 }
+                if(!writeQueue.isEmpty()){
+                    System.out.println("should write response");
+                    T msg = writeQueue.poll();
+                    byte[] encodedMsg = encdec.encode(msg);
+                    writeBuffer.put(encodedMsg);
+                    writeBuffer.flip();
+                    while(writeBuffer.hasRemaining()){
+                        sock.write(writeBuffer);
+                    }
+                    writeBuffer.clear();
+
+                }
+
             }
 
         } catch (IOException ex) {
@@ -52,12 +76,10 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         sock.close();
     }
 
-    public void send(T msg) throws IOException {
+    public void send(T msg) {
         //Todo: Maybe need to synchronize // work with a queue so other clients can insert messages to the queue
         // and only the current handler will pop msgs from the queue and write to the buffer.
-        byte[] encodedMsg = encdec.encode(msg);
-        out.write(encodedMsg,0,encodedMsg.length);
-        out.flush();
-        System.out.println("Couldn't send message to client");
+        writeQueue.add(msg);
+        System.out.println("added msg to write Q");
     }
 }
