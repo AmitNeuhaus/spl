@@ -207,7 +207,7 @@ std::string encoderDecoder::getFollowAckString(ConnectionHandler &connection){
 
 //TODO remove before submission
 int main(int argc,char *argv[]) {
-    ConnectionHandler connectionHandler("10.100.102.33", 5000);
+    ConnectionHandler connectionHandler("10.100.102.4", 5000);
     if(!connectionHandler.connect()){
         std::cout <<"fuck tou didnt connect"<< std::endl;
     }
