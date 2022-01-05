@@ -9,7 +9,7 @@ using boost::asio::ip::tcp;
 
 class ConnectionHandler {
 private:
-	const std::string host_;
+    const std::string host_;
 	const short port_;
 	boost::asio::io_service io_service_;   // Provides core I/O functionality
 	tcp::socket socket_; 
@@ -36,6 +36,10 @@ public:
 	// Send an ascii line from the server
     // Returns false in case connection closed before all the data is sent.
     bool sendLine(std::string& line);
+
+    bool sendSubstr(std::string& substr);
+
+    bool getSubstr(std::string& substr);
  
     // Get Ascii data from the server until the delimiter character
     // Returns false in case connection closed before null can be read.
@@ -47,7 +51,7 @@ public:
 	
     // Close down the connection properly.
     void close();
- 
+
 }; //class ConnectionHandler
  
 #endif

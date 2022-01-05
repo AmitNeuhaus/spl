@@ -1,5 +1,5 @@
 #include <connectionHandler.h>
- 
+
 using boost::asio::ip::tcp;
 
 using std::cin;
@@ -64,7 +64,7 @@ bool ConnectionHandler::sendBytes(const char bytes[], int bytesToWrite) {
 }
  
 bool ConnectionHandler::getLine(std::string& line) {
-    return getFrameAscii(line, '\n');
+    return getFrameAscii(line, ';');
 }
 
 bool ConnectionHandler::sendLine(std::string& line) {
@@ -101,3 +101,15 @@ void ConnectionHandler::close() {
         std::cout << "closing failed: connection already closed" << std::endl;
     }
 }
+
+bool ConnectionHandler::sendSubstr(string &substr) {
+    return  sendFrameAscii(substr, '\0');;
+}
+
+bool ConnectionHandler::getSubstr(string &substr) {
+    bool ans =  getFrameAscii(substr, '\0');
+    substr.resize(substr.length()-1);
+    return ans;
+}
+
+

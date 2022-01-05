@@ -5,6 +5,8 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -15,13 +17,13 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     private final BidiMessagingProtocol<T> protocol;
     private final MessageEncoderDecoder<T> encdec;
-    private final Socket sock;
-    private BufferedInputStream in;
-    private BufferedOutputStream out;
+    private final SocketChannel sock;
+//    private BufferedInputStream in;
+//    private BufferedOutputStream out;
     private volatile boolean connected = true;
     private final Queue<T> writeQueue;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
+    public BlockingConnectionHandler(SocketChannel sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
@@ -30,29 +32,38 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
 
     @Override
     public void run() {
-        try (Socket sock = this.sock) { //just for automatic closing
+        try (SocketChannel sock = this.sock) { //just for automatic closing
+            sock.configureBlocking(false);
             int read = -1;
-            in = new BufferedInputStream(sock.getInputStream());
-            out = new BufferedOutputStream(sock.getOutputStream());
+            ByteBuffer readBuff = ByteBuffer.allocateDirect(1<<13);
+            ByteBuffer writeBuffer= ByteBuffer.allocateDirect(1<<13);
 
-            while (!protocol.shouldTerminate() && connected && ((read = in.read()) >= 0) || !writeQueue.isEmpty()){
-                if (read >= 0){
-                    T nextMessage = encdec.decodeNextByte((byte) read);
-                    if (nextMessage != null) {
-                        System.out.println("message as received from client-" + nextMessage);
-                        protocol.process(nextMessage);
+            while (!protocol.shouldTerminate() && connected ){
+                if ((read = sock.read(readBuff))> 0){
+                    readBuff.flip();
+                    while(readBuff.hasRemaining()) {
+                        T nextMessage = encdec.decodeNextByte(readBuff.get());
+                        if (nextMessage != null) {
+                            System.out.println("message as received from client-" + nextMessage);
+                            protocol.process(nextMessage);
+                        }
                     }
+                    readBuff.clear();
                 }
                 if(!writeQueue.isEmpty()){
                     System.out.println("should write response");
                     T msg = writeQueue.poll();
                     byte[] encodedMsg = encdec.encode(msg);
-                    out.write(encodedMsg,0,encodedMsg.length);
-                    out.flush();
+                    writeBuffer.put(encodedMsg);
+                    writeBuffer.flip();
+                    while(writeBuffer.hasRemaining()){
+                        sock.write(writeBuffer);
+                    }
+                    writeBuffer.clear();
                 }
 
             }
-
+            close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
