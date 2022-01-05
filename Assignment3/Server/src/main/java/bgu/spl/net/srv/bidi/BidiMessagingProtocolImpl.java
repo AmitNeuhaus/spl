@@ -104,6 +104,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         if(canLogOut(myConnectionId)){
             dataBase.logOut(myConnectionId);
             sendAck(opCode);
+            shouldTerminate();
             connections.disconnect(myConnectionId);
         }else {
             sendError(opCode);
