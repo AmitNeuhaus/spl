@@ -98,7 +98,7 @@ public class UserInfo {
 
     public ArrayList<String> getStat(){
         ArrayList<String> userStat = new ArrayList<>();
-        userStat.add(getName());
+        userStat.add(getAge().toString());
         userStat.add(String.valueOf(getPosts().size()));
         userStat.add(String.valueOf(getFollowers().size()));
         userStat.add(String.valueOf(getFollowing().size()));
