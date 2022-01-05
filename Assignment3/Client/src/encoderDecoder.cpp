@@ -213,6 +213,7 @@ void encoderDecoder::readSocket(ConnectionHandler &connection){
         std::cout << serverResponse << std::endl;
         if(serverResponse == "ACK 3"){stop = true;}
     }
+    std::cout<<"terminated output thread"<<std::endl;
 }
 
 
@@ -250,7 +251,8 @@ int main(int argc,char *argv[]) {
         }
         encdec->encodeAndSend(input,connectionHandler);
     }
-
+    t1.join();
+    connectionHandler.close();
 
     delete encdec;
     return 0;
