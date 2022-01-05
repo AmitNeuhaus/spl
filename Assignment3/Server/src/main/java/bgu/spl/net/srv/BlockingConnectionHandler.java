@@ -60,11 +60,10 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
                         sock.write(writeBuffer);
                     }
                     writeBuffer.clear();
-
                 }
 
             }
-
+            close();
         } catch (IOException ex) {
             ex.printStackTrace();
         }
