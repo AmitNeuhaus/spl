@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 public class Message {
-    public LinkedList<String> badWords = new LinkedList<>();
+    public LinkedList<String> badWords;
     public String content;
 
-    public Message(String content){
+    public Message(String content,LinkedList<String> badWords){
         this.content = content;
+        this.badWords = badWords;
+
     }
     public String asterisks(String word){
         StringBuilder outPut = new StringBuilder();
