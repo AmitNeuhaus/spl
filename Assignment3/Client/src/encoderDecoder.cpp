@@ -229,7 +229,7 @@ int main(int argc,char *argv[]) {
     bool stop =false;
     while(!stop){
         std::getline(std::cin, input);
-        if(input == "stop"){
+        if(input == "LOGOUT"){
             stop = true;
         }
         if(input=="file"){
@@ -242,7 +242,7 @@ int main(int argc,char *argv[]) {
                 std::getline(file,line);
                 std::cout << line << std::endl;
                 encdec->encodeAndSend(line,connectionHandler);
-                if(line == "stop"){
+                if(line == "LOGOUT"){
                     stop =true;
                     break;
                 }

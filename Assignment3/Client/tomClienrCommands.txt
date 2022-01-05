@@ -1,5 +1,8 @@
 REGISTER tom 1234 20-10-1995
 LOGIN tom 1234 1
+LOGOUT
+LOGIN tom 1234 1
+stop
 FOLLOW 0 amit
 PM amit my name is tom and im testing PM*
 LOGSTAT
