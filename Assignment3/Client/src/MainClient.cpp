@@ -42,7 +42,7 @@ void MainClient::userInput() {
 void MainClient::workWithServer() {
     bool stop = false;
     while(!stop){
-        std::string serverResponse = encdec.decode(connection);
+        std::string serverResponse = encoderDecoder::decode(connection);
         std::cout << serverResponse << std::endl;
         if(serverResponse == "ACK 3"){stop = true;}
     }
