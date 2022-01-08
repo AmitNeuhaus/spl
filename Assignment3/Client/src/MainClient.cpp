@@ -24,6 +24,8 @@ void MainClient::run(std::string ip,int port) {
     MainClient client(ip,port);
     std::thread t1(&MainClient::userInput,&client);
     client.workWithServer();
+    t1.join();
+    client.connection.close();
 }
 
 void MainClient::userInput() {
@@ -34,9 +36,8 @@ void MainClient::userInput() {
         encdec.encodeAndSend(input,connection);
         if(input == "LOGOUT")
             stop = true;
-
     }
-
+    std::cout<<"terminated input thread"<<std::endl;
 }
 
 void MainClient::workWithServer() {
