@@ -78,6 +78,5 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         //Todo: Maybe need to synchronize // work with a queue so other clients can insert messages to the queue
         // and only the current handler will pop msgs from the queue and write to the buffer.
         writeQueue.add(msg);
-        System.out.println("added msg to write Q");
     }
 }
