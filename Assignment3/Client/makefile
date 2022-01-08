@@ -2,7 +2,7 @@ CFLAGS:=-c -Wall -Weffc++ -g -std=c++11 -Iinclude
 LDFLAGS:=-lboost_system
 
 all: MainClient
-	g++ -o bin/echoExample bin/connectionHandler.o bin/MainClient.o  bin/encoderDecoder.o $(LDFLAGS)
+	g++ -o bin/BGSclient bin/connectionHandler.o bin/MainClient.o  bin/encoderDecoder.o $(LDFLAGS)
 
 MainClient: bin/connectionHandler.o bin/encoderDecoder.o bin/MainClient.o
 

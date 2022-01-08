@@ -7,19 +7,21 @@
 
 #include <iostream>
 int main (int argc, char *argv[]) {
+    std::string ip = argv[1];
+    int port = std::stoi(argv[2]);
     std::cout <<"Started the program"<< std::endl;
-    MainClient::run();
+    MainClient::run(ip,port);
 }
 
-MainClient::MainClient(): connection("127.0.0.1", 3222), encoderDecoder() {
+MainClient::MainClient(std::string ip,int port): connection(ip, port), encoderDecoder() {
     if(!connection.connect()){
         std::cout <<"fuck tou didnt connect"<< std::endl;
     }
 
 }
 
-void MainClient::run() {
-    MainClient client;
+void MainClient::run(std::string ip,int port) {
+    MainClient client(ip,port);
     std::thread t1(&MainClient::userInput,&client);
     client.workWithServer();
 }

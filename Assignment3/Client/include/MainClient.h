@@ -14,11 +14,10 @@ private:
     encoderDecoder encoderDecoder;
 
 public:
-    MainClient();
+    MainClient(std::string ip, int port);
     void userInput();
     void workWithServer();
-    static void run();
-
+    static void run(std::string ip, int port);
 };
 
 
