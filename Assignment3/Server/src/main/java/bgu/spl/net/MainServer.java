@@ -11,7 +11,7 @@ import bgu.spl.net.srv.bidi.BidiMessagingProtocolImpl;
 public class MainServer {
 
     public static void main(String args[]){
-        Reactor server = new Reactor(5,5000, () -> new BidiMessagingProtocolImpl(), ()-> new MessagingEncoderDecoderImpl());
+        Reactor server = new Reactor(5,1234, () -> new BidiMessagingProtocolImpl(), ()-> new MessagingEncoderDecoderImpl());
         server.serve();
     }
 }

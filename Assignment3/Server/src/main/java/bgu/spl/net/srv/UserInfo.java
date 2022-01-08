@@ -77,7 +77,7 @@ public class UserInfo {
 
     public ConcurrentLinkedQueue<String> getFollowing(){return following;}
 
-    public ConcurrentLinkedQueue<String> detBlocked(){return blocked;}
+    public ConcurrentLinkedQueue<String> getBlocked(){return blocked;}
 
     public boolean isLoggedIn(){
         return loggedIn;
@@ -136,7 +136,6 @@ public class UserInfo {
 
     public void addBlocked(String name){
         blocked.add(name);
-        removeFollower(name);
     }
 
     public void removeBlocked(String name){

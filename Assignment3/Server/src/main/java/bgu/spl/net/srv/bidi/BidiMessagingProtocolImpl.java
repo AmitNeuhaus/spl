@@ -34,7 +34,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
                 register(message.get(1),message.get(2),message.get(3), opCode);
                 break;
             case "2":
-                logIn(message.get(1),message.get(2), opCode);
+                logIn(message.get(1),message.get(2), message.get(3), opCode);
                 break;
             case "3":
                 logOut(opCode);
@@ -88,8 +88,8 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         }
     }
 
-    public void logIn(String username,String password, String opCode){
-        if(canLogIn(username,password)) {
+    public void logIn(String username,String password,String captcha, String opCode){
+        if(canLogIn(username,password,captcha)) {
             dataBase.logIn(myConnectionId, username);
             sendAck(opCode);
             for (ArrayList<String> message : dataBase.getUserInfo(username).getUnreadMessages()){
@@ -146,7 +146,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             for (String usertag : matchingUsers) {
                 String username = usertag.substring(1);
                 UserInfo taggedUser = dataBase.getUserInfo(username);
-                if(taggedUser != null) {
+                if(taggedUser != null && !taggedUser.isBlocked(user.getName())) {
                     sendNotificationToUser(taggedUser,post.getContent(),"1");
                 }
             }
@@ -186,7 +186,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
             ConcurrentHashMap<Integer, String> activeUsers = dataBase.getActiveUsers();
             for(Integer i: activeUsers.keySet()) {
                 String userName = activeUsers.getOrDefault(i, null);
-                if (userName != null){
+                if (userName != null && !user.isBlocked(userName)){
                     UserInfo activeUserInfo = dataBase.getUserInfo(userName);
                     sendAck(activeUserInfo.getStat(), opCode);
                 }
@@ -201,9 +201,20 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         String[] interestedUserNames = usersList.split("\\|");
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         if(user != null && user.isLoggedIn()) {
+
             for(String userName: interestedUserNames) {
-                if (userName != null){
-                    UserInfo activeUserInfo = dataBase.getUserInfo(userName);
+                UserInfo activeUserInfo = dataBase.getUserInfo(userName);
+                if (activeUserInfo != null) {
+                    if (user.isBlocked(userName)){
+                        sendError(opCode);
+                        return;
+                    }
+                }
+            }
+
+            for(String userName: interestedUserNames) {
+                UserInfo activeUserInfo = dataBase.getUserInfo(userName);
+                if (activeUserInfo != null){
                      sendAck(activeUserInfo.getStat(),opCode);
                 }
             }
@@ -220,8 +231,10 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         if (blockUser != null) {
             user.unFollow(blockUser.getName());
             user.removeFollower(blockUser.getName());
+            user.addBlocked(blockUser.getName());
             blockUser.unFollow(user.getName());
             blockUser.removeFollower(user.getName());
+            blockUser.addBlocked(user.getName());
             sendAck(opCode);
         }else {
             sendError(opCode);
@@ -236,12 +249,12 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
     }
 
 
-    private boolean canLogIn(String username, String password) {
+    private boolean canLogIn(String username, String password, String captcha) {
         UserInfo user = dataBase.getUserInfo(username);
         boolean userExists = user != null;
         if (userExists){
             boolean matchingPassowrd = user.getPassword().equals(password);
-            return (userExists && matchingPassowrd && !user.isLoggedIn());
+            return (matchingPassowrd && !user.isLoggedIn() && captcha.equals("1"));
         }
         return false;
     }
@@ -256,11 +269,14 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
         UserInfo user = dataBase.getUserInfo(myConnectionId);
         UserInfo followed = dataBase.getUserInfo(userName);
         boolean followerExists = followed != null;
-        return (followerExists && user.isLoggedIn() && !followed.isFollower(user.getName()));
+        return (followerExists && user.isLoggedIn() && !followed.isFollower(user.getName()) && !followed.isBlocked(user.getName()));
     }
 
     private boolean canUnfollow(String userName) {
-        return true;
+        UserInfo user = dataBase.getUserInfo(myConnectionId);
+        UserInfo followed = dataBase.getUserInfo(userName);
+        boolean followerExists = followed != null;
+        return (followerExists && user.isLoggedIn() && user.isFollowing(userName));
     }
 
     public boolean canPost(UserInfo user){
@@ -268,7 +284,7 @@ public class BidiMessagingProtocolImpl implements BidiMessagingProtocol<ArrayLis
     }
 
     public boolean canPm(UserInfo user, UserInfo follower){
-        return user.isLoggedIn() && follower != null &&user.isFollower(follower.getName());
+        return user.isLoggedIn() && follower != null && user.isFollower(follower.getName());
     }
 
 //    HELPERS -------
