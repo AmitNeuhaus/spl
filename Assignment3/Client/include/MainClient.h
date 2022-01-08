@@ -11,7 +11,7 @@
 class MainClient {
 private:
     ConnectionHandler connection;
-    encoderDecoder encoderDecoder;
+    encoderDecoder encdec;
 
 public:
     MainClient(std::string ip, int port);

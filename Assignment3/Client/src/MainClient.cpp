@@ -13,7 +13,7 @@ int main (int argc, char *argv[]) {
     MainClient::run(ip,port);
 }
 
-MainClient::MainClient(std::string ip,int port): connection(ip, port), encoderDecoder() {
+MainClient::MainClient(std::string ip,int port): connection(ip, port), encdec() {
     if(!connection.connect()){
         std::cout <<"fuck tou didnt connect"<< std::endl;
     }
@@ -31,7 +31,7 @@ void MainClient::userInput() {
     std::string input;
     while(!stop){
         std::getline(std::cin, input);
-        encoderDecoder::encodeAndSend(input,connection);
+        encdec.encodeAndSend(input,connection);
         if(input == "LOGOUT")
             stop = true;
 
@@ -42,7 +42,7 @@ void MainClient::userInput() {
 void MainClient::workWithServer() {
     bool stop = false;
     while(!stop){
-        std::string serverResponse = encoderDecoder.decode(connection);
+        std::string serverResponse = encdec.decode(connection);
         std::cout << serverResponse << std::endl;
         if(serverResponse == "ACK 3"){stop = true;}
     }
