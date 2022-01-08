@@ -205,56 +205,56 @@ std::string encoderDecoder::getFollowAckString(ConnectionHandler &connection){
     return "ACK "+ std::to_string(4) + " " + userName;
 }
 
-void encoderDecoder::readSocket(ConnectionHandler &connection){
-    std::cout << "output thread is running"<<std::endl;
-    bool stop = false;
-    while(!stop){
-        std::string serverResponse = decode(connection);
-        std::cout << serverResponse << std::endl;
-        if(serverResponse == "ACK 3"){stop = true;}
-    }
-    std::cout<<"terminated output thread"<<std::endl;
-}
+//void encoderDecoder::readSocket(ConnectionHandler &connection){
+//    std::cout << "output thread is running"<<std::endl;
+//    bool stop = false;
+//    while(!stop){
+//        std::string serverResponse = decode(connection);
+//        std::cout << serverResponse << std::endl;
+//        if(serverResponse == "ACK 3"){stop = true;}
+//    }
+//    std::cout<<"terminated output thread"<<std::endl;
+//}
 
 
 
 //TODO remove before submission
-int main(int argc,char *argv[]) {
-    ConnectionHandler connectionHandler("10.100.102.4", 5000);
-    if(!connectionHandler.connect()){
-        std::cout <<"fuck tou didnt connect"<< std::endl;
-    }
-    auto* encdec = new encoderDecoder();
-    std::string input;
-    std::thread t1(&encoderDecoder::readSocket,std::ref(connectionHandler));
-    bool stop =false;
-    while(!stop){
-        std::getline(std::cin, input);
-        if(input == "LOGOUT"){
-            stop = true;
-        }
-        if(input=="file"){
-            std::string filePath;
-            std::getline(std::cin,filePath);
-            std::ifstream file(filePath);
-            std::string line;
-            do{
-                std::getline(std::cin,input);
-                std::getline(file,line);
-                std::cout << line << std::endl;
-                encdec->encodeAndSend(line,connectionHandler);
-                if(line == "LOGOUT"){
-                    stop =true;
-                    break;
-                }
-            }while(input.empty());
-        }
-        encdec->encodeAndSend(input,connectionHandler);
-    }
-    t1.join();
-    connectionHandler.close();
-
-    delete encdec;
-    return 0;
-}
+//int main(int argc,char *argv[]) {
+//    ConnectionHandler connectionHandler("10.100.102.4", 5000);
+//    if(!connectionHandler.connect()){
+//        std::cout <<"fuck tou didnt connect"<< std::endl;
+//    }
+//    auto* encdec = new encoderDecoder();
+//    std::string input;
+//    std::thread t1(&encoderDecoder::readSocket,std::ref(connectionHandler));
+//    bool stop =false;
+//    while(!stop){
+//        std::getline(std::cin, input);
+//        if(input == "LOGOUT"){
+//            stop = true;
+//        }
+//        if(input=="file"){
+//            std::string filePath;
+//            std::getline(std::cin,filePath);
+//            std::ifstream file(filePath);
+//            std::string line;
+//            do{
+//                std::getline(std::cin,input);
+//                std::getline(file,line);
+//                std::cout << line << std::endl;
+//                encdec->encodeAndSend(line,connectionHandler);
+//                if(line == "LOGOUT"){
+//                    stop =true;
+//                    break;
+//                }
+//            }while(input.empty());
+//        }
+//        encdec->encodeAndSend(input,connectionHandler);
+//    }
+//    t1.join();
+//    connectionHandler.close();
+//
+//    delete encdec;
+//    return 0;
+//}
 

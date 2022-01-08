@@ -22,7 +22,7 @@ public:
     static short getOpcode(std::string command);
     static void shortToBytes(short num, char* bytesArr);
     static short bytesToShort(char* bytesArr);
-    static void readSocket(ConnectionHandler &connection);
+//    static void readSocket(ConnectionHandler &connection);
 
 
 private:
