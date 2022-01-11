@@ -64,8 +64,8 @@ class Repository():
         file = open(file_path)
         hats = []
         suppliers = []
-        lines = file.readlines(file)
-        first_line = line[0].split(',')
+        lines = file.readlines()
+        first_line = lines[0].split(',')
         hats_number = first_line[0]
         for i,line in enumerate(lines[1:]):
             splited_line = line.split(',')
