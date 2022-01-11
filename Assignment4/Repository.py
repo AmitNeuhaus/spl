@@ -14,7 +14,6 @@ class Repository():
         self.orders = DAO(Order,self._conn)
 
 
-
     def close(self):
         self._conn.commit()
         self._conn.close()
@@ -87,7 +86,6 @@ class Repository():
 
     def insert_all(self):
 
-
         hat = Hat(1,"mushroom",2,25)
         supplier = Supplier(1,"tom")
         order = Order(1,"lehavim", 1)
@@ -96,5 +94,23 @@ class Repository():
         self.hats.insert(hat)
         self.orders.insert(order)
         print("inserted all")
+
+    def get_orders(self):
+        orders = [{"id":1}]
+        with open('output.txt', 'a') as the_file:
+            for idx,order in enumerate(orders):
+                topping = order["topping"]
+                location = order["location"]
+                hat = self.hats.find_first(topping=topping)[0]
+                supplier = self.suppliers.find_first(hat=hat[0])
+                self.orders.insert(idx,location,hat[0])
+                if hat[3] == 1:
+                    self.hats.delete(id=hat[0])
+                else:
+                    self.hats.update({"quantity" : hat[3]-1}, {"id":hat[0]})
+                # add to file:
+                line=f"{topping},{supplier[1]},{location}\n"
+                the_file.write(line)
+                
 
 
