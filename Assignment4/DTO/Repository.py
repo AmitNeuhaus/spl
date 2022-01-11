@@ -1,6 +1,11 @@
 import sqlite3
 from DAO import DAO
 import atexit
+from Hat import Hat
+from Supplier import Supplier
+from Order import Order
+
+
 
 class Repository():
     def __init__(self):
