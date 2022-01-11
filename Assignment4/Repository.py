@@ -49,6 +49,41 @@ class Repository():
         '''
         )
 
+    def get_orders(self, file_path):
+        file = open(file_path)
+        orders = []
+        lines = file.readlines()
+        for line in lines:
+            if line:
+                splited_line= line.split(',')
+                orders.append({ "location":splited_line[0], "topping":splited_line[1]})
+        return orders
+
+
+    def get_hats_and_suppliers(self, file_path):
+        file = open(file_path)
+        hats = []
+        suppliers = []
+        lines = file.readlines(file)
+        first_line = line[0].split(',')
+        hats_number = first_line[0]
+        for i,line in enumerate(lines[1:]):
+            splited_line = line.split(',')
+            if i<hats_number:
+                hats.append({'id':splited_line[0], "topping":splited_line[1], "supplier":splited_line[2], "quantity":splited_line[3]})
+            else:
+                suppliers.append({"id":splited_line[0], "name":splited_line[1]})
+
+        return hats, suppliers
+
+
+
+
+
+
+
+
+
     def insert_all(self):
 
         hat = Hat(1,"mushroom",2,25)
