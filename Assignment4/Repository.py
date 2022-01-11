@@ -77,26 +77,17 @@ class Repository():
         return hats, suppliers
 
 
-
-
-
-
-
-
-
     def insert_all(self):
+        hats, suppliers = self.get_hats_and_suppliers("config.txt")
+        for hat in hats:
+            hat_obj = Hat(hat["id"], hat["topping"],hat["supplier"], hat["quantity"])
+            self.hats.insert(hat_obj)
+        for supplier in suppliers:
+            supplier_obj = Supplier(supplier["id"], supplier["name"])
+            self.suppliers.insert(supplier_obj)
 
-        hat = Hat(1,"mushroom",2,25)
-        supplier = Supplier(1,"tom")
-        order = Order(1,"lehavim", 1)
-
-        self.suppliers.insert(supplier)
-        self.hats.insert(hat)
-        self.orders.insert(order)
-        print("inserted all")
-
-    def get_orders(self):
-        orders = [{"id":1}]
+    def output_orders(self):
+        orders = self.get_orders("orders.txt")
         with open('output.txt', 'a') as the_file:
             for idx,order in enumerate(orders):
                 topping = order["topping"]
