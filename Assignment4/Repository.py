@@ -70,9 +70,9 @@ class Repository():
         for i,line in enumerate(lines[1:]):
             splited_line = line.split(',')
             if i<hats_number:
-                hats.append({'id':splited_line[0], "topping":splited_line[1], "supplier":splited_line[2], "quantity":splited_line[3]})
+                hats.append({'id':int(splited_line[0]), "topping":splited_line[1], "supplier":int(splited_line[2]), "quantity":int(splited_line[3])})
             else:
-                suppliers.append({"id":splited_line[0], "name":splited_line[1]})
+                suppliers.append({"id":int(splited_line[0]), "name":int(splited_line[1])})
 
         return hats, suppliers
 
