@@ -1,18 +1,17 @@
 import sqlite3
 from DAO import DAO
-import atexit
-from Hat import Hat
-from Supplier import Supplier
-from Order import Order
+from DTO.Hat import Hat
+from DTO.Supplier import Supplier
+from DTO.Order import Order
 
 
 
 class Repository():
     def __init__(self):
         self._conn = sqlite3.connect("PizzaHat.db")
-        self.hats = DAO(Hat.table_name,self._conn)
-        self.suppliers = DAO(Supplier.table_name,self._conn)
-        self.orders = DAO(Order.table_name,self._conn)
+        self.hats = DAO(Hat,self._conn)
+        self.suppliers = DAO(Supplier,self._conn)
+        self.orders = DAO(Order,self._conn)
 
 
 
@@ -21,7 +20,8 @@ class Repository():
         self._conn.close()
 
 
-    def create_tables():
+    def create_tables(self):
+        self._conn.executescript(
         '''
         CREATE TABLE hats (
             id          INT     PRIMARY KEY,
@@ -41,15 +41,13 @@ class Repository():
         CREATE TABLE orders (
             id          INT     PRIMARY KEY,
             location    TEXT    NOT NULL,
-            hat         INT     
+            hat         INT,     
 
             FOREIGN KEY(hat)     REFERENCES hats(id)
         );
         
         
         '''
+        )
 
-
-repo = Repository()
-atexit.register(repo.close)
 

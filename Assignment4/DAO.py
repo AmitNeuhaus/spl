@@ -4,7 +4,7 @@ class DAO:
     def __init__(self,dto_type, conn):
         self.conn = conn
         self.dto_type = dto_type
-        self.table_name = f'{dto_type.__name__.lower()}s'
+        self.table_name = dto_type.__name__.lower()+ "s"
 
 
     def insert(self,dto_instance):
