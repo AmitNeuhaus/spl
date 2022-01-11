@@ -8,7 +8,7 @@ from DTO.Order import Order
 
 class Repository():
     def __init__(self):
-        self._conn = sqlite3.connect("PizzaHat.db")
+        self._conn = sqlite3.connect("database.db")
         self.hats = DAO(Hat,self._conn)
         self.suppliers = DAO(Supplier,self._conn)
         self.orders = DAO(Order,self._conn)
@@ -54,6 +54,7 @@ class Repository():
         orders = []
         lines = file.readlines()
         for line in lines:
+            line = line.rstrip("\n")
             if line:
                 splited_line= line.split(',')
                 orders.append({ "location":splited_line[0], "topping":splited_line[1]})
@@ -65,14 +66,17 @@ class Repository():
         hats = []
         suppliers = []
         lines = file.readlines()
-        first_line = lines[0].split(',')
-        hats_number = first_line[0]
+        first_line = lines[0].rstrip("\n")
+        first_line = first_line.split(',')
+        hats_number = int(first_line[0])
         for i,line in enumerate(lines[1:]):
-            splited_line = line.split(',')
-            if i<hats_number:
-                hats.append({'id':int(splited_line[0]), "topping":splited_line[1], "supplier":int(splited_line[2]), "quantity":int(splited_line[3])})
-            else:
-                suppliers.append({"id":int(splited_line[0]), "name":int(splited_line[1])})
+            line = line.rstrip("\n")
+            if line:
+                splited_line = line.split(',')
+                if i<hats_number:
+                    hats.append({'id':int(splited_line[0]), "topping":splited_line[1], "supplier":int(splited_line[2]), "quantity":int(splited_line[3])})
+                else:
+                    suppliers.append({"id":int(splited_line[0]), "name":splited_line[1]})
 
         return hats, suppliers
 
@@ -92,15 +96,15 @@ class Repository():
             for idx,order in enumerate(orders):
                 topping = order["topping"]
                 location = order["location"]
-                hat = self.hats.find_first(topping=topping)[0]
-                supplier = self.suppliers.find_first(hat=hat[0])
-                self.orders.insert(idx,location,hat[0])
+                hat = self.hats.find_first(topping=topping,order_by="supplier").fetchone()
+                first_supplier = self.suppliers.find_first(id=hat[2]).fetchone()
+                self.orders.insert(Order(idx,location,hat[0]))
                 if hat[3] == 1:
                     self.hats.delete(id=hat[0])
                 else:
                     self.hats.update({"quantity" : hat[3]-1}, {"id":hat[0]})
                 # add to file:
-                line=f"{topping},{supplier[1]},{location}\n"
+                line=f"{topping},{first_supplier[1]},{location}\n"
                 the_file.write(line)
                 
 

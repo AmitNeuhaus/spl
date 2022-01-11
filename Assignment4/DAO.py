@@ -40,21 +40,20 @@ class DAO:
 
 
 
-    def find_first(self, join, **kwargs):
-        if not join:
-            join_on = ""
-        else:
-            join_on = f"JOIN {join}"
+    def find_first(self, order_by=False, join=False, **kwargs):
+        join = f"JOIN {join}" if join else ""
+        order_by = f"ORDER BY {order_by} ASC" if order_by else ""
+
         column_names = list(kwargs.keys())
         params = list(kwargs.values())
 
-        stmt = f'''SELECT * FROM {self.table_name} WHERE {' AND '.join([col + '=?' for col in column_names])} ORDER BY id ASC LIMIT 1 {join_on}'''
+        stmt = f'''SELECT * FROM {self.table_name} WHERE {' AND '.join([col + '=?' for col in column_names])} {join} {order_by} LIMIT 1 '''
         c = self.conn.cursor()
         c.execute(stmt, params)
         # TODO: add orm to return
         return c
 
-    def find_all(self, join, **kwargs):
+    def find_all(self, join=False, **kwargs):
         if not join:
             join_on = ""
         else:
