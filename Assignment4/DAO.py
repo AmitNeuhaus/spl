@@ -10,10 +10,10 @@ class DAO:
     def insert(self,dto_instance):
         ins_dict = vars(dto_instance)
         columns_names = ','.join(ins_dict.keys())
-        params = ins_dict.values()
+        params = list(ins_dict.values())
         qmarks = ",".join(['?']*len(ins_dict))
 
-        stmt = f'''INSERT INTO{self.table_name} ({columns_names}VALUES({qmarks}))'''
+        stmt = f'''INSERT INTO {self.table_name} ({columns_names}) VALUES ({qmarks})'''
         self.conn.execute(stmt, params)
 
 
@@ -25,7 +25,7 @@ class DAO:
         cond_cols = list(conditions.keys())
         cond_values = list(conditions.values())
 
-        stmt = f'''UPDATE {self.table_name}SET{','.join([col + '= ?' for col in column_names])} WHERE {' AND '.join([col + '= ?' for col in cond_cols])}'''
+        stmt = f'''UPDATE {self.table_name} SET {','.join([col + '= ?' for col in column_names])} WHERE {' AND '.join([col + '= ?' for col in cond_cols])}'''
         self.conn.execute(stmt,new_params+cond_values)
 
 
@@ -33,11 +33,10 @@ class DAO:
 
     def delete(self,**kwargs):
         column_name = list(kwargs.keys())
-        params = list(kwargs.values)
+        params = list(kwargs.values())
 
-        stmt = f'''DELETE FROM{self.table_name}WHERE{' AND '.join([col+ '=?' for col in column_name])}'''
-        self.conn.execute(stmt,prams)
-
+        stmt = f'''DELETE FROM {self.table_name} WHERE {' AND '.join([col+ '=?' for col in column_name])}'''
+        self.conn.execute(stmt,params)
 
 
 
@@ -45,7 +44,7 @@ class DAO:
         column_names = list(kwargs.keys())
         params = list(kwargs.values())
 
-        stmt = f'''SELECT * FROM{self.table_name}WHERE{' AND '.join([col + '=?' for col in column_name])}ORDER BY id ASC LIMIT 1'''
+        stmt = f'''SELECT * FROM {self.table_name} WHERE {' AND '.join([col + '=?' for col in column_names])} ORDER BY id ASC LIMIT 1'''
         c = self.conn.cursor()
         c.execute(stmt, params)
         # TODO: add orm to return
@@ -55,9 +54,10 @@ class DAO:
         column_names = list(kwargs.keys())
         params = list(kwargs.values())
 
-        stmt = f'''SELECT * FROM{self.table_name} WHERE{' AND '.join([col + '=?' for col in column_names])}'''
+        stmt = f'''SELECT * FROM {self.table_name} WHERE {' AND '.join([col + '=?' for col in column_names])}'''
         c = self.conn.cursor()
         c.execute(stmt, params)
+        return c
 
 
 

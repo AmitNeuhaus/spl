@@ -26,7 +26,7 @@ class Repository():
         CREATE TABLE hats (
             id          INT     PRIMARY KEY,
             topping     TEXT    NOT NULL,
-            supplier    INT    
+            supplier    INT    ,
             quantity    INT     NOT NULL,
 
             FOREIGN KEY(supplier)     REFERENCES suppliers(id)
@@ -49,5 +49,17 @@ class Repository():
         
         '''
         )
+
+    def insert_all(self):
+
+
+        hat = Hat(1,"mushroom",2,25)
+        supplier = Supplier(1,"tom")
+        order = Order(1,"lehavim", 1)
+
+        self.suppliers.insert(supplier)
+        self.hats.insert(hat)
+        self.orders.insert(order)
+        print("inserted all")
 
 
