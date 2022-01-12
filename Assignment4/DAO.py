@@ -47,7 +47,7 @@ class DAO:
         column_names = list(kwargs.keys())
         params = list(kwargs.values())
 
-        stmt = f'''SELECT * FROM {self.table_name} WHERE {' AND '.join([col + '=?' for col in column_names])} {join} {order_by} LIMIT 1 '''
+        stmt = f'''SELECT * FROM {self.table_name} {join} WHERE {' AND '.join([col + '=?' for col in column_names])} {order_by} LIMIT 1 '''
         c = self.conn.cursor()
         c.execute(stmt, params)
         # TODO: add orm to return
