@@ -7,8 +7,8 @@ from DTO.Order import Order
 
 
 class Repository():
-    def __init__(self):
-        self._conn = sqlite3.connect("database.db")
+    def __init__(self, db_name):
+        self._conn = sqlite3.connect(db_name)
         self.hats = DAO(Hat,self._conn)
         self.suppliers = DAO(Supplier,self._conn)
         self.orders = DAO(Order,self._conn)
@@ -81,8 +81,8 @@ class Repository():
         return hats, suppliers
 
 
-    def insert_all(self):
-        hats, suppliers = self.get_hats_and_suppliers("config.txt")
+    def insert_all(self,config_file):
+        hats, suppliers = self.get_hats_and_suppliers(config_file)
         for hat in hats:
             hat_obj = Hat(hat["id"], hat["topping"],hat["supplier"], hat["quantity"])
             self.hats.insert(hat_obj)
@@ -90,9 +90,9 @@ class Repository():
             supplier_obj = Supplier(supplier["id"], supplier["name"])
             self.suppliers.insert(supplier_obj)
 
-    def output_orders(self):
-        orders = self.get_orders("orders.txt")
-        with open('output.txt', 'w') as the_file:
+    def output_orders(self,orders_file,output_file):
+        orders = self.get_orders(orders_file)
+        with open(output_file, 'w') as the_file:
             for idx,order in enumerate(orders):
                 topping = order["topping"]
                 location = order["location"]
