@@ -97,7 +97,7 @@ class Repository():
                 topping = order["topping"]
                 location = order["location"]
                 hat = self.hats.find_first(topping=topping,order_by="supplier",join="suppliers").fetchone()
-                self.orders.insert(Order(idx,location,hat[0]))
+                self.orders.insert(Order(idx+1,location,hat[0]))
                 if hat[3] == 1:
                     self.hats.delete(id=hat[0])
                 else:
