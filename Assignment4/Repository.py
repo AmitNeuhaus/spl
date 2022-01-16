@@ -90,21 +90,21 @@ class Repository():
             supplier_obj = Supplier(supplier["id"], supplier["name"])
             self.suppliers.insert(supplier_obj)
 
+
     def output_orders(self,orders_file,output_file):
         orders = self.get_orders(orders_file)
         with open(output_file, 'w') as the_file:
             for idx,order in enumerate(orders):
                 topping = order["topping"]
                 location = order["location"]
-                hat = self.hats.find_first(topping=topping,order_by="supplier",join="suppliers").fetchone()
+                hat = self.hats.find_first(topping=topping,order_by="supplier").fetchone()
+                first_supplier = self.suppliers.find_first(id=hat[2]).fetchone()
                 self.orders.insert(Order(idx+1,location,hat[0]))
                 if hat[3] == 1:
                     self.hats.delete(id=hat[0])
                 else:
                     self.hats.update({"quantity" : hat[3]-1}, {"id":hat[0]})
                 # add to file:
-                line=f"{topping},{hat[5]},{location}\n"
+                line=f"{topping},{first_supplier[1]},{location}\n"
                 the_file.write(line)
-                
-
 
